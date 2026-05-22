@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 01: AI × Bioinformatics 概論 — Tutorial</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html" class="active">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 01 / 14 · BASIC</div>
+<h1 data-zh="AI × 生物資訊 概論" data-en="AI × Bioinformatics — Overview">AI × 生物資訊 概論</h1>
+<p class="subtitle" data-lang="zh">從序列、結構到細胞圖譜——AI 正在如何改寫整個生物資訊版圖？這一章是後續 13 個主題的地圖與心智模型。</p>
+<p class="subtitle" data-lang="en">From sequences and structures to cell atlases — how AI is rewriting bioinformatics. A roadmap and mental model for the 13 chapters that follow.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- ===== Section 1: Why now ===== -->
+<section class="section">
+<div class="section-label" data-zh="開場" data-en="Setting the Stage">開場</div>
+<h2 data-zh="為什麼現在是 AI × 生資的黃金交叉點？" data-en="Why is now the inflection point for AI × bioinformatics?">為什麼現在是 AI × 生資的黃金交叉點？</h2>
+<div data-lang="zh">
+<p>三件事在 2020-2026 之間同時發生：<strong>(1) 資料指數級成長</strong>—UK Biobank 五十萬人全基因組、Human Cell Atlas 累計超過 5 千萬細胞、AlphaFold DB 提供 2 億條結構；<strong>(2) Transformer 跨領域成功</strong>—語言模型的「<span class="term">attention<span class="term-tip">注意力機制：讓模型能同時關注序列上任意位置的關係，是現代生物 AI 的共同語言</span></span>」在 DNA、蛋白質、單細胞 RNA-seq 上同樣有效；<strong>(3) 算力與開源權重</strong>—H100/B200、AlphaFold3 / ESM3 / Evo2 / scGPT 等大模型公開權重，讓中小實驗室也能在 fine-tune 階段參與創新。</p>
+<p>這三股力量讓「<strong>能不能用 AI 做？</strong>」這個問題，從少數巨頭的特權，變成每個生資人需要面對的日常選擇。</p>
+</div>
+<div data-lang="en">
+<p>Three things converged between 2020–2026: <strong>(1) data exploded</strong> — UK Biobank's 500K WGS, Human Cell Atlas's 50M+ cells, AlphaFold DB's 200M structures; <strong>(2) Transformers generalized</strong> — the same <span class="term">attention<span class="term-tip">Attention lets the model relate any two positions in a sequence — the lingua franca of modern bio-AI</span></span> mechanism that powers language models works on DNA, protein, and scRNA-seq; <strong>(3) compute and open weights</strong> — H100/B200 GPUs, plus AlphaFold 3, ESM3, Evo 2, scGPT with public weights, lets small labs fine-tune frontier models.</p>
+<p>Together, the question "<strong>can we use AI here?</strong>" has shifted from a Big-Tech privilege to a daily decision for every bioinformatician.</p>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>學習這套教程的方式：</strong>先快速讀完每章「概覽」與「決策樹」，遇到自己工作會用到的章節再深入程式碼與 quiz。AI 工具迭代很快，重點是抓「不變的判讀框架」，而不是死背 API。</span>
+<span data-lang="en"><strong>How to use this tutorial:</strong> skim each chapter's overview and decision tree first, then dive into the code/quizzes for the ones relevant to your work. Tools change fast — focus on the durable framework for picking and validating models, not the API surface.</span>
+</div></div>
+</section>
+
+<!-- ===== Section 2: 4 Levels ===== -->
+<section class="section">
+<div class="section-label" data-zh="心智模型" data-en="Mental Model">心智模型</div>
+<h2 data-zh="生物資訊中 AI 的四層應用" data-en="Four layers of AI in bioinformatics">生物資訊中 AI 的四層應用</h2>
+<div data-lang="zh"><p>不論你研究什麼物種或疾病，AI 在生資的應用大致可以歸入四個層級。每章都會回扣這個架構：</p></div>
+<div data-lang="en"><p>Regardless of organism or disease, AI in bioinformatics generally falls into four layers — every chapter ties back to this structure:</p></div>
+<div class="card-grid cols-2">
+  <div class="card"><div class="card-icon">🧬</div><h4 data-zh="L1：序列 → 表徵" data-en="L1: Sequence → Representation">L1：序列 → 表徵</h4>
+    <div data-lang="zh"><p>把 DNA / RNA / 蛋白質序列壓縮成資訊豐富的 embedding。代表：DNABERT、ESM、Nucleotide Transformer、Evo 2。下游任務 (function prediction、variant effect) 都建立在這層之上。</p></div>
+    <div data-lang="en"><p>Compress DNA/RNA/protein sequences into rich embeddings. Examples: DNABERT, ESM, Nucleotide Transformer, Evo 2. Downstream tasks (function, variant effect) build on this layer.</p></div>
+  </div>
+  <div class="card"><div class="card-icon">🏗️</div><h4 data-zh="L2：序列 → 結構/功能" data-en="L2: Sequence → Structure/Function">L2：序列 → 結構/功能</h4>
+    <div data-lang="zh"><p>從序列直接推斷立體結構或功能：AlphaFold 3 (結構)、Enformer/Borzoi (表達量)、SpliceAI (剪接)、DeepVariant (變異品質)。</p></div>
+    <div data-lang="en"><p>Predict 3D structure or function directly from sequence: AlphaFold 3 (structure), Enformer/Borzoi (expression), SpliceAI (splicing), DeepVariant (variant quality).</p></div>
+  </div>
+  <div class="card"><div class="card-icon">🧫</div><h4 data-zh="L3：細胞/組織 系統建模" data-en="L3: Cell/Tissue System Modeling">L3：細胞/組織 系統建模</h4>
+    <div data-lang="zh"><p>整合大規模單細胞或空間轉錄組資料，學習通用的「細胞語法」：scVI、scGPT、Geneformer、scFoundation。可以做擾動預測、跨樣本對齊。</p></div>
+    <div data-lang="en"><p>Integrate large-scale single-cell or spatial data to learn a universal "cellular grammar": scVI, scGPT, Geneformer, scFoundation. Enables perturbation prediction and cross-sample alignment.</p></div>
+  </div>
+  <div class="card"><div class="card-icon">📚</div><h4 data-zh="L4：知識合成 / Agent" data-en="L4: Knowledge Synthesis / Agents">L4：知識合成 / Agent</h4>
+    <div data-lang="zh"><p>用 LLM 整合文獻、資料庫、工具呼叫，產生分析腳本或診斷建議：BioGPT、Med-PaLM 2、CRISPR-Agent、AutoML pipelines。</p></div>
+    <div data-lang="en"><p>Use LLMs to integrate literature, databases, and tool calls to draft scripts or clinical suggestions: BioGPT, Med-PaLM 2, CRISPR-Agent, AutoML pipelines.</p></div>
+  </div>
+</div>
+</section>
+
+<!-- ===== Section 3: Decision Tree ===== -->
+<section class="section">
+<div class="section-label" data-zh="決策樹" data-en="Decision Tree">決策樹</div>
+<h2 data-zh="我這個任務該用 AI 嗎？" data-en="Should I reach for AI on this task?">我這個任務該用 AI 嗎？</h2>
+<div class="decision-tree">
+<h4 data-zh="🌳 決策路徑" data-en="🌳 Decision flow">🌳 決策路徑</h4>
+<div class="dt-node"><span class="dt-q">Q1.</span> <span data-zh="任務有標籤資料嗎？(>1000 筆)" data-en="Is there labeled data? (>1000 rows)">任務有標籤資料嗎？(>1000 筆)</span></div>
+<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>有：</strong>監督式 ML/DL（章 02、03）。少於 1000 筆優先嘗試傳統統計與經典 ML。" data-en="<strong>Yes:</strong> supervised ML/DL (Ch. 02, 03). Below 1000 rows, prefer classical stats and ML."><strong>有：</strong>監督式 ML/DL（章 02、03）。少於 1000 筆優先嘗試傳統統計與經典 ML。</span></div>
+<div class="dt-node"><span class="dt-q">Q2.</span> <span data-zh="輸入是序列嗎？" data-en="Is the input a sequence?">輸入是序列嗎？</span></div>
+<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>看是 DNA / 蛋白 / RNA，分別查章 04、05、08、09。優先 fine-tune 現成 foundation model 而非從零訓練。" data-en="<strong>Yes:</strong> branch by DNA/protein/RNA — see Ch. 04, 05, 08, 09. Prefer fine-tuning a foundation model over training from scratch."><strong>是：</strong>看是 DNA / 蛋白 / RNA，分別查章 04、05、08、09。優先 fine-tune 現成 foundation model 而非從零訓練。</span></div>
+<div class="dt-node"><span class="dt-q">Q3.</span> <span data-zh="是否需要可解釋與臨床合規？" data-en="Does it need to be interpretable / clinically compliant?">是否需要可解釋與臨床合規？</span></div>
+<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>選擇有「<span class='term'>attribution / saliency<span class='term-tip'>歸因方法：把模型的預測映射回輸入哪些位置造成的影響</span></span>」工具的模型，並準備 model card（章 14）。" data-en="<strong>Yes:</strong> choose models with attribution/saliency tooling and prepare a model card (Ch. 14)."><strong>是：</strong>選擇有 attribution/saliency 工具的模型，並準備 model card（章 14）。</span></div>
+<div class="dt-node"><span class="dt-q">Q4.</span> <span data-zh="任務是「總結 + 工具呼叫」型？" data-en="Is the task summarize-and-call-tools?">任務是「總結 + 工具呼叫」型？</span></div>
+<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>考慮 RAG/Agent（章 12、13），但要做 hallucination 控制。" data-en="<strong>Yes:</strong> consider RAG/Agents (Ch. 12, 13) — with strict hallucination controls."><strong>是：</strong>考慮 RAG/Agent（章 12、13），但要做 hallucination 控制。</span></div>
+</div>
+</section>
+
+<!-- ===== Section 4: Stats Snapshot Interactive ===== -->
+<section class="section">
+<div class="section-label" data-zh="互動圖表" data-en="Interactive Chart">互動圖表</div>
+<h2 data-zh="14 章主題地圖" data-en="A map of the 14 chapters">14 章主題地圖</h2>
+<div data-lang="zh"><p>下圖以「資料量需求」對「方法成熟度」散佈各章主題。<strong>右下</strong>是大眾化、低門檻的；<strong>右上</strong>是已成熟但需要大量資料；<strong>左上</strong>則是還在快速演化的前沿。</p></div>
+<div data-lang="en"><p>Below: each chapter's topic plotted by data-hunger × method maturity. <strong>Lower-right</strong> is accessible; <strong>upper-right</strong> is mature but data-heavy; <strong>upper-left</strong> is the rapidly-evolving frontier.</p></div>
+<div class="interactive-panel">
+<div class="chart-container"><canvas id="mapChart"></canvas></div>
+<p style="font-size:.82rem;color:var(--c-ink-muted);text-align:center;" data-zh="X：方法成熟度（年） · Y：資料量需求（log）" data-en="X: method maturity (years) · Y: data hunger (log)">X：方法成熟度（年） · Y：資料量需求（log）</p>
+</div>
+</section>
+
+<!-- ===== Section 5: Toolchain ===== -->
+<section class="section">
+<div class="section-label" data-zh="工具鏈" data-en="Toolchain">工具鏈</div>
+<h2 data-zh="2026 年的標準工具鏈" data-en="The standard toolchain in 2026">2026 年的標準工具鏈</h2>
+<div data-lang="zh"><p>本教程的所有範例會圍繞以下這套常見工具，第二章開始將用 Python（主）+ R（對照）雙語呈現：</p></div>
+<div data-lang="en"><p>All examples are built on this common stack. From Ch. 2 onward, code is shown side-by-side in Python (primary) and R (companion):</p></div>
+<table class="comp-table">
+<thead><tr><th data-zh="任務" data-en="Task">任務</th><th>Python</th><th>R</th></tr></thead>
+<tbody>
+<tr><td data-zh="資料整理" data-en="Data wrangling">資料整理</td><td>pandas, polars</td><td>tidyverse, data.table</td></tr>
+<tr><td data-zh="經典 ML" data-en="Classical ML">經典 ML</td><td>scikit-learn, xgboost</td><td>tidymodels, caret, xgboost</td></tr>
+<tr><td data-zh="深度學習" data-en="Deep learning">深度學習</td><td>PyTorch, JAX, Lightning</td><td>torch, keras3</td></tr>
+<tr><td data-zh="基因體 / 序列" data-en="Genomics / Sequences">基因體 / 序列</td><td>Biopython, pyfaidx, genomepy</td><td>Biostrings, GenomicRanges</td></tr>
+<tr><td data-zh="單細胞" data-en="Single-cell">單細胞</td><td>scanpy, scvi-tools, anndata</td><td>Seurat v5, SingleCellExperiment</td></tr>
+<tr><td data-zh="蛋白質" data-en="Protein">蛋白質</td><td>fair-esm, openfold, biotite</td><td>—（多以 reticulate 呼叫 Python）</td></tr>
+<tr><td data-zh="LLM / 文獻" data-en="LLM / Literature">LLM / 文獻</td><td>transformers, langchain, llama-index</td><td>chattr, ellmer (R 4.4+)</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ===== Section 6: Code peek ===== -->
+<section class="section">
+<div class="section-label" data-zh="先睹為快" data-en="Sneak Peek">先睹為快</div>
+<h2 data-zh="一段程式碼，五行解決一個生資任務" data-en="Five lines, one bioinformatics task">一段程式碼，五行解決一個生資任務</h2>
+<div data-lang="zh"><p>下面用 ESM-2 把蛋白質序列轉成嵌入向量（你會在第 4–5 章重新遇到它）。試著感受兩種語言寫法的等價性：</p></div>
+<div data-lang="en"><p>Below: ESM-2 turning a protein sequence into an embedding (you'll meet it again in Ch. 4–5). Notice how the two languages mirror each other:</p></div>
+
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python</button><button class="code-tab-btn">R</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install fair-esm torch</span>
+<span class="kw">import</span> torch, esm
+model, alphabet = esm.pretrained.<span class="func">esm2_t6_8M_UR50D</span>()
+batch = alphabet.<span class="func">get_batch_converter</span>()([(<span class="str">"GFP"</span>, <span class="str">"MSKGEELFTGV..."</span>)])
+<span class="kw">with</span> torch.<span class="func">no_grad</span>():
+    out = model(batch[<span class="num">2</span>], repr_layers=[<span class="num">6</span>])
+emb = out[<span class="str">"representations"</span>][<span class="num">6</span>].<span class="func">mean</span>(<span class="num">1</span>)   <span class="comment"># (1, 320)</span></pre></div>
+<div class="code-tab-content"><pre><span class="comment"># install.packages("reticulate"); reticulate::py_install("fair-esm")</span>
+<span class="kw">library</span>(reticulate); esm <- <span class="func">import</span>(<span class="str">"esm"</span>); torch <- <span class="func">import</span>(<span class="str">"torch"</span>)
+m  <- esm$pretrained$<span class="func">esm2_t6_8M_UR50D</span>()
+batch <- m[[<span class="num">2</span>]]$<span class="func">get_batch_converter</span>()(<span class="func">list</span>(<span class="func">list</span>(<span class="str">"GFP"</span>, <span class="str">"MSKGEELFTGV..."</span>)))
+out <- torch$<span class="func">no_grad</span>()$<span class="func">__enter__</span>(); res <- m[[<span class="num">1</span>]](batch[[<span class="num">3</span>]], repr_layers=<span class="func">c</span>(<span class="num">6</span>L))
+emb <- res$representations[[<span class="str">"6"</span>]]$<span class="func">mean</span>(<span class="num">1</span>L)        <span class="comment"># tensor shape (1, 320)</span></pre></div>
+</div>
+
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>R 使用者注意：</strong>蛋白質深度學習生態幾乎全在 Python，最佳做法是 <code>reticulate</code> 包裝呼叫，或使用 R-side 套件 <code>torch</code> 和 <code>biostrings</code> 處理序列前處理 + 向量分析。</span>
+<span data-lang="en"><strong>R users:</strong> the protein deep-learning ecosystem is Python-first. Best practice is to call it via <code>reticulate</code>, while using R-native packages (<code>torch</code>, <code>Biostrings</code>) for preprocessing and downstream analysis.</span>
+</div></div>
+</section>
+
+<!-- ===== Quiz ===== -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+
+<div class="quiz-q">
+<p data-zh="Q1. 下列哪一項<strong>不是</strong> 2020-2026 推動 AI×生資的主要驅動力？" data-en="Q1. Which of the following is <strong>NOT</strong> a key driver behind the 2020–2026 AI × bioinformatics surge?">Q1. 下列哪一項<strong>不是</strong> 2020-2026 推動 AI×生資的主要驅動力？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) UK Biobank 等大規模資料釋出" data-en="(A) Large-scale data releases like UK Biobank">(A) UK Biobank 等大規模資料釋出</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(B) Transformer 架構跨領域有效" data-en="(B) Transformer architectures generalizing across domains">(B) Transformer 架構跨領域有效</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(C) Sanger 定序技術突然變便宜 1000 倍" data-en="(C) A sudden 1000× drop in Sanger sequencing cost">(C) Sanger 定序技術突然變便宜 1000 倍</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) AlphaFold3、ESM3 等大模型開放權重" data-en="(D) Public weights for AlphaFold 3, ESM3, etc.">(D) AlphaFold3、ESM3 等大模型開放權重</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正確答案 (C)。Sanger 並沒有突然降價；驅動力是 NGS 已經夠便宜 + 模型開源 + 算力充足。" data-en="✅ Correct: (C). Sanger sequencing didn't drop another 1000× — the driver was NGS being cheap enough plus open weights and ample compute.">✅ 正確答案 (C)。Sanger 並沒有突然降價；驅動力是 NGS 已經夠便宜 + 模型開源 + 算力充足。</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q2. 「序列 → 表徵」(L1) 與「序列 → 結構/功能」(L2) 的核心差別是？" data-en="Q2. What is the core difference between L1 (sequence → representation) and L2 (sequence → structure/function)?">Q2. 「序列 → 表徵」(L1) 與「序列 → 結構/功能」(L2) 的核心差別是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="true"><span data-zh="(A) L1 輸出向量，是下游任務的輸入；L2 直接輸出生物學上有意義的結構或量化指標" data-en="(A) L1 outputs vectors used as inputs for downstream tasks; L2 directly outputs biologically meaningful structures or metrics">(A) L1 輸出向量，是下游任務的輸入；L2 直接輸出生物學上有意義的結構或量化指標</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(B) L1 必須使用 Transformer，L2 必須使用 CNN" data-en="(B) L1 must use Transformers, L2 must use CNNs">(B) L1 必須使用 Transformer，L2 必須使用 CNN</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) L1 是監督式，L2 是非監督式" data-en="(C) L1 is supervised, L2 is unsupervised">(C) L1 是監督式，L2 是非監督式</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) L1 只能處理 DNA，L2 只能處理蛋白質" data-en="(D) L1 only handles DNA, L2 only handles protein">(D) L1 只能處理 DNA，L2 只能處理蛋白質</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正確答案 (A)。L1 是「特徵抽取」階段，L2 是「應用」階段；架構選擇與監督式與否是另一個維度。" data-en="✅ Correct: (A). L1 is feature extraction; L2 is application. Architecture choice and supervision are orthogonal axes.">✅ 正確答案 (A)。L1 是「特徵抽取」階段，L2 是「應用」階段；架構選擇與監督式與否是另一個維度。</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q3. 你接到一個任務：從 800 條腫瘤外顯子組篩選致病變異。你應該先嘗試？" data-en="Q3. Task: prioritize pathogenic variants from 800 tumor exomes. What should you try first?">Q3. 你接到一個任務：從 800 條腫瘤外顯子組篩選致病變異。你應該先嘗試？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 從零訓練一個 Transformer 預測致病性" data-en="(A) Train a Transformer from scratch to predict pathogenicity">(A) 從零訓練一個 Transformer 預測致病性</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 先用既有工具 (e.g. AlphaMissense、SpliceAI) + 經典 ML，800 筆遠不夠從零訓練 DL" data-en="(B) Use existing tools (AlphaMissense, SpliceAI) + classical ML — 800 samples is far too few to train a DL model from scratch">(B) 先用既有工具 (e.g. AlphaMissense、SpliceAI) + 經典 ML，800 筆遠不夠從零訓練 DL</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 跳過 AI，只用 VEP 注解" data-en="(C) Skip AI, only use VEP annotation">(C) 跳過 AI，只用 VEP 注解</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 用一個大型 LLM 直接讀 VCF 給診斷" data-en="(D) Feed the whole VCF to an LLM and let it diagnose">(D) 用一個大型 LLM 直接讀 VCF 給診斷</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正確答案 (B)。資料量不大時，最佳實踐是把已訓練好的大模型作為特徵抽取器，再加上輕量分類器；章 9 會深入談這套流程。" data-en="✅ Correct: (B). With small N, use pretrained models as feature extractors and stack a light classifier on top — covered in detail in Ch. 9.">✅ 正確答案 (B)。資料量不大時，最佳實踐是把已訓練好的大模型作為特徵抽取器，再加上輕量分類器；章 9 會深入談這套流程。</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<div class="placeholder"></div>
+<a href="02-ml-basics.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="02 · 機器學習基礎" data-en="02 · Machine Learning Basics">02 · 機器學習基礎</span></a>
+</nav>
+
+</main>
+
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+
+<script src="i18n.js"></script>
+<script>
+// ----- Topic map scatter -----
+const topics = [
+  {x:5, y:5, r:14, name:'01 Overview'},
+  {x:8, y:3, r:14, name:'02 ML basics'},
+  {x:7, y:5, r:14, name:'03 DL basics'},
+  {x:5, y:7, r:14, name:'04 Seq embed'},
+  {x:6, y:8, r:18, name:'05 AlphaFold3'},
+  {x:3, y:8, r:14, name:'06 Protein design'},
+  {x:3, y:7, r:14, name:'07 Docking'},
+  {x:5, y:9, r:18, name:'08 Enformer/Borzoi'},
+  {x:6, y:6, r:14, name:'09 SpliceAI/DeepVariant'},
+  {x:4, y:9, r:18, name:'10 scGPT/Geneformer'},
+  {x:3, y:7, r:14, name:'11 Drug discovery'},
+  {x:4, y:8, r:14, name:'12 BioGPT/BioMedLM'},
+  {x:2, y:6, r:14, name:'13 AI agents'},
+  {x:7, y:4, r:12, name:'14 Ethics'},
+];
+const ctx = document.getElementById('mapChart');
+if(ctx){
+  new Chart(ctx, {
+    type: 'bubble',
+    data:{ datasets:[{
+      label:'Topics', data:topics,
+      backgroundColor:'rgba(91,61,245,0.55)', borderColor:'#3a25b8', borderWidth:1
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{ label:(c)=> c.raw.name }}
+      },
+      scales:{
+        x:{title:{display:true,text:'Method Maturity (years since flagship paper)'},min:0,max:10},
+        y:{title:{display:true,text:'Data hunger (log)'},min:0,max:10}
+      }
+    }
+  });
+}
+</script>
+</body></html>

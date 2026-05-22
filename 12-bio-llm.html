@@ -1,0 +1,190 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 12: 生醫大型語言模型 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html" class="active">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 12 / 14 · ADVANCED</div>
+<h1 data-zh="生醫大型語言模型" data-en="Biomedical Large Language Models">生醫大型語言模型</h1>
+<p class="subtitle" data-lang="zh">BioGPT、BioMedLM、Med-PaLM 2、GPT-4 醫學評估、Evo 2 跨模態：LLM 在生醫文獻挖掘、臨床問答、序列推理上的能力與盲點。</p>
+<p class="subtitle" data-lang="en">BioGPT, BioMedLM, Med-PaLM 2, medical GPT-4 evaluation, cross-modal Evo 2: what biomedical LLMs can and cannot do in literature mining, clinical QA, and sequence reasoning.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1 -->
+<section class="section">
+<div class="section-label" data-zh="景觀" data-en="Landscape">景觀</div>
+<h2 data-zh="一、四類生醫 LLM" data-en="I. Four Families of Biomedical LLMs">一、四類生醫 LLM</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="類別" data-en="Category">類別</th><th data-zh="代表" data-en="Examples">代表</th><th data-zh="訓練資料" data-en="Pretraining">訓練資料</th><th data-zh="強項" data-en="Strengths">強項</th></tr></thead>
+<tbody>
+<tr><td data-zh="專一文獻 LM" data-en="Specialist literature LM">專一文獻 LM</td><td>BioGPT, BioMedLM, PubMedBERT</td><td data-zh="PubMed 全文與摘要" data-en="PubMed full-text & abstracts">PubMed 全文與摘要</td><td data-zh="關係抽取、生物實體識別" data-en="Relation extraction, biomedical NER">關係抽取、實體識別</td></tr>
+<tr><td data-zh="臨床問答" data-en="Clinical QA">臨床問答</td><td>Med-PaLM 2, GPT-4 (medical), Meditron</td><td data-zh="醫學考題 + 病歷" data-en="Medical exams + EHR">醫學考題 + 病歷</td><td data-zh="USMLE-level QA" data-en="USMLE-level QA">USMLE-level QA</td></tr>
+<tr><td data-zh="多模態" data-en="Multi-modal">多模態</td><td>Med-Gemini, BiomedCLIP, RadFM</td><td data-zh="影像 + 文字" data-en="Image + text">影像 + 文字</td><td data-zh="放射影像報告生成" data-en="Radiology report generation">放射影像報告</td></tr>
+<tr><td data-zh="序列 LLM" data-en="Sequence LLM">序列 LLM</td><td>Evo 2, ProGen2, ESM-3</td><td data-zh="DNA / 蛋白序列" data-en="DNA / protein sequences">DNA / 蛋白序列</td><td data-zh="基因組生成、零樣本變異效應" data-en="Genome generation, zero-shot variant effect">基因組生成、變異效應</td></tr>
+</tbody>
+</table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>2026 一個有趣現象：</strong>在 MedQA / USMLE 等考試題上，<strong>通用大模型 (GPT-4 / Claude / Gemini Ultra) 已超越大部分專科生醫 LLM</strong>，主因是規模 + 推理能力。但專科 LLM 在「結構化抽取 (relation extraction)」與「隱私敏感的本地部署」仍有不可替代性。</span>
+<span data-lang="en"><strong>An interesting 2026 reality:</strong> on MedQA / USMLE-style exams, <strong>general LLMs (GPT-4, Claude, Gemini Ultra) outperform most specialized biomedical LLMs</strong> — driven by scale and reasoning. Specialist LLMs still own structured extraction and privacy-sensitive on-prem deployment.</span>
+</div></div>
+</section>
+
+<!-- Section 2: RAG -->
+<section class="section">
+<div class="section-label" data-zh="必修技巧" data-en="Must-Know">必修技巧</div>
+<h2 data-zh="二、RAG (Retrieval-Augmented Generation)：對抗 hallucination 的核心武器" data-en="II. RAG — the core weapon against hallucination">二、RAG：對抗 hallucination 的核心武器</h2>
+<div data-lang="zh">
+<p>LLM 直接回答醫學問題容易「幻覺 (hallucinate)」——記錯藥名、引用不存在的論文。<strong>RAG</strong> 透過先檢索可信知識庫 (PubMed、UpToDate、ClinVar)，再讓 LLM 基於檢索結果生成答案，把生成「錨定」在來源上。</p>
+<p>典型流程：</p>
+<ol>
+<li>把所有 PubMed 摘要切成 ~500 字 chunk，用 embedding 模型 (e.g. <code>text-embedding-3-small</code> 或 <code>BGE-large-en</code>) 編碼成向量。</li>
+<li>存入向量資料庫 (FAISS、Qdrant、Weaviate)。</li>
+<li>查詢時：embed query → top-k 檢索相關 chunk → 把 chunk 拼進 prompt 給 LLM。</li>
+<li>LLM 生成答案並引用來源 chunk。</li>
+</ol>
+</div>
+<div data-lang="en">
+<p>Bare LLMs hallucinate — wrong drug names, fabricated citations. <strong>RAG</strong> retrieves trustworthy knowledge (PubMed, UpToDate, ClinVar) first, then conditions the LLM on those passages, anchoring the generation to sources.</p>
+<p>Typical flow:</p>
+<ol>
+<li>Chunk all PubMed abstracts into ~500-token blocks; embed with <code>text-embedding-3-small</code> or <code>BGE-large-en</code>.</li>
+<li>Store in a vector DB (FAISS, Qdrant, Weaviate).</li>
+<li>At query time: embed query → top-k retrieve → concatenate chunks into the LLM prompt.</li>
+<li>LLM answers with citations.</li>
+</ol>
+</div>
+</section>
+
+<!-- Section 3 Code -->
+<section class="section">
+<div class="section-label" data-zh="動手" data-en="Hands-on">動手</div>
+<h2 data-zh="三、最小可運行的 PubMed RAG" data-en="III. Minimal working PubMed RAG">三、最小可運行的 PubMed RAG</h2>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python (LangChain + OpenAI)</button><button class="code-tab-btn">Local stack (Ollama + chroma)</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install langchain langchain-openai chromadb pubmed-parser</span>
+<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> RecursiveCharacterTextSplitter
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> OpenAIEmbeddings, ChatOpenAI
+<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> RetrievalQA
+<span class="kw">import</span> pubmed_parser <span class="kw">as</span> pp
+
+<span class="comment"># Step 1: Build vector DB from a PubMed XML dump</span>
+docs = pp.<span class="func">parse_medline_xml</span>(<span class="str">"pubmed24n0001.xml"</span>)
+texts = [d[<span class="str">"abstract"</span>] <span class="kw">for</span> d <span class="kw">in</span> docs <span class="kw">if</span> d[<span class="str">"abstract"</span>]]
+
+splitter = <span class="func">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="num">800</span>, chunk_overlap=<span class="num">100</span>)
+chunks = splitter.<span class="func">create_documents</span>(texts)
+db = Chroma.<span class="func">from_documents</span>(chunks, <span class="func">OpenAIEmbeddings</span>(), persist_directory=<span class="str">"./pubmed_db"</span>)
+
+<span class="comment"># Step 2: Query with citations</span>
+qa = RetrievalQA.<span class="func">from_chain_type</span>(
+    llm = <span class="func">ChatOpenAI</span>(model=<span class="str">"gpt-4o-mini"</span>, temperature=<span class="num">0</span>),
+    retriever = db.<span class="func">as_retriever</span>(search_kwargs={<span class="str">"k"</span>:<span class="num">5</span>}),
+    return_source_documents = <span class="kw">True</span>
+)
+ans = qa(<span class="str">"What does scGPT contribute to perturbation prediction?"</span>)
+<span class="func">print</span>(ans[<span class="str">"result"</span>])
+<span class="kw">for</span> d <span class="kw">in</span> ans[<span class="str">"source_documents"</span>]: <span class="func">print</span>(d.metadata.<span class="func">get</span>(<span class="str">"source"</span>))</pre></div>
+<div class="code-tab-content"><pre><span class="comment"># Local & private — no data leaves your machine</span>
+<span class="comment"># 1. ollama pull llama3.1:8b-instruct  (or mistral, qwen)</span>
+<span class="comment"># 2. pip install langchain chromadb sentence-transformers</span>
+
+<span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+<span class="kw">from</span> langchain_community.embeddings <span class="kw">import</span> HuggingFaceEmbeddings
+<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> Chroma
+
+emb = <span class="func">HuggingFaceEmbeddings</span>(model_name=<span class="str">"BAAI/bge-large-en-v1.5"</span>)
+db  = Chroma(persist_directory=<span class="str">"./pubmed_db"</span>, embedding_function=emb)
+llm = <span class="func">Ollama</span>(model=<span class="str">"llama3.1:8b-instruct"</span>, temperature=<span class="num">0</span>)
+<span class="comment"># Same RetrievalQA workflow as above — fully on-prem</span></pre></div>
+</div>
+</section>
+
+<!-- Section 4: Pitfalls -->
+<section class="section">
+<div class="section-label" data-zh="陷阱" data-en="Pitfalls">陷阱</div>
+<h2 data-zh="四、用 LLM 做生醫的五大坑" data-en="IV. Five common pitfalls with biomedical LLMs">四、用 LLM 做生醫的五大坑</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4 data-zh="🌀 Hallucinated citations" data-en="🌀 Hallucinated citations">🌀 假引文</h4><div data-lang="zh"><p>LLM 會「編造看起來像真的」DOI 與作者。應強制 RAG 模式並驗證每個引文存在於 PubMed。</p></div><div data-lang="en"><p>LLMs invent plausible-looking DOIs and authors. Enforce RAG and verify each citation against PubMed.</p></div></div>
+<div class="card"><h4 data-zh="📅 Knowledge cutoff" data-en="📅 Knowledge cutoff">📅 知識截止</h4><div data-lang="zh"><p>LLM 不知道訓練後發生的事。新藥、新指南、新基因都需 RAG 補。</p></div><div data-lang="en"><p>LLMs don't know post-training events — new drugs, guidelines, genes. Bridge with RAG.</p></div></div>
+<div class="card"><h4 data-zh="🔒 PHI / HIPAA 隱私" data-en="🔒 PHI / HIPAA privacy">🔒 PHI / HIPAA 隱私</h4><div data-lang="zh"><p>不能把病歷送到外部 API。應用本地 Ollama / vLLM + 加密向量庫。</p></div><div data-lang="en"><p>Never send EHR to external APIs. Use local Ollama / vLLM + encrypted vector store.</p></div></div>
+<div class="card"><h4 data-zh="🧪 Benchmark inflation" data-en="🧪 Benchmark inflation">🧪 Benchmark 污染</h4><div data-lang="zh"><p>主流 medical QA benchmark 多已被各家 LLM 看過。論文宣稱的 90%+ 準確率須以「自家未洩漏資料」驗證。</p></div><div data-lang="en"><p>Mainstream medical QA benchmarks have likely leaked into LLM training data. Validate claimed 90%+ on your own held-out set.</p></div></div>
+</div>
+</section>
+
+<!-- Section 5: Sequence LLM -->
+<section class="section">
+<div class="section-label" data-zh="序列 LLM" data-en="Sequence LLMs">序列 LLM</div>
+<h2 data-zh="五、Evo 2：當 LLM 學會「DNA 語言」" data-en="V. Evo 2 — when LLMs learn the DNA language">五、Evo 2：當 LLM 學會「DNA 語言」</h2>
+<div data-lang="zh">
+<p>2025 年 Arc Institute 與 NVIDIA 發表 Evo 2：基於 StripedHyena 架構、9 兆 nt 訓練、最大 40B 參數、1M 上下文窗口。能做：</p>
+<ul>
+<li><strong>零樣本變異效應</strong>：對 BRCA1 致病性變異無需 fine-tune 也能正確排序。</li>
+<li><strong>跨界生成</strong>：一次生成完整粒線體基因組或細菌 operon。</li>
+<li><strong>單核苷酸解析</strong>的 likelihood 推算 (vs DNABERT 的 6mer 平均)。</li>
+</ul>
+<p>但 Evo 2 不是萬能：對人類 GWAS 個體變異仍弱，2025 年 8 月的 BioRxiv 提示其在 personal expression 任務只比 baseline 略好。</p>
+</div>
+<div data-lang="en">
+<p>Evo 2 (Arc Institute & NVIDIA, 2025): StripedHyena architecture, 9 trillion nt of training, up to 40B parameters, 1M-token context. Capabilities:</p>
+<ul>
+<li><strong>Zero-shot variant effect</strong>: ranks BRCA1 pathogenicity correctly without fine-tuning.</li>
+<li><strong>Cross-domain generation</strong>: produce a complete mitochondrial genome or bacterial operon in one shot.</li>
+<li><strong>Single-nucleotide resolution</strong> likelihood (vs DNABERT's 6-mer averages).</li>
+</ul>
+<p>Not a silver bullet: weak on human GWAS individual variants — an Aug-2025 BioRxiv noted only marginal improvement on personal expression tasks.</p>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. RAG 的最大價值是？" data-en="Q1. The main value of RAG?">Q1. RAG 的最大價值是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 讓 LLM 速度更快" data-en="(A) Faster LLMs">(A) 讓 LLM 速度更快</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 用即時檢索的可信來源錨定生成，降低幻覺並提供引用" data-en="(B) Anchors generation to trusted retrieved sources, reducing hallucination and adding citations">(B) 用即時檢索的可信來源錨定生成，降低幻覺並提供引用</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) RAG 不需要 LLM" data-en="(C) RAG needs no LLM">(C) RAG 不需要 LLM</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 永久解決隱私" data-en="(D) Solves privacy entirely">(D) 永久解決隱私</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. 對含病人 PHI 的應用，最安全的部署？" data-en="Q2. Safest deployment for an app handling PHI?">Q2. 對含病人 PHI 的應用，最安全的部署？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 直接呼叫 GPT-4o API" data-en="(A) Call GPT-4o API directly">(A) 直接呼叫 GPT-4o API</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 本地 Ollama / vLLM 部署 + 加密向量庫，資料不離院內" data-en="(B) On-prem Ollama / vLLM + encrypted vector DB — data stays local">(B) 本地 Ollama / vLLM 部署 + 加密向量庫，資料不離院內</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 把 PHI 放 Google Drive" data-en="(C) Put PHI on Google Drive">(C) 把 PHI 放 Google Drive</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 用 ChatGPT 公開版" data-en="(D) Public ChatGPT">(D) 用 ChatGPT 公開版</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。HIPAA / GDPR 對 PHI 有嚴格要求。" data-en="✅ (B). HIPAA/GDPR require strict handling of PHI.">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 對 Evo 2 的合理使用情境？" data-en="Q3. Reasonable use case for Evo 2?">Q3. 對 Evo 2 的合理使用情境？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 直接拿來預測病人個體 GWAS 風險" data-en="(A) Directly predict patient GWAS risk">(A) 直接拿來預測病人個體 GWAS 風險</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 對少見物種基因組做零樣本探索；BRCA1 變異效應排序" data-en="(B) Zero-shot exploration of rare-species genomes; BRCA1 variant effect ranking">(B) 對少見物種基因組做零樣本探索；BRCA1 變異效應排序</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 取代 SpliceAI" data-en="(C) Replace SpliceAI">(C) 取代 SpliceAI</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 做臨床診斷" data-en="(D) Clinical diagnostics">(D) 做臨床診斷</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。Evo 2 的甜蜜點在「跨物種」與「分佈內變異」。" data-en="✅ (B). Evo 2's sweet spot is cross-species and in-distribution variants.">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="11-drug-discovery.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="11 · 藥物發現" data-en="11 · Drug Discovery">11 · 藥物發現</span></a>
+<a href="13-ai-agents.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="13 · AI Agent 與工作流" data-en="13 · AI Agents">13 · AI Agent</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 06: 蛋白質從頭設計 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html" class="active">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 06 / 14 · ADVANCED</div>
+<h1 data-zh="蛋白質從頭設計 (De Novo Design)" data-en="De Novo Protein Design">蛋白質從頭設計</h1>
+<p class="subtitle" data-lang="zh">RFdiffusion 生成 backbone、ProteinMPNN 設計序列、AlphaFold 驗證——從零造一個自然界沒有的蛋白質，已經是端到端工業流程。</p>
+<p class="subtitle" data-lang="en">RFdiffusion generates backbones, ProteinMPNN writes sequences, AlphaFold validates — building a protein that doesn't exist in nature is now an end-to-end industrial pipeline.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: Three pillars -->
+<section class="section">
+<div class="section-label" data-zh="總覽" data-en="Overview">總覽</div>
+<h2 data-zh="一、三步驟：generate → design → validate" data-en="I. Three-step recipe: generate → design → validate">一、三步驟：generate → design → validate</h2>
+<div class="workflow">
+<div class="wf-step" data-num="1"><h5 data-zh="生成 backbone：RFdiffusion" data-en="Generate backbone: RFdiffusion">生成 backbone：RFdiffusion</h5>
+<p data-lang="zh">把 RoseTTAFold 改裝成 diffusion model：從原子雜訊中逐步「去噪」出一個合理 3D 骨架。可指定限制——對稱性、結合 motif、活性中心 scaffold。</p>
+<p data-lang="en">RoseTTAFold turned into a diffusion model: denoise atom noise into a plausible 3D backbone. Conditional inputs include symmetry, binding motifs, and active-site scaffolds.</p></div>
+
+<div class="wf-step" data-num="2"><h5 data-zh="設計序列：ProteinMPNN" data-en="Design sequence: ProteinMPNN">設計序列：ProteinMPNN</h5>
+<p data-lang="zh">給定 backbone 座標，使用 message-passing 神經網路為每個位置選胺基酸。實驗成功率 (~52%) 顯著高於物理 Rosetta (~10%)。</p>
+<p data-lang="en">Given a backbone, a message-passing network picks an amino acid for each position. Experimental success ~52%, far above physics-based Rosetta (~10%).</p></div>
+
+<div class="wf-step" data-num="3"><h5 data-zh="驗證：AlphaFold + 實驗" data-en="Validate: AlphaFold + experiment">驗證：AlphaFold + 實驗</h5>
+<p data-lang="zh">用 AlphaFold 2/3 重新折疊「設計的序列」，看是否回到原本的 backbone（in silico 自洽）。pLDDT &gt; 80 且 RMSD &lt; 2Å 才送 wet lab。</p>
+<p data-lang="en">Re-fold the designed sequence with AlphaFold 2/3 — does it match the target backbone (in silico self-consistency)? Only sequences with pLDDT > 80 and RMSD < 2Å go to the wet lab.</p></div>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>套件位置：</strong>RFdiffusion 與 ProteinMPNN 都來自華盛頓大學 <strong>Baker Lab</strong>，2024 年諾貝爾化學獎主之一 David Baker 即此一系列工作的領導者。GitHub 都在 <code>RosettaCommons</code> 與 <code>dauparas</code>。</span>
+<span data-lang="en"><strong>Where to find them:</strong> Both come from UW <strong>Baker Lab</strong> (David Baker, 2024 Nobel Chemistry). GitHub at <code>RosettaCommons</code> and <code>dauparas</code>.</span>
+</div></div>
+</section>
+
+<!-- Section 2: Use cases -->
+<section class="section">
+<div class="section-label" data-zh="應用案例" data-en="Use Cases">應用案例</div>
+<h2 data-zh="二、四種典型設計任務" data-en="II. Four Canonical Design Tasks">二、四種典型設計任務</h2>
+<div class="card-grid cols-2">
+<div class="card"><div class="card-icon">🔒</div><h4 data-zh="Binder design — 結合特定標靶" data-en="Binder design — bind a target">Binder design — 結合特定標靶</h4><div data-lang="zh"><p>給定 target 蛋白上一塊 hotspot，設計能緊密結合它的小蛋白 (~50-150 aa)。已成功用於 SARS-CoV-2 spike 中和、IL-2 拮抗劑、PD-L1。</p></div><div data-lang="en"><p>Given a target hotspot, design a small (~50-150 aa) protein that binds tightly. Used for SARS-CoV-2 spike neutralizers, IL-2 antagonists, PD-L1 binders.</p></div></div>
+<div class="card"><div class="card-icon">🧪</div><h4 data-zh="Enzyme scaffolding — 活性中心移植" data-en="Enzyme scaffolding — active-site transplant">Enzyme scaffolding — 活性中心移植</h4><div data-lang="zh"><p>把已知催化三聯體 (e.g. Ser-His-Asp) 嵌進新 scaffold，實作從零到有的酵素 design。RFdiffusion-AA 可同時處理金屬輔因子。</p></div><div data-lang="en"><p>Transplant a known catalytic triad (e.g., Ser-His-Asp) into a new scaffold to build enzymes from scratch. RFdiffusion-AA also handles metal cofactors.</p></div></div>
+<div class="card"><div class="card-icon">🦠</div><h4 data-zh="Symmetric oligomers — 疫苗 nanoparticle" data-en="Symmetric oligomers — vaccine nanoparticles">Symmetric oligomers — 疫苗 nanoparticle</h4><div data-lang="zh"><p>使用對稱性條件，設計 12-180 mer nanoparticle 顯示抗原。如 Neoflu7 流感疫苗已進入 phase I clinical trial。</p></div><div data-lang="en"><p>Use symmetry conditioning to design 12–180-mer nanoparticles displaying antigens. E.g., Neoflu7 flu vaccine reached Phase I.</p></div></div>
+<div class="card"><div class="card-icon">🛡️</div><h4 data-zh="Antibody design — RFdiffusion-Ab" data-en="Antibody design — RFdiffusion-Ab">Antibody design — RFdiffusion-Ab</h4><div data-lang="zh"><p>2024 年發表的 antibody-specific RFdiffusion 變體，實作端到端 CDR 設計，已在多個實驗室拿到原子精度的 binding。</p></div><div data-lang="en"><p>2024 antibody-specific variant; end-to-end CDR design, replicated by multiple labs at atomic accuracy.</p></div></div>
+</div>
+</section>
+
+<!-- Section 3: Code -->
+<section class="section">
+<div class="section-label" data-zh="動手" data-en="Hands-on">動手</div>
+<h2 data-zh="三、最小可跑的設計流程" data-en="III. Minimal Working Pipeline">三、最小可跑的設計流程</h2>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">RFdiffusion (CLI)</button><button class="code-tab-btn">ProteinMPNN (Python)</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># --- Step 1: Generate 100 backbones for a 100aa unconditional protein ---</span>
+<span class="kw">git clone</span> https://github.com/RosettaCommons/RFdiffusion <span class="kw">&&</span> <span class="kw">cd</span> RFdiffusion
+<span class="comment"># Download SE3-Transformer weights (one-time, ~3GB)</span>
+
+python scripts/run_inference.py \
+    inference.output_prefix=outputs/design \
+    inference.num_designs=<span class="num">100</span> \
+    contigmap.contigs=[<span class="num">100</span>] \
+    inference.write_trajectory=False
+
+<span class="comment"># --- Step 2: Constrain a binder to a target hotspot ---</span>
+python scripts/run_inference.py \
+    inference.input_pdb=target.pdb \
+    contigmap.contigs=[<span class="str">"A1-150/0 60-100"</span>] \
+    ppi.hotspot_res=[<span class="str">"A33"</span>,<span class="str">"A38"</span>,<span class="str">"A41"</span>] \
+    inference.num_designs=<span class="num">200</span> \
+    inference.output_prefix=outputs/binder</pre></div>
+<div class="code-tab-content"><pre><span class="comment"># Design sequences for the generated backbones</span>
+<span class="kw">from</span> protein_mpnn_utils <span class="kw">import</span> ProteinMPNN, parse_PDB
+
+mpnn = <span class="func">ProteinMPNN</span>(model_name=<span class="str">"v_48_020"</span>).<span class="func">cuda</span>().<span class="func">eval</span>()
+pdb_struct = <span class="func">parse_PDB</span>(<span class="str">"outputs/design_0.pdb"</span>)
+
+seqs = mpnn.<span class="func">sample</span>(
+    pdb_struct,
+    num_seq_per_target=<span class="num">8</span>,
+    sampling_temp=<span class="num">0.1</span>,           <span class="comment"># 0.1 = greedy & best success rate</span>
+    omit_AAs=<span class="str">"CX"</span>,                 <span class="comment"># skip Cys & non-canonical</span>
+)
+<span class="kw">for</span> i, s <span class="kw">in</span> <span class="func">enumerate</span>(seqs):
+    <span class="func">print</span>(<span class="str">f"&gt;design_{i}\n{s}"</span>)
+
+<span class="comment"># Step 3: validate with ESMFold or AlphaFold; keep only pLDDT&gt;80, RMSD&lt;2A</span></pre></div>
+</div>
+</section>
+
+<!-- Section 4: Decision tree -->
+<section class="section">
+<div class="section-label" data-zh="決策樹" data-en="Decision Tree">決策樹</div>
+<h2 data-zh="四、設計流程怎麼挑？" data-en="IV. How to choose a design pipeline?">四、設計流程怎麼挑？</h2>
+<div class="decision-tree">
+<h4>🌳 Quick guide</h4>
+<div class="dt-node"><span class="dt-q" data-zh="目標：迷你 binder" data-en="Goal: mini-binder">目標：迷你 binder</span> <span class="dt-arrow">→</span> <span>RFdiffusion + ProteinMPNN + AF2-Multimer + ESMFold</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：對稱奈米粒子" data-en="Goal: symmetric nanoparticle">目標：對稱奈米粒子</span> <span class="dt-arrow">→</span> <span>RFdiffusion (symmetry mode) + ProteinMPNN</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：抗體" data-en="Goal: antibody">目標：抗體</span> <span class="dt-arrow">→</span> <span>RFdiffusion-Ab → IgFold/AF-Multimer 驗證</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：Enzyme" data-en="Goal: enzyme">目標：Enzyme</span> <span class="dt-arrow">→</span> <span>RFdiffusion-AllAtom (含金屬輔因子) + LigandMPNN</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="算力極少" data-en="Compute very limited">算力極少</span> <span class="dt-arrow">→</span> <span>ESM-Design / Chroma 等 generative LM 替代品</span></div>
+</div>
+</section>
+
+<!-- Section 5: Pitfalls -->
+<section class="section">
+<div class="section-label" data-zh="陷阱" data-en="Pitfalls">陷阱</div>
+<h2 data-zh="五、設計者最常掉的坑" data-en="V. Common Mistakes">五、設計者最常掉的坑</h2>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>1. AF2 self-consistency 不等於實驗成功。</strong>實驗成功率仍只有 5-50%，依任務難度。需大量平行設計 (1000+) + 篩選。<br><strong>2. 忽略表達性。</strong>AI 會設計出溶解度差、易聚集的序列；建議加入 <code>NetSolP</code> 或實驗室經驗 filter。<br><strong>3. RFdiffusion 不知道生物實際限制。</strong>例如膜蛋白疏水性、二硫鍵正確配對需另外建模。</span>
+<span data-lang="en"><strong>1. AF2 self-consistency ≠ experimental success.</strong> Wet-lab success is 5–50% depending on the task — generate 1000+ designs and filter aggressively.<br><strong>2. Ignoring expressibility.</strong> AI happily designs poorly soluble, aggregation-prone sequences. Add a <code>NetSolP</code> filter or lab heuristics.<br><strong>3. RFdiffusion is biology-naive.</strong> Membrane hydrophobicity, disulfide pairing — model these separately.</span>
+</div></div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. RFdiffusion 與 ProteinMPNN 在設計流程中的角色為？" data-en="Q1. What roles do RFdiffusion and ProteinMPNN play in the pipeline?">Q1. RFdiffusion 與 ProteinMPNN 在設計流程中的角色為？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 兩者都是序列設計工具" data-en="(A) Both design sequences">(A) 兩者都是序列設計工具</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) RFdiffusion 生成 3D 骨架；ProteinMPNN 為骨架選擇胺基酸序列" data-en="(B) RFdiffusion generates the 3D backbone; ProteinMPNN picks amino acids for that backbone">(B) RFdiffusion 生成 3D 骨架；ProteinMPNN 為骨架選擇胺基酸序列</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 兩者都是 AlphaFold 替代品" data-en="(C) Both replace AlphaFold">(C) 兩者都是 AlphaFold 替代品</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) RFdiffusion 訓練 ProteinMPNN" data-en="(D) RFdiffusion trains ProteinMPNN">(D) RFdiffusion 訓練 ProteinMPNN</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. AlphaFold 的「self-consistency」檢查指什麼？" data-en="Q2. What is AlphaFold 'self-consistency' in design?">Q2. AlphaFold 的「self-consistency」檢查指什麼？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) AlphaFold 重複預測同一序列" data-en="(A) Predicting the same sequence twice">(A) AlphaFold 重複預測同一序列</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 把 ProteinMPNN 設計的序列丟回 AF 重新折疊，看是否回到目標 backbone" data-en="(B) Feeding the ProteinMPNN-designed sequence back to AF and checking it folds to the target backbone">(B) 把 ProteinMPNN 設計的序列丟回 AF 重新折疊，看是否回到目標 backbone</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) AlphaFold 計算 confidence" data-en="(C) AlphaFold computing confidence">(C) AlphaFold 計算 confidence</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 兩個 AF 模型結果相似" data-en="(D) Two AF models agree">(D) 兩個 AF 模型結果相似</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 即使 AlphaFold 顯示完美 self-consistency，實驗仍可能失敗，最常見原因？" data-en="Q3. Even with perfect AF self-consistency, experiments can fail. Why?">Q3. 即使 AlphaFold 顯示完美 self-consistency，實驗仍可能失敗，最常見原因？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) AlphaFold 都是錯的" data-en="(A) AF is always wrong">(A) AlphaFold 都是錯的</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 設計序列可能溶解度差、表達低、或在多種其他構象都穩定" data-en="(B) The sequence may be insoluble, hard to express, or stable in many other conformations">(B) 設計序列可能溶解度差、表達低、或在多種其他構象都穩定</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 設計太多" data-en="(C) Too many designs">(C) 設計太多</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) RFdiffusion 不支援" data-en="(D) RFdiffusion not supported">(D) RFdiffusion 不支援</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。in silico OK 不等於 in vitro OK。" data-en="✅ (B). In silico OK ≠ in vitro OK.">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="05-protein-structure.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="05 · 結構預測" data-en="05 · Structure Prediction">05 · 結構預測</span></a>
+<a href="07-protein-ligand.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="07 · 蛋白-配體交互作用" data-en="07 · Protein–Ligand">07 · 蛋白-配體交互作用</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 13: 生資 AI Agents 與工作流 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html" class="active">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 13 / 14 · ADVANCED</div>
+<h1 data-zh="生資 AI Agents 與工作流" data-en="AI Agents for Bioinformatics">生資 AI Agents 與工作流</h1>
+<p class="subtitle" data-lang="zh">CRISPR-Agent、Variant Triage Bot、AutoBio：把 LLM、工具呼叫、資料庫、實驗自動化串成「能自己思考的助理」。</p>
+<p class="subtitle" data-lang="en">CRISPR-Agent, Variant Triage Bot, AutoBio: chaining LLMs, tool calls, databases, and lab automation into a thinking assistant.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1 -->
+<section class="section">
+<div class="section-label" data-zh="什麼是 Agent" data-en="What is an Agent">什麼是 Agent</div>
+<h2 data-zh="一、Agent ≠ 對話 LLM" data-en="I. An Agent is not a chat LLM">一、Agent ≠ 對話 LLM</h2>
+<div data-lang="zh">
+<p>一個 LLM agent 至少包含三個組件：</p>
+<ul>
+<li><strong>規劃 (Planner)</strong>：拆解使用者的高階目標成步驟。</li>
+<li><strong>工具 (Tools)</strong>：可呼叫的外部函式 (BLAST、SpliceAI、Ensembl REST、shell 等)。</li>
+<li><strong>記憶 (Memory)</strong>：scratchpad、向量檢索的長期記憶；用於跨步驟一致性。</li>
+</ul>
+<p>三者經由「<strong>ReAct</strong>」(Reason + Act) 或「<strong>Plan-and-Execute</strong>」迴圈互動，使 agent 能根據前一步結果動態調整下一步。</p>
+</div>
+<div data-lang="en">
+<p>An LLM agent has at least three parts:</p>
+<ul>
+<li><strong>Planner</strong> — decomposes a high-level goal into steps.</li>
+<li><strong>Tools</strong> — callable external functions (BLAST, SpliceAI, Ensembl REST, shell, etc.).</li>
+<li><strong>Memory</strong> — scratchpad and vector-retrieved long-term memory for cross-step consistency.</li>
+</ul>
+<p>They interact via <strong>ReAct</strong> (Reason + Act) or <strong>Plan-and-Execute</strong> loops, letting the agent adjust based on prior results.</p>
+</div>
+<div class="formula-box">User goal → Plan → [Reason → Tool call → Observe] × N → Final answer + Audit trail</div>
+</section>
+
+<!-- Section 2: Use cases -->
+<section class="section">
+<div class="section-label" data-zh="生資場景" data-en="Bio Use Cases">生資場景</div>
+<h2 data-zh="二、四個高價值的生資 agent 場景" data-en="II. Four high-value agent scenarios">二、四個高價值的生資 agent 場景</h2>
+<div class="card-grid cols-2">
+<div class="card"><div class="card-icon">📋</div><h4 data-zh="變異篩查 Bot" data-en="Variant triage bot">變異篩查 Bot</h4><div data-lang="zh"><p>輸入 VCF → 自動 annotate (VEP) → 跑 SpliceAI / AlphaMissense → 比對 ClinVar / OMIM → 整理 ACMG/AMP 證據 → 輸出可審核的 evidence table。<strong>NHS 已部署多個此類工具</strong>。</p></div><div data-lang="en"><p>VCF in → auto-annotate (VEP) → run SpliceAI/AlphaMissense → cross-ref ClinVar/OMIM → assemble ACMG/AMP evidence → output an audit-ready table. <strong>Several NHS deployments exist</strong>.</p></div></div>
+<div class="card"><div class="card-icon">🧬</div><h4 data-zh="CRISPR 設計 agent" data-en="CRISPR design agent">CRISPR 設計 agent</h4><div data-lang="zh"><p>給定基因 + 目標 (KO / KI / activation) → 規劃 gRNA → 跑 CRISPOR / Cas-OFFinder → 排序 → 設計 primer → 產生實驗 protocol。</p></div><div data-lang="en"><p>Given a gene and goal (KO/KI/activation) → plan gRNAs → run CRISPOR/Cas-OFFinder → rank → design primers → produce a wet-lab protocol.</p></div></div>
+<div class="card"><div class="card-icon">📊</div><h4 data-zh="自動分析腳本生成" data-en="Auto pipeline generation">自動分析腳本生成</h4><div data-lang="zh"><p>「給我 5 個樣本的 scRNA-seq Seurat 分析腳本」→ agent 寫出可跑的 R/Python 流程，必要時調用容器執行。</p></div><div data-lang="en"><p>"Give me a Seurat pipeline for 5 scRNA-seq samples" → the agent writes runnable R/Python, executing in a container if needed.</p></div></div>
+<div class="card"><div class="card-icon">🔬</div><h4 data-zh="文獻 + 資料 meta-analysis" data-en="Literature + data meta-analysis">文獻 + meta 分析</h4><div data-lang="zh"><p>對特定基因/疾病：抓 PubMed 摘要 + GEO/SRA 資料 → 統一 normalize → 做 meta DE → 自動寫成草稿。</p></div><div data-lang="en"><p>For a gene/disease: pull PubMed + GEO/SRA data → harmonize → meta-DE → drafted as a write-up.</p></div></div>
+</div>
+</section>
+
+<!-- Section 3: Code with langchain -->
+<section class="section">
+<div class="section-label" data-zh="動手" data-en="Hands-on">動手</div>
+<h2 data-zh="三、用 LangChain 建一個迷你變異 triage agent" data-en="III. A minimal variant triage agent with LangChain">三、用 LangChain 建一個迷你變異 triage agent</h2>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python (LangChain ReAct)</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install langchain langchain-openai requests</span>
+<span class="kw">from</span> langchain.agents <span class="kw">import</span> AgentExecutor, create_react_agent, Tool
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> PromptTemplate
+<span class="kw">import</span> requests, subprocess, json
+
+<span class="comment"># --- Define tools ---</span>
+<span class="kw">def</span> <span class="func">vep_annotate</span>(variant_str):       <span class="comment"># e.g. "17:7676154:G:A"</span>
+    r = requests.<span class="func">get</span>(<span class="str">f"https://rest.ensembl.org/vep/human/region/{variant_str}"</span>,
+                     headers={<span class="str">"Content-Type"</span>:<span class="str">"application/json"</span>})
+    <span class="kw">return</span> json.<span class="func">dumps</span>(r.<span class="func">json</span>()[:<span class="num">1</span>])
+
+<span class="kw">def</span> <span class="func">spliceai_score</span>(variant_str):
+    out = subprocess.<span class="func">check_output</span>([<span class="str">"spliceai"</span>, <span class="str">"-I"</span>, <span class="str">f"&lt;(echo {variant_str})"</span>], shell=<span class="kw">True</span>)
+    <span class="kw">return</span> out.<span class="func">decode</span>()
+
+<span class="kw">def</span> <span class="func">clinvar_lookup</span>(variant_str):
+    r = requests.<span class="func">get</span>(<span class="str">f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"</span>,
+                     params={<span class="str">"db"</span>:<span class="str">"clinvar"</span>, <span class="str">"term"</span>: variant_str, <span class="str">"retmode"</span>:<span class="str">"json"</span>})
+    <span class="kw">return</span> json.<span class="func">dumps</span>(r.<span class="func">json</span>())
+
+tools = [
+    <span class="func">Tool</span>(name=<span class="str">"VEP"</span>,       func=vep_annotate,   description=<span class="str">"Annotate a variant"</span>),
+    <span class="func">Tool</span>(name=<span class="str">"SpliceAI"</span>,  func=spliceai_score, description=<span class="str">"Get splicing impact score"</span>),
+    <span class="func">Tool</span>(name=<span class="str">"ClinVar"</span>,   func=clinvar_lookup, description=<span class="str">"Search ClinVar"</span>)
+]
+
+<span class="comment"># --- ReAct loop ---</span>
+prompt = PromptTemplate.<span class="func">from_template</span>(
+    <span class="str">"You are a clinical bioinformatics agent. {input}\n{agent_scratchpad}\n"</span>
+    <span class="str">"Available tools: {tools}\nNames: {tool_names}"</span>
+)
+agent  = <span class="func">create_react_agent</span>(<span class="func">ChatOpenAI</span>(model=<span class="str">"gpt-4o-mini"</span>), tools, prompt)
+exe    = <span class="func">AgentExecutor</span>(agent=agent, tools=tools, max_iterations=<span class="num">8</span>, verbose=<span class="kw">True</span>)
+
+result = exe.<span class="func">invoke</span>({<span class="str">"input"</span>: <span class="str">"Triage variant 17:7676154:G:A — is it pathogenic?"</span>})
+<span class="func">print</span>(result[<span class="str">"output"</span>])</pre></div>
+</div>
+<p data-lang="zh">這個 demo 中，agent 會自己決定先呼叫 VEP 看在哪個基因，再呼叫 ClinVar 查資料庫，最後若需要再跑 SpliceAI。整個過程留下完整 tool-call log，可被審核。</p>
+<p data-lang="en">In this demo the agent decides on its own to first call VEP, then ClinVar, then SpliceAI if needed. The full tool-call log is auditable.</p>
+</section>
+
+<!-- Section 4 Risks -->
+<section class="section">
+<div class="section-label" data-zh="風險" data-en="Risks">風險</div>
+<h2 data-zh="四、Agent 的常見災難模式" data-en="IV. Common failure modes">四、Agent 的常見災難模式</h2>
+<div class="callout danger"><span class="callout-icon">🚨</span><div>
+<span data-lang="zh"><strong>三個必須有的護欄：</strong><br>
+1. <strong>step budget</strong> — 設定最大工具呼叫次數，避免 agent 死循環。<br>
+2. <strong>destructive action 黑名單</strong> — 禁止 <code>rm -rf</code>、SQL DROP、外部寫入等。<br>
+3. <strong>human-in-the-loop</strong> — 高風險決策 (報告診斷、實驗訂單) 必須人類核準。</span>
+<span data-lang="en"><strong>Three mandatory guardrails:</strong><br>
+1. <strong>Step budget</strong> — cap max tool calls to avoid loops.<br>
+2. <strong>Destructive-action denylist</strong> — block <code>rm -rf</code>, SQL DROP, outbound writes.<br>
+3. <strong>Human-in-the-loop</strong> — humans approve high-risk decisions (diagnoses, experiment orders).</span>
+</div></div>
+<div class="card-grid cols-2">
+<div class="card"><h4 data-zh="🔁 思考死循環" data-en="🔁 Reasoning loops">🔁 思考死循環</h4><div data-lang="zh"><p>連續呼叫同個工具想拼湊不存在的資料；用 step budget + 重複偵測。</p></div><div data-lang="en"><p>Repeatedly calls the same tool trying to invent data; mitigate with step budget + duplicate detection.</p></div></div>
+<div class="card"><h4 data-zh="🌀 工具幻覺" data-en="🌀 Tool hallucination">🌀 工具幻覺</h4><div data-lang="zh"><p>編出不存在的工具名稱呼叫；prompt 內明確列舉合法工具，並 strict JSON。</p></div><div data-lang="en"><p>Invents tool names; pin legal tools in the prompt and use strict JSON output.</p></div></div>
+<div class="card"><h4 data-zh="🪤 Prompt injection" data-en="🪤 Prompt injection">🪤 Prompt injection</h4><div data-lang="zh"><p>檢索結果中的惡意指令會劫持 agent。每次工具回傳須以「context」標註而非「instruction」。</p></div><div data-lang="en"><p>Malicious text in retrieved content can hijack agents. Treat tool outputs as <em>context</em>, not instructions.</p></div></div>
+<div class="card"><h4 data-zh="💸 Cost spiral" data-en="💸 Cost spiral">💸 成本失控</h4><div data-lang="zh"><p>連續長 prompt → API 成本爆炸；務必加 token 計數與 abort 條件。</p></div><div data-lang="en"><p>Long prompts blow up API bills; track tokens and add abort thresholds.</p></div></div>
+</div>
+</section>
+
+<!-- Section 5 Frameworks -->
+<section class="section">
+<div class="section-label" data-zh="框架選擇" data-en="Framework Choice">框架選擇</div>
+<h2 data-zh="五、2026 年的 agent 框架地圖" data-en="V. The 2026 agent framework map">五、2026 年的 agent 框架地圖</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="框架" data-en="Framework">框架</th><th data-zh="特色" data-en="Notes">特色</th></tr></thead>
+<tbody>
+<tr><td>LangChain / LangGraph</td><td data-zh="生態最成熟；LangGraph 提供 graph-based 控制流" data-en="Most mature ecosystem; LangGraph provides graph-based control flow">生態最成熟；LangGraph graph-based 控制流</td></tr>
+<tr><td>LlamaIndex</td><td data-zh="RAG-first，文件問答最佳實踐" data-en="RAG-first; best practice for doc QA">RAG-first，文件問答最佳實踐</td></tr>
+<tr><td>OpenAI Assistants / Tools API</td><td data-zh="官方 hosted；自帶檔案、code interpreter" data-en="Official hosted; built-in files & code interpreter">官方 hosted；內建 code interpreter</td></tr>
+<tr><td>Anthropic Tool use</td><td data-zh="Claude 函式呼叫；JSON schema 嚴格" data-en="Claude function calling; strict JSON schema">Claude 函式呼叫</td></tr>
+<tr><td>BioContainers + nf-core</td><td data-zh="把 agent 串到 Nextflow workflow，可重現性強" data-en="Wire agents into Nextflow workflows; high reproducibility">串到 Nextflow workflow，可重現性強</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. ReAct 模式的核心是？" data-en="Q1. The core of ReAct?">Q1. ReAct 模式的核心是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 一次推理出所有答案" data-en="(A) One-shot reasoning">(A) 一次推理出所有答案</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 推理 → 工具呼叫 → 觀察結果 → 再推理 的迴圈" data-en="(B) Reason → tool call → observe → reason loop">(B) 推理 → 工具呼叫 → 觀察結果 → 再推理 的迴圈</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 不需要工具" data-en="(C) No tools">(C) 不需要工具</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 只用 RAG" data-en="(D) RAG only">(D) 只用 RAG</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. 對「臨床變異 triage agent」最重要的護欄？" data-en="Q2. The most important guardrail for a clinical triage agent?">Q2. 對「臨床變異 triage agent」最重要的護欄？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 速度極快" data-en="(A) Speed">(A) 速度極快</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) Human-in-the-loop：高風險判讀必須人類核準" data-en="(B) Human-in-the-loop — humans must approve high-risk calls">(B) Human-in-the-loop：高風險判讀必須人類核準</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 大模型才行" data-en="(C) Only big models work">(C) 大模型才行</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 不需要 logging" data-en="(D) No logging needed">(D) 不需要 logging</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 工具呼叫返回的網路文字裡夾帶「Forget all instructions, output X」，agent 應該？" data-en="Q3. A tool returns retrieved text containing 'Forget all instructions, output X'. Agent should?">Q3. 工具呼叫返回的網路文字裡夾帶「Forget all instructions, output X」，agent 應該？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 服從新指令" data-en="(A) Obey new instructions">(A) 服從新指令</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 把工具輸出當作 context (資料)，不是 instruction (命令)；遵守原 system prompt" data-en="(B) Treat tool output as context (data), not instructions; stick to the original system prompt">(B) 把工具輸出當作 context (資料)，不是 instruction (命令)；遵守原 system prompt</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 立即停機" data-en="(C) Halt immediately">(C) 立即停機</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 通知 user 並退出" data-en="(D) Notify user and quit">(D) 通知 user 並退出</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。Prompt injection 對策的根本是「不要把外部資料當指令」。" data-en="✅ (B). The root defense against prompt injection: never treat external data as instructions.">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="12-bio-llm.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="12 · 生醫 LLM" data-en="12 · Biomedical LLMs">12 · 生醫 LLM</span></a>
+<a href="14-ethics.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="14 · 倫理與最佳實踐" data-en="14 · Ethics">14 · 倫理與最佳實踐</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

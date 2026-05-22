@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 02: ML 基礎 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html" class="active">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 02 / 14 · BASIC</div>
+<h1 data-zh="機器學習基礎" data-en="Machine Learning Basics">機器學習基礎</h1>
+<p class="subtitle" data-lang="zh">監督 vs 非監督、過擬合、AUROC 與 PR——所有 AI 模型背後的共通語言。本章用乳癌 (Wisconsin) 與 Iris 兩個經典資料集示範。</p>
+<p class="subtitle" data-lang="en">Supervised vs unsupervised, overfitting, AUROC and PR — the shared language under every AI model. Worked examples on the Wisconsin breast-cancer and Iris datasets.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: Supervised vs Unsupervised -->
+<section class="section">
+<div class="section-label" data-zh="核心概念" data-en="Core Concepts">核心概念</div>
+<h2 data-zh="一、監督式 vs 非監督式 vs 自監督式" data-en="I. Supervised vs Unsupervised vs Self-Supervised">一、監督式 vs 非監督式 vs 自監督式</h2>
+<div data-lang="zh"><p>機器學習的本質就是<strong>從資料中學習一個函數</strong>，根據訓練時是否提供「正確答案 (label)」分為三大類：</p></div>
+<div data-lang="en"><p>Machine learning fundamentally means <strong>learning a function from data</strong>. Categorized by whether labels are provided during training:</p></div>
+<div class="card-grid cols-3">
+<div class="card"><div class="card-icon">🎯</div><h4 data-zh="監督式 (Supervised)" data-en="Supervised">監督式 (Supervised)</h4>
+<div data-lang="zh"><p>有 X 和 y。<br>例：依 SNP 預測糖尿病風險。<br>方法：邏輯回歸、Random Forest、XGBoost、神經網路。</p></div>
+<div data-lang="en"><p>Both X and y available.<br>Ex: predict T2D risk from SNPs.<br>Methods: logistic regression, RF, XGBoost, NN.</p></div></div>
+<div class="card"><div class="card-icon">🔍</div><h4 data-zh="非監督式 (Unsupervised)" data-en="Unsupervised">非監督式 (Unsupervised)</h4>
+<div data-lang="zh"><p>只有 X。<br>例：scRNA-seq 細胞分群。<br>方法：K-means、Louvain、UMAP、PCA、autoencoder。</p></div>
+<div data-lang="en"><p>X only.<br>Ex: scRNA-seq cell clustering.<br>Methods: K-means, Louvain, UMAP, PCA, autoencoders.</p></div></div>
+<div class="card"><div class="card-icon">🪞</div><h4 data-zh="自監督式 (Self-supervised)" data-en="Self-supervised">自監督式 (Self-supervised)</h4>
+<div data-lang="zh"><p>只有 X，自己產生「pretext label」。<br>例：ESM 遮蔽 15% 胺基酸再預測。<br>幾乎所有現代 foundation model 的訓練方式。</p></div>
+<div data-lang="en"><p>X only, with auto-generated pretext labels.<br>Ex: ESM masks 15% of residues and predicts them.<br>How nearly every modern foundation model is trained.</p></div></div>
+</div>
+</section>
+
+<!-- Section 2: Train/Val/Test -->
+<section class="section">
+<div class="section-label" data-zh="工作流程" data-en="Workflow">工作流程</div>
+<h2 data-zh="二、Train / Validation / Test 切分" data-en="II. Train / Validation / Test Splits">二、Train / Validation / Test 切分</h2>
+<div data-lang="zh">
+<p>三組資料各自的角色：</p>
+<ul>
+<li><strong>Train (~70%)</strong>：模型用來學參數的資料。</li>
+<li><strong>Validation (~15%)</strong>：用來挑選超參數 (hyperparameter)，<em>不能用來報告最終表現</em>。</li>
+<li><strong>Test (~15%)</strong>：模型「真正沒看過」的資料，只做最後一次評估。</li>
+</ul>
+<p>在生資中要特別小心 <strong>data leakage</strong>：例如同一個病人的多筆樣本同時出現在 train 與 test，或同一個基因家族跨組出現，都會讓表現「假好」。</p>
+</div>
+<div data-lang="en">
+<p>Three roles:</p>
+<ul>
+<li><strong>Train (~70%)</strong> — fits the parameters.</li>
+<li><strong>Validation (~15%)</strong> — picks hyperparameters; <em>never report performance from here</em>.</li>
+<li><strong>Test (~15%)</strong> — held-out, evaluated only once.</li>
+</ul>
+<p>In bioinformatics watch out for <strong>data leakage</strong>: the same patient appearing in train and test, or homologous genes split across folds, will artificially inflate metrics.</p>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>分組切分原則：</strong>序列任務應做 <code>sequence-identity split</code>（避免訓練/測試序列相似度 > 30%）；病人資料用 <code>group K-fold</code>，同一病人的所有樣本只能在同一個 fold。</span>
+<span data-lang="en"><strong>Splitting rules:</strong> for sequence tasks use <code>sequence-identity splits</code> (no train/test pairs > 30% identity); for patient data use <code>group K-fold</code> so all samples per patient stay in one fold.</span>
+</div></div>
+</section>
+
+<!-- Section 3: Overfitting interactive -->
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="Interactive">互動模擬</div>
+<h2 data-zh="三、過擬合的視覺化" data-en="III. Visualizing Overfitting">三、過擬合的視覺化</h2>
+<div data-lang="zh"><p>拖動下方滑桿改變模型「複雜度」(以多項式階數模擬)，觀察訓練 loss 下降但驗證 loss 在某個點之後反彈——這就是過擬合的訊號。</p></div>
+<div data-lang="en"><p>Drag the slider below to change model complexity (polynomial degree). Train loss keeps falling but validation loss rebounds past a point — that's overfitting.</p></div>
+<div class="interactive-panel">
+<div class="slider-group"><label><span data-zh="模型複雜度（多項式階數）" data-en="Model complexity (polynomial degree)">模型複雜度</span> <span id="valDeg">5</span></label><input type="range" id="sliderDeg" min="1" max="14" value="5" step="1"></div>
+<div class="sim-stats"><span class="sim-stat info" id="trainLoss">—</span><span class="sim-stat fail" id="valLoss">—</span><span class="sim-stat pass" id="bestDeg">—</span></div>
+<div class="chart-container"><canvas id="lossChart"></canvas></div>
+</div>
+</section>
+
+<!-- Section 4: Metrics -->
+<section class="section">
+<div class="section-label" data-zh="評估指標" data-en="Metrics">評估指標</div>
+<h2 data-zh="四、分類任務的關鍵指標" data-en="IV. Key Metrics for Classification">四、分類任務的關鍵指標</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="指標" data-en="Metric">指標</th><th data-zh="計算" data-en="Formula">計算</th><th data-zh="什麼時候看？" data-en="When to use">什麼時候看？</th></tr></thead>
+<tbody>
+<tr><td>Accuracy</td><td>(TP+TN)/N</td><td data-zh="類別平衡時。<strong>在罕見疾病等不平衡資料會誤導。</strong>" data-en="Balanced classes. <strong>Misleading on rare-disease imbalance.</strong>">類別平衡時。<strong>在罕見疾病等不平衡資料會誤導。</strong></td></tr>
+<tr><td>Precision</td><td>TP/(TP+FP)</td><td data-zh="不能容忍 false positive 時 (e.g. 臨床診斷)" data-en="When false positives are costly (e.g., clinical diagnosis)">不能容忍 false positive 時 (e.g. 臨床診斷)</td></tr>
+<tr><td>Recall (Sensitivity)</td><td>TP/(TP+FN)</td><td data-zh="不能容忍 false negative 時 (e.g. 癌症篩檢)" data-en="When false negatives are costly (e.g., cancer screening)">不能容忍 false negative 時 (e.g. 癌症篩檢)</td></tr>
+<tr><td>AUROC</td><td data-zh="ROC 曲線下面積" data-en="Area under ROC curve">ROC 曲線下面積</td><td data-zh="整體排序能力；不受 threshold 影響" data-en="Overall ranking ability; threshold-independent">整體排序能力；不受 threshold 影響</td></tr>
+<tr><td>AUPRC</td><td data-zh="PR 曲線下面積" data-en="Area under PR curve">PR 曲線下面積</td><td data-zh="<strong>類別嚴重不平衡時的首選</strong>（罕見變異、稀有細胞型別）" data-en="<strong>Primary metric on heavily imbalanced data</strong> (rare variants, rare cell types)"><strong>類別嚴重不平衡時的首選</strong>（罕見變異、稀有細胞型別）</td></tr>
+<tr><td>MCC</td><td data-zh="Matthews 相關係數" data-en="Matthews correlation">Matthews 相關係數</td><td data-zh="混淆矩陣的全包指標，類別不平衡時也合理" data-en="A balanced single number even with imbalance">混淆矩陣的全包指標，類別不平衡時也合理</td></tr>
+</tbody>
+</table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>經驗法則：</strong>類別比例 1:10 以上不平衡 → 別只看 accuracy 或 AUROC，務必加上 AUPRC 與 MCC。</span>
+<span data-lang="en"><strong>Rule of thumb:</strong> imbalance ≥ 1:10 → don't rely on accuracy or AUROC alone; report AUPRC and MCC too.</span>
+</div></div>
+</section>
+
+<!-- Section 5: Hands-on code -->
+<section class="section">
+<div class="section-label" data-zh="動手實作" data-en="Hands-on">動手實作</div>
+<h2 data-zh="五、Wisconsin 乳癌資料集 — Logistic vs Random Forest" data-en="V. Wisconsin Breast Cancer — Logistic vs Random Forest">五、Wisconsin 乳癌資料集 — Logistic vs Random Forest</h2>
+
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python (sklearn)</button><button class="code-tab-btn">R (tidymodels)</button></div>
+<div class="code-tab-content active"><pre><span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_breast_cancer
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split, cross_val_score
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> roc_auc_score, average_precision_score
+
+X, y = <span class="func">load_breast_cancer</span>(return_X_y=<span class="kw">True</span>)
+Xtr, Xte, ytr, yte = <span class="func">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>, stratify=y, random_state=<span class="num">42</span>)
+
+<span class="kw">for</span> name, mdl <span class="kw">in</span> [(<span class="str">"LogReg"</span>, <span class="cls">LogisticRegression</span>(max_iter=<span class="num">5000</span>)),
+                 (<span class="str">"RandomForest"</span>, <span class="cls">RandomForestClassifier</span>(n_estimators=<span class="num">300</span>, random_state=<span class="num">42</span>))]:
+    mdl.<span class="func">fit</span>(Xtr, ytr)
+    p = mdl.<span class="func">predict_proba</span>(Xte)[:, <span class="num">1</span>]
+    <span class="func">print</span>(name, <span class="str">"AUROC"</span>, <span class="func">round</span>(<span class="func">roc_auc_score</span>(yte, p), <span class="num">3</span>),
+                <span class="str">"AUPRC"</span>, <span class="func">round</span>(<span class="func">average_precision_score</span>(yte, p), <span class="num">3</span>))</pre></div>
+<div class="code-tab-content"><pre><span class="kw">library</span>(tidymodels); <span class="kw">library</span>(mlbench); <span class="func">data</span>(<span class="str">"BreastCancer"</span>)
+df <- BreastCancer |> <span class="func">na.omit</span>() |> <span class="func">mutate</span>(<span class="func">across</span>(<span class="num">2</span>:<span class="num">10</span>, as.numeric))
+
+split <- <span class="func">initial_split</span>(df, prop = <span class="num">0.8</span>, strata = Class)
+tr <- <span class="func">training</span>(split); te <- <span class="func">testing</span>(split)
+
+rec <- <span class="func">recipe</span>(Class ~ ., data = tr) |> <span class="func">step_rm</span>(Id) |> <span class="func">step_normalize</span>(<span class="func">all_numeric_predictors</span>())
+
+logit <- <span class="func">logistic_reg</span>() |> <span class="func">set_engine</span>(<span class="str">"glm"</span>)
+rf    <- <span class="func">rand_forest</span>(trees=<span class="num">300</span>) |> <span class="func">set_mode</span>(<span class="str">"classification"</span>) |> <span class="func">set_engine</span>(<span class="str">"ranger"</span>)
+
+<span class="func">workflow_set</span>(<span class="func">list</span>(rec=rec), <span class="func">list</span>(logit=logit, rf=rf)) |>
+  <span class="func">workflow_map</span>(<span class="str">"fit_resamples"</span>, resamples = <span class="func">vfold_cv</span>(tr, v = <span class="num">5</span>, strata = Class),
+               metrics = <span class="func">metric_set</span>(roc_auc, pr_auc, mcc)) |>
+  <span class="func">collect_metrics</span>()</pre></div>
+</div>
+<p data-lang="zh">兩段程式碼會印出 AUROC 與 AUPRC，通常 RF 略勝；但 Logistic 模型可解釋性更強——在臨床場景常常更受歡迎。</p>
+<p data-lang="en">Both snippets print AUROC and AUPRC. RF usually edges out, but logistic regression's interpretability often wins in clinical settings.</p>
+</section>
+
+<!-- Decision Tree -->
+<section class="section">
+<div class="section-label" data-zh="決策樹" data-en="Decision Tree">決策樹</div>
+<h2 data-zh="六、選哪個 ML 模型？" data-en="VI. Which ML Model Should I Use?">六、選哪個 ML 模型？</h2>
+<div class="decision-tree">
+<h4>🌳 Quick guide</h4>
+<div class="dt-node"><span class="dt-q">N&lt;1k</span> <span class="dt-arrow">→</span> <span data-zh="Logistic / Penalized regression（可解釋、不易過擬合）" data-en="Logistic / penalized regression — interpretable, hard to overfit">Logistic / Penalized regression（可解釋、不易過擬合）</span></div>
+<div class="dt-node"><span class="dt-q">1k-100k</span> <span class="dt-arrow">→</span> <span data-zh="<strong>XGBoost / LightGBM</strong> 是 tabular 王者；<span class='term'>SHAP<span class='term-tip'>把每個特徵對單一預測的貢獻量化</span></span> 解釋特徵重要性" data-en="<strong>XGBoost / LightGBM</strong> dominate tabular tasks; SHAP for feature attribution"><strong>XGBoost / LightGBM</strong> 是 tabular 王者；SHAP 解釋特徵重要性</span></div>
+<div class="dt-node"><span class="dt-q">&gt;100k</span> <span class="dt-arrow">→</span> <span data-zh="如果是序列/影像，跳到 DL（章 03）；若仍是 tabular，深層 GBM 仍很強" data-en="Sequence/image → jump to DL (Ch. 03); else GBMs still hold their own">如果是序列/影像，跳到 DL（章 03）；若仍是 tabular，深層 GBM 仍很強</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="無標籤" data-en="Unlabeled">無標籤</span> <span class="dt-arrow">→</span> <span data-zh="K-means / Louvain → UMAP 視覺化；之後做半監督 (label propagation)" data-en="K-means / Louvain → UMAP for visualization; then semi-supervised label propagation">K-means / Louvain → UMAP 視覺化；之後做半監督</span></div>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. 你拿罕見疾病資料 (1:200 不平衡) 訓練分類器，AUROC=0.95，AUPRC=0.20。最合理的解讀是？" data-en="Q1. On a rare-disease classifier (1:200 imbalance) you get AUROC=0.95, AUPRC=0.20. Best interpretation?">Q1. 你拿罕見疾病資料 (1:200 不平衡) 訓練分類器，AUROC=0.95，AUPRC=0.20。最合理的解讀是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 模型表現極佳" data-en="(A) Excellent model">(A) 模型表現極佳</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 排序能力 OK，但實際應用中 precision 很低，誤報率仍高" data-en="(B) Ranking is OK, but precision in deployment will still be low — many false positives">(B) 排序能力 OK，但實際應用中 precision 很低，誤報率仍高</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 資料一定有 bug" data-en="(C) Data must be buggy">(C) 資料一定有 bug</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) AUPRC 沒有意義可以忽略" data-en="(D) AUPRC is meaningless, ignore it">(D) AUPRC 沒有意義可以忽略</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。在 1:200 的場景中，AUPRC = 0.20 雖比 baseline 0.005 高很多，但仍代表 ~80% 預測陽性是錯的。" data-en="✅ (B). At 1:200 base rate, AUPRC of 0.20 is far above baseline 0.005, but still ~80% of predicted positives are false alarms.">✅ 正解 (B)</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q2. 下列哪一種切分最容易導致「假好」?" data-en="Q2. Which split most likely creates artificially inflated performance?">Q2. 下列哪一種切分最容易導致「假好」?</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 對病人 ID 做 group K-fold" data-en="(A) Group K-fold by patient ID">(A) 對病人 ID 做 group K-fold</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 隨機 split — 同一病人在 train 與 test 各出現一次" data-en="(B) Random split where the same patient appears in both train and test">(B) 隨機 split — 同一病人在 train 與 test 各出現一次</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 序列相似度 30% 切分" data-en="(C) Sequence-identity split at 30%">(C) 序列相似度 30% 切分</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) Stratified K-fold" data-en="(D) Stratified K-fold">(D) Stratified K-fold</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。這是最常見的 leakage 來源之一。" data-en="✅ (B). One of the most common leakage failure modes.">✅ 正解 (B)</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q3. 自監督式 (self-supervised) 模型最大的優勢是？" data-en="Q3. Biggest advantage of self-supervised models?">Q3. 自監督式 (self-supervised) 模型最大的優勢是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 不需要算力" data-en="(A) No compute required">(A) 不需要算力</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 可以利用海量無標籤序列預訓練，再以小量標籤資料 fine-tune" data-en="(B) Can pretrain on massive unlabeled sequences, then fine-tune with small labeled data">(B) 可以利用海量無標籤序列預訓練，再以小量標籤資料 fine-tune</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 永遠比監督式準" data-en="(C) Always beats supervised">(C) 永遠比監督式準</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 不需要驗證集" data-en="(D) No validation set needed">(D) 不需要驗證集</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。所有現代生物 foundation model（ESM、scGPT、Evo 2）都是這套思路。" data-en="✅ (B). The recipe behind every modern biology foundation model — ESM, scGPT, Evo 2.">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="01-overview.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="01 · 概論" data-en="01 · Overview">01 · 概論</span></a>
+<a href="03-deep-learning.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="03 · 深度學習基礎" data-en="03 · Deep Learning">03 · 深度學習基礎</span></a>
+</nav>
+
+</main>
+
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+
+<script src="i18n.js"></script>
+<script>
+// Overfitting demo: noisy sin(x) -> fit polynomials of varying degree
+const X = Array.from({length:30}, (_,i)=> -3 + 6*i/29);
+function noisy(){ return X.map(x => Math.sin(x) + (Math.random()-0.5)*0.45); }
+const yTrain = noisy();
+const yVal = X.map(x => Math.sin(x));
+
+function fitPoly(deg){
+  // Build Vandermonde and solve via normal equations (small N, OK for demo)
+  const A = X.map(x => Array.from({length:deg+1}, (_,k)=> Math.pow(x,k)));
+  const AT = (M)=> M[0].map((_,c)=> M.map(r=>r[c]));
+  const dot = (P,Q)=> P.map(p => Q[0].map((_,c)=> p.reduce((s,_,k)=> s + p[k]*Q[k][c],0)));
+  const matVec = (P,v)=> P.map(p => p.reduce((s,_,k)=> s + p[k]*v[k],0));
+  const inv = (M)=>{ // Gauss-Jordan small
+    const n=M.length, A=M.map((r,i)=> [...r, ...Array.from({length:n},(_,j)=>i===j?1:0)]);
+    for(let i=0;i<n;i++){
+      let mx=i; for(let k=i+1;k<n;k++) if(Math.abs(A[k][i])>Math.abs(A[mx][i]))mx=k;
+      [A[i],A[mx]]=[A[mx],A[i]];
+      const d = A[i][i] || 1e-9;
+      for(let j=0;j<2*n;j++) A[i][j]/=d;
+      for(let k=0;k<n;k++) if(k!==i){const f=A[k][i];for(let j=0;j<2*n;j++) A[k][j]-=f*A[i][j];}
+    }
+    return A.map(r => r.slice(n));
+  };
+  const At = AT(A); const AtA = dot(At, A); const Aty = matVec(At, yTrain);
+  let coef;
+  try{ coef = matVec(inv(AtA), Aty); }catch{ coef = Array(deg+1).fill(0); }
+  const pred = (x)=> coef.reduce((s,c,k)=> s + c*Math.pow(x,k), 0);
+  const trainLoss = X.reduce((s,x,i)=> s + (pred(x)-yTrain[i])**2, 0)/X.length;
+  const valLoss = X.reduce((s,x,i)=> s + (pred(x)-yVal[i])**2, 0)/X.length;
+  const xs = Array.from({length:120},(_,i)=> -3 + 6*i/119);
+  const ys = xs.map(pred);
+  return {xs, ys, trainLoss, valLoss};
+}
+
+const ctx = document.getElementById('lossChart');
+let chart;
+function render(deg){
+  const {xs, ys, trainLoss, valLoss} = fitPoly(deg);
+  document.getElementById('valDeg').textContent = deg;
+  document.getElementById('trainLoss').textContent = 'Train MSE: '+trainLoss.toFixed(3);
+  document.getElementById('valLoss').textContent = 'Val MSE (vs true sin): '+valLoss.toFixed(3);
+  const data = {
+    datasets:[
+      {label:'Train data', data: X.map((x,i)=>({x, y:yTrain[i]})), backgroundColor:'#5b3df5', type:'scatter'},
+      {label:'True sin(x)', data: X.map((x,i)=>({x, y:yVal[i]})), borderColor:'#16a673', borderWidth:2, type:'line', pointRadius:0, fill:false},
+      {label:'Polynomial fit (deg='+deg+')', data: xs.map((x,i)=>({x, y:ys[i]})), borderColor:'#ff7a59', borderWidth:2, type:'line', pointRadius:0, fill:false}
+    ]
+  };
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, { type:'scatter', data,
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{ x:{title:{display:true,text:'x'}}, y:{min:-2.5,max:2.5,title:{display:true,text:'y'}} },
+      plugins:{legend:{position:'bottom'}}
+    }
+  });
+}
+document.getElementById('sliderDeg').addEventListener('input', e=> render(+e.target.value));
+render(5);
+document.getElementById('bestDeg').textContent = '✓ Sweet spot ~ degree 3-5';
+</script>
+</body></html>

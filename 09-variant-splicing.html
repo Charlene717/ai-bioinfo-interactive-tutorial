@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 09: 變異判讀與剪接預測 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html" class="active">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 09 / 14 · INTERMEDIATE</div>
+<h1 data-zh="變異判讀與剪接預測" data-en="Variant Calling & Splicing Prediction">變異判讀與剪接預測</h1>
+<p class="subtitle" data-lang="zh">DeepVariant 對抗 GATK、SpliceAI 把剪接變異 priority 化、AlphaMissense 給每個錯義 SNV 致病評分。臨床/研究上的標準工具與真實限制。</p>
+<p class="subtitle" data-lang="en">DeepVariant vs GATK; SpliceAI prioritizing splice variants; AlphaMissense scoring every missense SNV. Standard tools and their real-world limits.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: DeepVariant -->
+<section class="section">
+<div class="section-label" data-zh="變異判讀" data-en="Variant Calling">變異判讀</div>
+<h2 data-zh="一、DeepVariant 為什麼能贏 GATK？" data-en="I. Why does DeepVariant beat GATK?">一、DeepVariant 為什麼能贏 GATK？</h2>
+<div data-lang="zh">
+<p>傳統 GATK 採用<span class="term">機率圖模型 (HMM/Bayesian)<span class="term-tip">基於假設族群基因型分佈與 read 錯誤率，計算後驗機率</span></span>，需要專家手調超參數。DeepVariant 把問題轉成「<strong>影像識別</strong>」：</p>
+<ol>
+<li>每個候選變異位點，產生一張 RGB 「pile-up image」——每行 read，欄是位置，channel 編碼 base、quality、strand 等。</li>
+<li>用 Inception-v3 / EfficientNet 直接分類三類：homozygous ref、het、homozygous alt。</li>
+</ol>
+<p>2025 benchmark 顯示，DeepVariant 在 SNV 上 precision 約 0.79，F1 約 0.88，較 GATK HaplotypeCaller 高 2-3 個百分點，特別是 long-read 與 PCR-free 樣本差距更大。</p>
+</div>
+<div data-lang="en">
+<p>Traditional GATK uses <span class="term">probabilistic graph models (HMM/Bayesian)<span class="term-tip">Based on assumed population genotype priors and read error rates, computing posterior probabilities</span></span> with expert-tuned hyperparameters. DeepVariant reframes calling as <strong>image recognition</strong>:</p>
+<ol>
+<li>For each candidate site, build an RGB pile-up image — rows are reads, columns are positions, channels encode base, quality, strand, etc.</li>
+<li>An Inception-v3 / EfficientNet classifies into three classes: hom-ref, het, hom-alt.</li>
+</ol>
+<p>2025 benchmarks: DeepVariant SNV precision ≈0.79, F1 ≈0.88 — ~2–3 points above GATK HaplotypeCaller, with larger gaps on long-read and PCR-free data.</p>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>但別 100% 信任：</strong>DeepVariant 在訓練分佈外（如非人類物種、稀有結構變異 SV）會 silent failure。臨床流程通常雙工具 (GATK + DeepVariant) 取交集，再加 manual review。</span>
+<span data-lang="en"><strong>Don't fully trust:</strong> DeepVariant has silent failures off-distribution (non-human species, rare SVs). Clinical pipelines typically run both GATK and DeepVariant and intersect, then manual review.</span>
+</div></div>
+</section>
+
+<!-- Section 2: SpliceAI -->
+<section class="section">
+<div class="section-label" data-zh="剪接預測" data-en="Splicing">剪接預測</div>
+<h2 data-zh="二、SpliceAI：把「剪接致病性」量化" data-en="II. SpliceAI — quantifying splice pathogenicity">二、SpliceAI：把「剪接致病性」量化</h2>
+<div data-lang="zh">
+<p>SpliceAI (Illumina, Cell 2019) 用 32 層 dilated CNN 看 ±5,000 bp 上下文，對任何位點輸出兩個機率：(1) 該位點作為 acceptor、(2) 作為 donor。從一個變異前後機率差異 (Δscore)，可以給出 4 個值：</p>
+<ul>
+<li><strong>Acceptor gain / loss</strong>：acceptor 強度的增加 / 減少</li>
+<li><strong>Donor gain / loss</strong>：donor 強度的增加 / 減少</li>
+</ul>
+<p>2025 年 medRxiv 一篇大型臨床研究 (n=7,220 罕見疾病患者) 發現：使用<strong>預先計算的 SpliceAI 分數</strong>會漏掉 18% 的剪接致病變異，主因是基因註解過時與 liftover 錯誤。重新用最新基因註解跑 SpliceAI 可額外獲得 11.7% 的診斷率提升。</p>
+</div>
+<div data-lang="en">
+<p>SpliceAI (Illumina, Cell 2019) uses 32 dilated-CNN layers across ±5,000 bp context to output, for any position, two probabilities: (1) acts as acceptor, (2) acts as donor. Per variant, it gives 4 deltas:</p>
+<ul>
+<li><strong>Acceptor gain/loss</strong></li>
+<li><strong>Donor gain/loss</strong></li>
+</ul>
+<p>A 2025 medRxiv study (n=7,220 rare-disease patients) found that <strong>precomputed SpliceAI scores</strong> miss 18% of splice-altering variants, mainly due to outdated gene annotations and liftover errors. Re-running SpliceAI with current annotations adds 11.7% diagnostic yield.</p>
+</div>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>最佳實踐：</strong>(1) 用最新 GENCODE 註解重跑，不要只查 dbNSFP precomputed；(2) 閾值通常 0.2-0.5；(3) 對 deep intronic 變異特別敏感——傳統 splice site predictor 漏掉的它常能抓到。</span>
+<span data-lang="en"><strong>Best practices:</strong> (1) Re-run with current GENCODE annotations, don't rely on dbNSFP precomputed; (2) thresholds usually 0.2–0.5; (3) excels at deep-intronic variants traditional predictors miss.</span>
+</div></div>
+</section>
+
+<!-- Section 3: AlphaMissense + ESM-1v -->
+<section class="section">
+<div class="section-label" data-zh="missense 致病性" data-en="Missense Pathogenicity">missense 致病性</h2>
+<h2 data-zh="三、Missense 變異致病性：AlphaMissense vs ESM-1v vs PrimateAI" data-en="III. Missense pathogenicity: AlphaMissense vs ESM-1v vs PrimateAI">三、Missense 變異致病性</h2>
+<table class="comp-table">
+<thead><tr><th>Tool</th><th data-zh="輸入" data-en="Input">輸入</th><th data-zh="原理" data-en="Principle">原理</th><th data-zh="覆蓋率" data-en="Coverage">覆蓋率</th></tr></thead>
+<tbody>
+<tr><td>AlphaMissense (2023)</td><td data-zh="蛋白序列" data-en="Protein sequence">蛋白序列</td><td data-zh="AlphaFold backbone + MSA + clinical fine-tuning" data-en="AlphaFold backbone + MSA + clinical fine-tuning">AlphaFold + MSA + 臨床 fine-tune</td><td data-zh="71M 人類 missense (全覆蓋)" data-en="71M human missense (full)">71M (全覆蓋)</td></tr>
+<tr><td>ESM-1v (2021)</td><td data-zh="蛋白序列" data-en="Protein sequence">蛋白序列</td><td data-zh="無監督 likelihood ratio (mutant vs WT)" data-en="Unsupervised likelihood ratio (mutant vs WT)">無監督 likelihood</td><td data-zh="任意蛋白 (依模型大小)" data-en="Any protein (depends on model size)">任意蛋白</td></tr>
+<tr><td>PrimateAI-3D (2023)</td><td data-zh="蛋白序列 + 結構" data-en="Sequence + structure">蛋白序列 + 結構</td><td data-zh="使用靈長類缺失突變作為負樣本" data-en="Uses primate variants as negatives">用靈長類缺失突變</td><td data-zh="人類 ~70M missense" data-en="~70M human missense">~70M</td></tr>
+<tr><td>REVEL (ensemble, 2016)</td><td>VEP annotations</td><td data-zh="11 種 in silico 工具 ensemble" data-en="Ensemble of 11 in silico tools">11 種 ensemble</td><td data-zh="廣泛應用" data-en="Widely deployed">廣泛應用</td></tr>
+</tbody>
+</table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>2026 共識：</strong>AlphaMissense 在 ClinVar 上 AUROC 約 0.94，比 REVEL 提升明顯；但 ESM-1v 的優勢是<strong>無需臨床標籤、可跨物種</strong>——研究新物種或非標準胺基酸時更有用。</span>
+<span data-lang="en"><strong>2026 consensus:</strong> AlphaMissense reaches ~0.94 AUROC on ClinVar, beating REVEL clearly. ESM-1v's edge is being <strong>label-free and cross-species</strong> — useful for non-human or non-canonical residues.</span>
+</div></div>
+</section>
+
+<!-- Section 4: Code -->
+<section class="section">
+<div class="section-label" data-zh="動手" data-en="Hands-on">動手</div>
+<h2 data-zh="四、實戰：跑 SpliceAI + AlphaMissense" data-en="IV. Hands-on: SpliceAI + AlphaMissense">四、實戰：跑 SpliceAI + AlphaMissense</h2>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">SpliceAI (CLI)</button><button class="code-tab-btn">AlphaMissense lookup (Python)</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install spliceai pyfaidx tensorflow</span>
+spliceai \
+    -I input.vcf.gz \
+    -O output.vcf.gz \
+    -R hg38.fa \
+    -A grch38                <span class="comment"># latest gencode annotation file</span>
+
+<span class="comment"># Output VCF gets a SpliceAI=&lt;allele&gt;|&lt;gene&gt;|&lt;DS_AG&gt;|&lt;DS_AL&gt;|&lt;DS_DG&gt;|&lt;DS_DL&gt;|&lt;DP_AG&gt;|... INFO field</span>
+<span class="comment"># DS_AG/AL/DG/DL = delta scores 0..1; report variants with max(DS) &gt;= 0.2</span></pre></div>
+<div class="code-tab-content"><pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="comment"># Download from https://alphamissense.hegelab.org/ or AlphaFold DB precomputed table (~5 GB)</span>
+am = pd.<span class="func">read_csv</span>(<span class="str">"AlphaMissense_hg38.tsv.gz"</span>, sep=<span class="str">"\t"</span>, comment=<span class="str">"#"</span>,
+                 names=[<span class="str">"chrom"</span>,<span class="str">"pos"</span>,<span class="str">"ref"</span>,<span class="str">"alt"</span>,<span class="str">"genome"</span>,<span class="str">"uniprot"</span>,<span class="str">"transcript"</span>,
+                        <span class="str">"protein_var"</span>,<span class="str">"am_pathogenicity"</span>,<span class="str">"am_class"</span>])
+
+<span class="comment"># Lookup score for chr17:7676154 G&gt;A (TP53 p.R273H)</span>
+hit = am[(am.chrom==<span class="str">"chr17"</span>) &amp; (am.pos==<span class="num">7676154</span>) &amp; (am.alt==<span class="str">"A"</span>)]
+<span class="func">print</span>(hit[[<span class="str">"protein_var"</span>,<span class="str">"am_pathogenicity"</span>,<span class="str">"am_class"</span>]])
+<span class="comment"># am_class: likely_benign | ambiguous | likely_pathogenic</span></pre></div>
+</div>
+</section>
+
+<!-- Section 5: Decision -->
+<section class="section">
+<div class="section-label" data-zh="決策" data-en="Decision">決策</div>
+<h2 data-zh="五、變異判讀流程怎麼配？" data-en="V. Variant interpretation pipeline">五、變異判讀流程怎麼配？</h2>
+<div class="workflow">
+<div class="wf-step" data-num="1"><h5 data-zh="Calling" data-en="Calling">Calling</h5><p data-lang="zh">DeepVariant + GATK 取交集；長讀長加上 NanoVar/Sniffles。</p><p data-lang="en">Intersect DeepVariant + GATK; add NanoVar/Sniffles for long-reads.</p></div>
+<div class="wf-step" data-num="2"><h5 data-zh="Filtering" data-en="Filtering">Filtering</h5><p data-lang="zh">VAF、coverage、strand bias、gnomAD AF；移除常見 polymorphism。</p><p data-lang="en">VAF, coverage, strand bias, gnomAD AF; drop common polymorphisms.</p></div>
+<div class="wf-step" data-num="3"><h5 data-zh="Annotation" data-en="Annotation">Annotation</h5><p data-lang="zh">VEP / Ensembl; ClinVar; HGMD; <strong>SpliceAI</strong> on-the-fly (不要只查 precomputed)。</p><p data-lang="en">VEP/Ensembl; ClinVar; HGMD; <strong>SpliceAI</strong> on-the-fly (don't trust precomputed alone).</p></div>
+<div class="wf-step" data-num="4"><h5 data-zh="Pathogenicity" data-en="Pathogenicity">Pathogenicity</h5><p data-lang="zh">AlphaMissense + REVEL + ClinVar 共識；ACMG/AMP rule-based 加分。</p><p data-lang="en">AlphaMissense + REVEL + ClinVar consensus; ACMG/AMP rule-based scoring.</p></div>
+<div class="wf-step" data-num="5"><h5 data-zh="Manual review" data-en="Manual review">Manual review</h5><p data-lang="zh">IGV 看 read pile-up，臨床對照表型；AI ≠ 自動診斷。</p><p data-lang="en">Inspect read pile-ups in IGV; correlate with clinical phenotype. AI ≠ auto-diagnosis.</p></div>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. 為什麼 DeepVariant 把變異判讀轉成「影像識別」？" data-en="Q1. Why does DeepVariant frame variant calling as image classification?">Q1. 為什麼 DeepVariant 把變異判讀轉成「影像識別」？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 因為他們有圖片" data-en="(A) Because they have images">(A) 因為他們有圖片</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 把 read pile-up 編成 image，可直接用成熟的 CNN 自動學習特徵，不用手調" data-en="(B) Encoding read pile-ups as images leverages mature CNNs to auto-learn features, no manual tuning">(B) 把 read pile-up 編成 image，可直接用成熟的 CNN 自動學習特徵</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 影像比 VCF 容易" data-en="(C) Images are easier than VCFs">(C) 影像比 VCF 容易</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 要省記憶體" data-en="(D) To save memory">(D) 要省記憶體</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. 2025 大型研究 (n=7,220) 對 SpliceAI 提出的最重要警示是？" data-en="Q2. The most important caveat from the 2025 (n=7,220) SpliceAI study?">Q2. 2025 大型研究 (n=7,220) 對 SpliceAI 提出的最重要警示是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) SpliceAI 完全不可用" data-en="(A) SpliceAI is unusable">(A) SpliceAI 完全不可用</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 預先計算分數會漏掉約 18% 變異，原因主要是過時基因註解；應該每次重跑" data-en="(B) Precomputed scores miss ~18% of variants, mainly due to outdated annotations — re-run every time">(B) 預先計算分數會漏掉約 18% 變異，主因是過時基因註解；應該重跑</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) AlphaMissense 才正確" data-en="(C) AlphaMissense is the only valid tool">(C) AlphaMissense 才正確</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) SpliceAI 沒有用 deep learning" data-en="(D) SpliceAI doesn't use deep learning">(D) SpliceAI 沒有用 deep learning</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 對「研究斑馬魚的少見蛋白變異」最合適的工具？" data-en="Q3. Best tool for missense variants in a non-human (zebrafish) protein?">Q3. 對「研究斑馬魚的少見蛋白變異」最合適的工具？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) AlphaMissense（只覆蓋人類）" data-en="(A) AlphaMissense (human-only)">(A) AlphaMissense（只覆蓋人類）</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) ESM-1v 等無監督蛋白語言模型 (任意物種，無需臨床標籤)" data-en="(B) ESM-1v or similar unsupervised PLMs — any species, no clinical labels needed">(B) ESM-1v 等無監督 PLM (任意物種、無需臨床標籤)</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) REVEL" data-en="(C) REVEL">(C) REVEL</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) PolyPhen" data-en="(D) PolyPhen">(D) PolyPhen</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="08-regulatory-genomics.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="08 · 調控基因體" data-en="08 · Regulatory Genomics">08 · 調控基因體</span></a>
+<a href="10-singlecell-ai.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="10 · 單細胞 AI" data-en="10 · Single-Cell AI">10 · 單細胞 AI</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

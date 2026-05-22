@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 08: 調控基因體 AI — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html" class="active">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 08 / 14 · INTERMEDIATE</div>
+<h1 data-zh="調控基因體 AI" data-en="Regulatory Genomics AI">調控基因體 AI</h1>
+<p class="subtitle" data-lang="zh">DeepSEA → Basenji → Enformer → Borzoi → AlphaGenome：從 DNA 序列直接預測表達量、染色質可及性、3D folding。長距離 attention 把調控「黑箱」打開了一個視窗。</p>
+<p class="subtitle" data-lang="en">DeepSEA → Basenji → Enformer → Borzoi → AlphaGenome: predicting expression, chromatin accessibility, and 3D folding from raw DNA. Long-range attention cracked open the regulatory black box.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1 -->
+<section class="section">
+<div class="section-label" data-zh="背景" data-en="Background">背景</div>
+<h2 data-zh="一、為什麼這個領域 5 年內換了 5 次代？" data-en="I. Why this field changed generation five times in five years">一、為什麼這個領域 5 年內換了 5 次代？</h2>
+<table class="comp-table">
+<thead><tr><th>Model</th><th>Year</th><th>Context</th><th data-zh="預測目標" data-en="Targets">預測目標</th></tr></thead>
+<tbody>
+<tr><td>DeepBind, DeepSEA</td><td>2015</td><td>1 kb</td><td>TF binding, chromatin marks</td></tr>
+<tr><td>Basenji / Basenji 2</td><td>2018-20</td><td>131 kb</td><td>CAGE, ATAC, ChIP-seq tracks</td></tr>
+<tr><td>Enformer</td><td>2021</td><td>200 kb</td><td>5,313 tracks (CAGE, ATAC, ChIP)</td></tr>
+<tr><td>Borzoi / Flashzoi</td><td>2024-25</td><td>524 kb</td><td>RNA-seq coverage (per-bp)</td></tr>
+<tr><td>AlphaGenome</td><td>2025</td><td>1 Mb</td><td>Multi-modal: expression + accessibility + 3D</td></tr>
+</tbody>
+</table>
+<div data-lang="zh"><p>每一代「視野更大、預測更細」。這之所以重要：90% 以上 GWAS hits 在非編碼區，要解讀它們的功能，模型必須能看到 enhancer 與 gene body 之間的距離（常常 100kb–500kb）。</p></div>
+<div data-lang="en"><p>Each generation sees further and predicts finer. This matters because >90% of GWAS hits are non-coding — interpreting them requires looking from the enhancer all the way to the gene body, often 100kb–500kb apart.</p></div>
+</section>
+
+<!-- Section 2 -->
+<section class="section">
+<div class="section-label" data-zh="架構" data-en="Architecture">架構</div>
+<h2 data-zh="二、Enformer 的架構直覺" data-en="II. Enformer architecture in one picture">二、Enformer 的架構直覺</h2>
+<div data-lang="zh">
+<p>Enformer 是 2021 年 DeepMind 發表的經典：</p>
+<ol>
+<li>輸入 196,608 bp 的 one-hot DNA。</li>
+<li><strong>7 層 conv + max pool</strong> 把序列壓到 128 bp 解析度的 1,536-dim embedding（共 1,536 個位置）。</li>
+<li><strong>11 層 Transformer</strong> 在這 1,536 個 token 上做 long-range attention。</li>
+<li>輸出 5,313 條軌跡 × 896 個 bin × 128 bp，覆蓋人類與小鼠的 CAGE / ATAC / ChIP-seq。</li>
+</ol>
+<p>Borzoi 把第 4 步換成「逐 bp RNA-seq coverage」，因此能直接做 splice junction、3' UTR 變異效應預測。</p>
+</div>
+<div data-lang="en">
+<p>Enformer (DeepMind, 2021) at a glance:</p>
+<ol>
+<li>Input 196,608 bp one-hot DNA.</li>
+<li><strong>7 conv + max-pool layers</strong> compress to 128 bp resolution × 1,536-dim embeddings (1,536 positions).</li>
+<li><strong>11 Transformer layers</strong> apply long-range attention across those 1,536 tokens.</li>
+<li>Output 5,313 tracks × 896 bins × 128 bp, covering human/mouse CAGE/ATAC/ChIP-seq.</li>
+</ol>
+<p>Borzoi swaps step 4 with per-bp RNA-seq coverage, enabling direct prediction of splice junctions and 3'-UTR variant effects.</p>
+</div>
+</section>
+
+<!-- Section 3 -->
+<section class="section">
+<div class="section-label" data-zh="實戰" data-en="In Practice">實戰</div>
+<h2 data-zh="三、用 Enformer 做變異效應預測" data-en="III. Variant effect prediction with Enformer">三、用 Enformer 做變異效應預測</h2>
+<div data-lang="zh"><p>核心想法：給定 SNP，將「ref 序列」和「alt 序列」分別丟給模型，比較預測軌跡的差異 (Δlog2FC)。</p></div>
+<div data-lang="en"><p>Key idea: feed both the ref and alt sequences to the model and compare the predicted track differences (Δlog2FC).</p></div>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python (Enformer)</button><button class="code-tab-btn">Bash (Borzoi)</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install enformer-pytorch pyfaidx</span>
+<span class="kw">import</span> torch
+<span class="kw">from</span> enformer_pytorch <span class="kw">import</span> Enformer, str_to_one_hot
+
+mdl = Enformer.<span class="func">from_pretrained</span>(<span class="str">"EleutherAI/enformer-official-rough"</span>).<span class="func">eval</span>().cuda()
+
+ref = <span class="str">"AAGTC..."</span>     <span class="comment"># length 196,608, SNP at center</span>
+alt = ref[:<span class="num">98_303</span>] + <span class="str">"T"</span> + ref[<span class="num">98_304</span>:]   <span class="comment"># A→T</span>
+
+<span class="kw">with</span> torch.<span class="func">no_grad</span>():
+    p_ref = <span class="func">mdl</span>(<span class="func">str_to_one_hot</span>(ref).<span class="func">cuda</span>())[<span class="str">"human"</span>]   <span class="comment"># (896, 5313)</span>
+    p_alt = <span class="func">mdl</span>(<span class="func">str_to_one_hot</span>(alt).<span class="func">cuda</span>())[<span class="str">"human"</span>]
+delta = (p_alt - p_ref).<span class="func">abs</span>().<span class="func">mean</span>(<span class="num">0</span>)               <span class="comment"># per-track effect</span>
+top_tracks = delta.<span class="func">topk</span>(<span class="num">10</span>)               <span class="comment"># most affected assays</span></pre></div>
+<div class="code-tab-content"><pre><span class="comment"># Borzoi: predict per-bp RNA-seq coverage</span>
+<span class="kw">git clone</span> https://github.com/calico/borzoi <span class="kw">&&</span> <span class="kw">cd</span> borzoi
+<span class="kw">pip install</span> -e .
+
+<span class="comment"># Provided helper for SNP effect:</span>
+python scripts/borzoi_satg_gene.py \
+    -f targets.txt \
+    -o output_dir \
+    --vcf my_variants.vcf.gz \
+    --gene_list gene_ids.txt
+<span class="comment"># Output: per-gene Δexpression for every SNP</span></pre></div>
+</div>
+</section>
+
+<!-- Section 4: Limitations -->
+<section class="section">
+<div class="section-label" data-zh="限制" data-en="Limitations">限制</div>
+<h2 data-zh="四、模型的盲點" data-en="IV. Where they fail">四、模型的盲點</h2>
+<div class="callout danger"><span class="callout-icon">🚧</span><div>
+<span data-lang="zh"><strong>2025 後一系列獨立研究發現：</strong>Enformer/Borzoi 在「個人基因組 (cross-individual)」表達預測上，比在「組織平均」表達上差得多——它們學到的是「sequence → average tissue expression」，不是「sequence → individual variation」。AlphaGenome 試圖修正，但仍未完全解決 personalized expression。</span>
+<span data-lang="en"><strong>Independent 2025 studies show:</strong> Enformer/Borzoi work much worse on cross-individual expression than on tissue averages — they learn "sequence → tissue mean," not "sequence → individual variation." AlphaGenome partly addresses this but personalized expression remains open.</span>
+</div></div>
+<div class="card-grid cols-2">
+<div class="card"><h4 data-zh="🪞 Cis vs Trans" data-en="🪞 Cis vs Trans">🪞 Cis vs Trans</h4><div data-lang="zh"><p>模型只看區域內 DNA，無法捕捉 trans 效應 (TF 濃度差異、表觀遺傳狀態)。</p></div><div data-lang="en"><p>Models only see local DNA — they can't capture trans effects (TF abundance, epigenetic state).</p></div></div>
+<div class="card"><h4 data-zh="🔬 細胞型別解析" data-en="🔬 Cell-type resolution">🔬 細胞型別解析</h4><div data-lang="zh"><p>軌跡是 bulk 細胞型別。要做單細胞解析需 scBasset、ChromBPNet 等專門模型。</p></div><div data-lang="en"><p>Tracks are bulk cell-types. For single-cell resolution, use scBasset, ChromBPNet.</p></div></div>
+</div>
+</section>
+
+<!-- Section 5: Decision -->
+<section class="section">
+<div class="section-label" data-zh="決策" data-en="Decision">決策</div>
+<h2 data-zh="五、我該選哪個？" data-en="V. Which to use?">五、我該選哪個？</h2>
+<div class="decision-tree">
+<h4>🌳 Quick guide</h4>
+<div class="dt-node"><span class="dt-q" data-zh="只要 expression" data-en="Only need expression">只要 expression</span> <span class="dt-arrow">→</span> <span>Borzoi (RNA-seq coverage 直出)</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="多種 assay tracks" data-en="Multi-assay tracks">多種 assay</span> <span class="dt-arrow">→</span> <span>Enformer (5,313 tracks)</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="需要 3D / 整合" data-en="Need 3D / integrative">3D / 整合</span> <span class="dt-arrow">→</span> <span>AlphaGenome (1 Mb context)</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="算力極少" data-en="Compute-poor">算力極少</span> <span class="dt-arrow">→</span> <span>Flashzoi (Borzoi 蒸餾版，3× 快)</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="單細胞 ATAC" data-en="single-cell ATAC">單細胞 ATAC</span> <span class="dt-arrow">→</span> <span>ChromBPNet, scBasset</span></div>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. 90% 以上 GWAS hits 在非編碼區，這對 AI 模型意味著？" data-en="Q1. >90% of GWAS hits are non-coding. Implication for AI models?">Q1. 90% 以上 GWAS hits 在非編碼區，這對 AI 模型意味著？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) AI 完全沒用" data-en="(A) AI is useless">(A) AI 完全沒用</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 模型必須能看見遠距離調控元件 (常 100kb-500kb)" data-en="(B) Models must see long-range regulatory elements (often 100kb-500kb)">(B) 模型必須能看見遠距離調控元件 (常 100kb-500kb)</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 應只看編碼區" data-en="(C) Should only look at coding regions">(C) 應只看編碼區</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) GWAS 沒有意義" data-en="(D) GWAS is meaningless">(D) GWAS 沒有意義</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。這就是為什麼 Enformer / Borzoi / AlphaGenome 不斷擴大上下文。" data-en="✅ (B). That's why context windows keep growing.">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. Enformer 為了同時得到大視野與細解析度，採用什麼架構策略？" data-en="Q2. To balance large field of view with fine resolution, what architectural trick does Enformer use?">Q2. Enformer 為了同時得到大視野與細解析度，採用什麼架構策略？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 純 CNN，128 層" data-en="(A) Pure CNN, 128 layers">(A) 純 CNN，128 層</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 先用 CNN 壓縮到 128bp 解析度，再用 Transformer attention 做長距離關聯" data-en="(B) CNN first compresses to 128bp resolution, then Transformer attention for long-range">(B) 先用 CNN 壓縮到 128bp 解析度，再用 Transformer attention 做長距離關聯</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 使用 RNN" data-en="(C) RNN">(C) 使用 RNN</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 只用 attention" data-en="(D) Attention only">(D) 只用 attention</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。這個 hybrid 是現代基因體 AI 的通用設計。" data-en="✅ (B). The hybrid is the standard design for modern genomic AI.">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 你想預測一個非編碼 SNP 對 GWAS 候選基因的影響，最該怎麼做？" data-en="Q3. For predicting a non-coding SNP's effect on a GWAS candidate gene, the best approach is?">Q3. 你想預測一個非編碼 SNP 對 GWAS 候選基因的影響，最該怎麼做？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) BLAST 找同源" data-en="(A) BLAST for homologs">(A) BLAST 找同源</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 把含 ref 與 alt 等位的長序列分別輸入 Enformer/Borzoi，比較 Δexpression 在目標 gene 處" data-en="(B) Feed long sequences with ref and alt alleles into Enformer/Borzoi and compare Δexpression at the target gene">(B) 把含 ref 與 alt 等位的長序列分別輸入 Enformer/Borzoi，比較 Δexpression</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 跑全外顯子組" data-en="(C) Run whole-exome">(C) 跑全外顯子組</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 跳過，用 PolyPhen" data-en="(D) Skip, use PolyPhen">(D) 跳過，用 PolyPhen</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。PolyPhen 只處理蛋白質編碼變異。" data-en="✅ (B). PolyPhen handles only protein-coding variants.">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="07-protein-ligand.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="07 · 蛋白-配體" data-en="07 · Protein-Ligand">07 · 蛋白-配體</span></a>
+<a href="09-variant-splicing.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="09 · 變異與剪接" data-en="09 · Variant & Splicing">09 · 變異與剪接</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

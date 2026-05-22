@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 07: 蛋白-配體交互作用 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html" class="active">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 07 / 14 · ADVANCED</div>
+<h1 data-zh="蛋白質-配體交互作用" data-en="Protein–Ligand Interaction">蛋白質-配體交互作用</h1>
+<p class="subtitle" data-lang="zh">DiffDock、AlphaFold 3-Multimer、PoseBusters：AI 如何預測小分子綁進蛋白口袋的位置與親和力，以及為什麼 hybrid 方法仍是 2026 業界主流。</p>
+<p class="subtitle" data-lang="en">DiffDock, AlphaFold 3-Multimer, PoseBusters: how AI predicts where ligands bind and how tightly — and why hybrid pipelines still rule industry in 2026.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: Why hard -->
+<section class="section">
+<div class="section-label" data-zh="難在哪" data-en="Why hard">難在哪</div>
+<h2 data-zh="一、為什麼預測小分子結合那麼難？" data-en="I. Why is ligand binding so hard?">一、為什麼預測小分子結合那麼難？</h2>
+<div data-lang="zh">
+<p>三個因素同時作用：</p>
+<ol>
+<li><strong>搜尋空間巨大</strong>——小分子有 6 個剛體自由度 + 多個可旋轉鍵，再乘上口袋形變的可能性。</li>
+<li><strong>能量函數不確定</strong>——VdW、靜電、氫鍵、去溶劑化、entropy；古典 force field 誤差通常 1-2 kcal/mol，已足以翻轉排名。</li>
+<li><strong>受體柔性</strong>——induced fit / cryptic pocket：apo 結構與 holo 結構往往不一樣，AlphaFold 給的常常是 apo。</li>
+</ol>
+</div>
+<div data-lang="en">
+<p>Three things conspire:</p>
+<ol>
+<li><strong>Huge search space</strong> — 6 rigid-body DOFs plus rotatable bonds, multiplied by pocket flexibility.</li>
+<li><strong>Energy function uncertainty</strong> — VdW, electrostatics, H-bonds, desolvation, entropy; classical force fields are off by 1–2 kcal/mol — enough to swap rankings.</li>
+<li><strong>Receptor flexibility</strong> — induced fit / cryptic pockets: apo ≠ holo, and AlphaFold usually gives apo.</li>
+</ol>
+</div>
+</section>
+
+<!-- Section 2: Methods -->
+<section class="section">
+<div class="section-label" data-zh="方法演進" data-en="Method Evolution">方法演進</div>
+<h2 data-zh="二、Docking 三個世代" data-en="II. Three Generations of Docking">二、Docking 三個世代</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="世代" data-en="Generation">世代</th><th data-zh="代表" data-en="Examples">代表</th><th data-zh="原理" data-en="Principle">原理</th><th data-zh="優劣" data-en="Trade-off">優劣</th></tr></thead>
+<tbody>
+<tr><td>Gen 1: 物理</td><td>AutoDock Vina, Glide, GOLD</td><td data-zh="搜尋演算法 + 經驗能量函數" data-en="Search + empirical scoring">搜尋演算法 + 經驗能量函數</td><td data-zh="可解釋；commercial 工具熟成度高；對未見口袋仍可用" data-en="Interpretable; mature commercial tooling; works on unseen pockets">可解釋；對未見口袋仍可用</td></tr>
+<tr><td>Gen 2: 神經評分</td><td>RTMScore, GNINA</td><td data-zh="物理產生 pose，CNN/GNN 重新評分" data-en="Physics generates poses, CNN/GNN rescores">物理產生 pose，CNN/GNN 重新評分</td><td data-zh="評分提升但 pose 受物理 search 限制" data-en="Better scoring but bounded by physics search">評分提升但受物理 search 限制</td></tr>
+<tr><td>Gen 3: 生成式</td><td>DiffDock, EquiBind, AlphaFold 3</td><td data-zh="把 docking 視為生成問題，模型直接吐 pose" data-en="Cast docking as generation; model directly outputs poses">把 docking 視為生成問題</td><td data-zh="速度快；訓練分佈外表現會降；2025 後 hybrid 是主流" data-en="Fast; degrades out-of-distribution; hybrid pipelines dominate post-2025">速度快；2025 後 hybrid 是主流</td></tr>
+</tbody>
+</table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>2026 業界共識：</strong>沒有「one-size-fits-all」。常見作法是 DiffDock 篩出 top-100 pose → AutoDock Vina 重新評分 → AlphaFold 3 用 holo 結構 refine。</span>
+<span data-lang="en"><strong>2026 industry consensus:</strong> no one-size-fits-all. Common pattern: DiffDock for top-100 poses → AutoDock Vina rescoring → AlphaFold 3 holo refinement.</span>
+</div></div>
+</section>
+
+<!-- Section 3: AlphaFold 3 for ligands -->
+<section class="section">
+<div class="section-label" data-zh="AF3 的角色" data-en="AlphaFold 3's role">AF3 的角色</h2>
+<h2 data-zh="三、AlphaFold 3 改變了什麼？" data-en="III. What changed with AlphaFold 3?">三、AlphaFold 3 改變了什麼？</h2>
+<div data-lang="zh">
+<p>2024 年發表時，AlphaFold 3 在 <strong>protein-ligand</strong> 任務上比最先進的 docking 工具提升至少 50%；對 <strong>protein-RNA、protein-DNA</strong> 也勝過特化工具。其關鍵在於把所有原子（蛋白、配體、核酸、離子）一視同仁地放入 diffusion module，並 jointly 預測。</p>
+<p>但學界 2025 年的多個獨立 benchmark 也發現：</p>
+<ul>
+<li>對「<strong>訓練分佈內</strong>」的標靶（PDB 已存在類似口袋）AF3 大幅領先。</li>
+<li>對「<strong>新標靶 / 罕見化學家族</strong>」AF3 仍會幻覺 (hallucinate) 出非物理的 pose——PoseBusters 等檢查工具因此誕生。</li>
+<li>AF3 給的 ipTM/pLDDT 不直接是 binding affinity 估計，仍需另接 SF。</li>
+</ul>
+</div>
+<div data-lang="en">
+<p>At 2024 release, AlphaFold 3 beat state-of-the-art docking on <strong>protein-ligand</strong> by ≥50%, and outperformed specialized tools on <strong>protein-RNA, protein-DNA</strong>. The key was treating all atoms (protein, ligand, nucleic acid, ion) uniformly inside the diffusion module and predicting them jointly.</p>
+<p>But independent 2025 benchmarks revealed:</p>
+<ul>
+<li>For <strong>in-distribution targets</strong> (similar pockets in PDB), AF3 dominates.</li>
+<li>For <strong>novel targets / rare chemotypes</strong>, AF3 hallucinates non-physical poses — hence the rise of PoseBusters checks.</li>
+<li>AF3's ipTM/pLDDT is <em>not</em> a binding affinity; pair it with a downstream scoring function.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 4: Code -->
+<section class="section">
+<div class="section-label" data-zh="動手" data-en="Hands-on">動手</div>
+<h2 data-zh="四、DiffDock + PoseBusters 篩選流程" data-en="IV. DiffDock + PoseBusters Screening">四、DiffDock + PoseBusters 篩選流程</h2>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python (DiffDock-L)</button><button class="code-tab-btn">PoseBusters check</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install diffdock posebusters</span>
+<span class="kw">from</span> diffdock <span class="kw">import</span> DiffDock
+
+dd = <span class="func">DiffDock</span>(model_dir=<span class="str">"./diffdock-L"</span>, device=<span class="str">"cuda"</span>)
+poses = dd.<span class="func">dock</span>(
+    receptor_pdb = <span class="str">"target.pdb"</span>,
+    ligand_smiles = <span class="str">"CC(=O)Oc1ccccc1C(=O)O"</span>,   <span class="comment"># aspirin</span>
+    n_poses = <span class="num">40</span>,
+    inference_steps = <span class="num">20</span>
+)
+<span class="comment"># poses: list of (pose_pdb_path, confidence_score)</span>
+<span class="kw">for</span> p, c <span class="kw">in</span> poses[:<span class="num">5</span>]:
+    <span class="func">print</span>(<span class="str">f"{p}: confidence={c:.3f}"</span>)</pre></div>
+<div class="code-tab-content"><pre><span class="comment"># Filter out impossible-geometry poses</span>
+<span class="kw">from</span> posebusters <span class="kw">import</span> PoseBusters
+
+pb = <span class="func">PoseBusters</span>(config=<span class="str">"redock"</span>)        <span class="comment"># or "dock", "mol"</span>
+df = pb.<span class="func">bust</span>(
+    mol_pred=[<span class="str">"pose_1.sdf"</span>, <span class="str">"pose_2.sdf"</span>],
+    mol_true=<span class="str">"reference.sdf"</span>,            <span class="comment"># optional</span>
+    mol_cond=<span class="str">"target.pdb"</span>
+)
+<span class="comment"># Each pose checked for: bond lengths, angles, planarity, intermolecular clashes</span>
+<span class="func">print</span>(df[df.all_passing].index.<span class="func">tolist</span>())</pre></div>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>PoseBusters：</strong>2024 年發表的物理可行性檢查工具，社群已成為新模型發表的<em>事實</em>標準——任何宣稱「super-human docking」的論文，沒過 PoseBusters 都該打折扣。</span>
+<span data-lang="en"><strong>PoseBusters:</strong> the physics sanity-check tool that became the de facto bar for new docking papers — any "super-human docking" claim that doesn't clear PoseBusters should be discounted.</span>
+</div></div>
+</section>
+
+<!-- Section 5: Affinity prediction -->
+<section class="section">
+<div class="section-label" data-zh="親和力" data-en="Affinity">親和力</div>
+<h2 data-zh="五、Pose 不夠：怎麼預測親和力 (Kd / IC50)？" data-en="V. Beyond pose — predicting affinity (Kd / IC50)">五、Pose 不夠：怎麼預測親和力？</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4 data-zh="📊 Free-energy 技術" data-en="📊 Free-energy methods">📊 Free-energy 技術</h4><div data-lang="zh"><p>FEP+ (Schrödinger)、PMX、Alchemistry：以 MD 為基礎做 ΔΔG 計算，1-2 kcal/mol 等級精度，但很慢 (1 配體 ~12 GPU-hour)。</p></div><div data-lang="en"><p>FEP+ (Schrödinger), PMX, Alchemistry: MD-based ΔΔG with 1–2 kcal/mol accuracy — but slow (~12 GPU-hours per ligand).</p></div></div>
+<div class="card"><h4 data-zh="🧬 ML 親和力預測" data-en="🧬 ML affinity prediction">🧬 ML 親和力預測</h4><div data-lang="zh"><p>OnionNet, IGModel, Boltz-1, Chai-1：直接從結構/序列預測 pKd。速度快但對 OOD 配體不穩。</p></div><div data-lang="en"><p>OnionNet, IGModel, Boltz-1, Chai-1: predict pKd directly from structure/sequence. Fast but unstable on OOD ligands.</p></div></div>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. DiffDock 比傳統 AutoDock Vina 在 PDBBind 上的 top-1 success rate 提升幾乎 2 倍 (~38% vs ~23%)，但實務上仍常被 hybrid 取代，主因？" data-en="Q1. DiffDock nearly doubles AutoDock Vina's top-1 success on PDBBind (~38% vs ~23%), yet hybrid pipelines often replace it in practice. Why?">Q1. DiffDock 比傳統 AutoDock Vina 在 PDBBind 上的 top-1 success rate 提升幾乎 2 倍，但實務上仍常被 hybrid 取代，主因？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) DiffDock 速度太慢" data-en="(A) DiffDock is too slow">(A) DiffDock 速度太慢</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) DiffDock 對訓練分佈外的標靶/化學家族表現會明顯下降" data-en="(B) DiffDock degrades on targets/chemotypes outside its training distribution">(B) DiffDock 對訓練分佈外的標靶/化學家族表現會明顯下降</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) DiffDock 不能輸出 SDF" data-en="(C) DiffDock can't output SDF">(C) DiffDock 不能輸出 SDF</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) DiffDock 還沒開源" data-en="(D) DiffDock isn't open-source">(D) DiffDock 還沒開源</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. PoseBusters 的角色是？" data-en="Q2. What is PoseBusters for?">Q2. PoseBusters 的角色是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 一個全新的 docking 演算法" data-en="(A) A new docking algorithm">(A) 一個全新的 docking 演算法</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 物理可行性檢查工具，剔除鍵長/角度/碰撞不合理的 pose" data-en="(B) A physics sanity-check tool that filters out poses with unreasonable bond lengths, angles, or clashes">(B) 物理可行性檢查工具，剔除鍵長/角度/碰撞不合理的 pose</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 一個 pose 視覺化軟體" data-en="(C) A pose viewer">(C) 一個 pose 視覺化軟體</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 親和力預測模型" data-en="(D) An affinity predictor">(D) 親和力預測模型</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。已成為 docking 論文 de facto 比較基準。" data-en="✅ (B). Now the de facto bar for new docking papers.">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. AlphaFold 3 預測 protein-ligand 結構，可以直接拿輸出的 pLDDT 當作 binding affinity 嗎？" data-en="Q3. Can the pLDDT from AlphaFold 3 protein-ligand prediction be used directly as binding affinity?">Q3. AlphaFold 3 預測 protein-ligand 結構，可以直接拿輸出的 pLDDT 當作 binding affinity 嗎？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 可以，越高越強" data-en="(A) Yes, higher means tighter">(A) 可以，越高越強</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 不可以，pLDDT 反映幾何置信度，不是 ΔG；應另接親和力模型" data-en="(B) No — pLDDT reflects geometric confidence, not ΔG; pair with an affinity model">(B) 不可以，pLDDT 反映幾何置信度，不是 ΔG；應另接親和力模型</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 可以，但要倒數" data-en="(C) Yes, but use the reciprocal">(C) 可以，但要倒數</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) AlphaFold 3 直接輸出 IC50" data-en="(D) AlphaFold 3 outputs IC50 directly">(D) AlphaFold 3 直接輸出 IC50</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="06-protein-design.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="06 · 蛋白設計" data-en="06 · Protein Design">06 · 蛋白設計</span></a>
+<a href="08-regulatory-genomics.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="08 · 調控基因體" data-en="08 · Regulatory Genomics">08 · 調控基因體</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

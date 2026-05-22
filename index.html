@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI for Bioinformatics — Interactive Tutorial</title>
+<meta name="description" content="Comprehensive bilingual interactive tutorial on AI for bioinformatics: from ML fundamentals to AlphaFold3, scGPT, Evo2 and AI agents.">
+<link rel="stylesheet" href="styles.css"></head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li>
+    <li><a href="02-ml-basics.html">02 ML</a></li>
+    <li><a href="03-deep-learning.html">03 DL</a></li>
+    <li><a href="04-sequence-embeddings.html">04 Seq</a></li>
+    <li><a href="05-protein-structure.html">05 Struct</a></li>
+    <li><a href="06-protein-design.html">06 Design</a></li>
+    <li><a href="07-protein-ligand.html">07 PPI</a></li>
+    <li><a href="08-regulatory-genomics.html">08 RegGen</a></li>
+    <li><a href="09-variant-splicing.html">09 Variant</a></li>
+    <li><a href="10-singlecell-ai.html">10 scAI</a></li>
+    <li><a href="11-drug-discovery.html">11 Drug</a></li>
+    <li><a href="12-bio-llm.html">12 BioLLM</a></li>
+    <li><a href="13-ai-agents.html">13 Agent</a></li>
+    <li><a href="14-ethics.html">14 Ethics</a></li>
+    <li><a href="references.html">📚 Refs</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+
+<header class="hub-hero"><div style="position:relative;z-index:1;">
+<h1 data-zh="AI for Bioinformatics 互動式教程" data-en="AI for Bioinformatics — Interactive Tutorial">AI for Bioinformatics 互動式教程</h1>
+<p data-lang="zh">從 ML/DL 基礎到 AlphaFold 3、scGPT、Evo 2、生醫 LLM —— 14 個章節帶你掌握 AI 在生物資訊上的核心應用，搭配 Python+R 雙標籤、互動模擬與決策樹。</p>
+<p data-lang="en">From ML/DL fundamentals to AlphaFold 3, scGPT, Evo 2, and biomedical LLMs — 14 chapters covering the core of AI in bioinformatics, with paired Python/R code tabs, live simulations, and decision trees.</p>
+</div></header>
+
+<h2 class="hub-section-title"><span>I</span> <span data-zh="基礎篇 — Foundations" data-en="Part I — Foundations">基礎篇 — Foundations</span></h2>
+<div class="hub-steps-grid">
+
+  <a href="01-overview.html" class="hub-card"><span class="tier-tag tier-basic" data-zh="基礎" data-en="Basic">基礎</span>
+    <div class="hub-emoji">🧭</div><span class="step-num">Chapter 01</span>
+    <h3 data-zh="AI × 生資 概論" data-en="AI × Bioinformatics Overview">AI × 生資 概論</h3>
+    <p data-lang="zh">AI 為什麼正在改寫生物資訊？從序列、結構到細胞圖譜，全景式理解 AI 的角色與限制。</p>
+    <p data-lang="en">Why AI is reshaping bioinformatics — a panoramic view from sequences and structures to cell atlases, with its strengths and limits.</p>
+  </a>
+
+  <a href="02-ml-basics.html" class="hub-card"><span class="tier-tag tier-basic" data-zh="基礎" data-en="Basic">基礎</span>
+    <div class="hub-emoji">📐</div><span class="step-num">Chapter 02</span>
+    <h3 data-zh="機器學習基礎" data-en="Machine Learning Basics">機器學習基礎</h3>
+    <p data-lang="zh">監督 vs 非監督、訓練/測試切分、過擬合、AUROC vs PR；用乳癌資料集動手實作。</p>
+    <p data-lang="en">Supervised vs unsupervised, train/test splits, overfitting, AUROC vs PR — hands-on with the breast-cancer dataset.</p>
+  </a>
+
+  <a href="03-deep-learning.html" class="hub-card"><span class="tier-tag tier-basic" data-zh="基礎" data-en="Basic">基礎</span>
+    <div class="hub-emoji">🕸️</div><span class="step-num">Chapter 03</span>
+    <h3 data-zh="深度學習基礎" data-en="Deep Learning Basics">深度學習基礎</h3>
+    <p data-lang="zh">神經元、反向傳播、CNN/RNN/Transformer 三大架構，搭配互動 Loss 模擬器。</p>
+    <p data-lang="en">Neurons, backprop, and the three pillars (CNN/RNN/Transformer), with an interactive loss-curve simulator.</p>
+  </a>
+
+  <a href="04-sequence-embeddings.html" class="hub-card"><span class="tier-tag tier-inter" data-zh="進階" data-en="Inter.">進階</span>
+    <div class="hub-emoji">🔤</div><span class="step-num">Chapter 04</span>
+    <h3 data-zh="生物序列嵌入" data-en="Biological Sequence Embeddings">生物序列嵌入</h3>
+    <p data-lang="zh">k-mer、word2vec、ESM、DNABERT、Nucleotide Transformer：把序列變向量。</p>
+    <p data-lang="en">k-mers, word2vec, ESM, DNABERT, Nucleotide Transformer — turning sequences into vectors.</p>
+  </a>
+</div>
+
+<h2 class="hub-section-title"><span>II</span> <span data-zh="蛋白質 AI — Protein AI" data-en="Part II — Protein AI">蛋白質 AI — Protein AI</span></h2>
+<div class="hub-steps-grid">
+
+  <a href="05-protein-structure.html" class="hub-card"><span class="tier-tag tier-inter" data-zh="進階" data-en="Inter.">進階</span>
+    <div class="hub-emoji">🧬</div><span class="step-num">Chapter 05</span>
+    <h3 data-zh="蛋白質結構預測" data-en="Protein Structure Prediction">蛋白質結構預測</h3>
+    <p data-lang="zh">AlphaFold 2 / 3、ESMFold、RoseTTAFold 的核心思想、pLDDT 解讀與部署實務。</p>
+    <p data-lang="en">AlphaFold 2/3, ESMFold, RoseTTAFold — core ideas, reading pLDDT, and deployment notes.</p>
+  </a>
+
+  <a href="06-protein-design.html" class="hub-card"><span class="tier-tag tier-adv" data-zh="前沿" data-en="Adv.">前沿</span>
+    <div class="hub-emoji">🛠️</div><span class="step-num">Chapter 06</span>
+    <h3 data-zh="蛋白質從頭設計" data-en="De Novo Protein Design">蛋白質從頭設計</h3>
+    <p data-lang="zh">RFdiffusion 生成 backbone，ProteinMPNN 設計序列；binder、enzyme、antibody 案例。</p>
+    <p data-lang="en">RFdiffusion generates backbones; ProteinMPNN designs sequences. Case studies on binders, enzymes, antibodies.</p>
+  </a>
+
+  <a href="07-protein-ligand.html" class="hub-card"><span class="tier-tag tier-adv" data-zh="前沿" data-en="Adv.">前沿</span>
+    <div class="hub-emoji">🔗</div><span class="step-num">Chapter 07</span>
+    <h3 data-zh="蛋白質-配體交互作用" data-en="Protein–Ligand Interaction">蛋白質-配體交互作用</h3>
+    <p data-lang="zh">DiffDock、AlphaFold 3-Multimer、PoseBusters 評估，與物理 docking 的 hybrid 方案。</p>
+    <p data-lang="en">DiffDock, AlphaFold 3-Multimer, PoseBusters evaluation, and hybrid pipelines with physics-based docking.</p>
+  </a>
+</div>
+
+<h2 class="hub-section-title"><span>III</span> <span data-zh="基因組與單細胞 AI" data-en="Part III — Genomic & Single-Cell AI">基因組與單細胞 AI</span></h2>
+<div class="hub-steps-grid">
+
+  <a href="08-regulatory-genomics.html" class="hub-card"><span class="tier-tag tier-inter" data-zh="進階" data-en="Inter.">進階</span>
+    <div class="hub-emoji">🎛️</div><span class="step-num">Chapter 08</span>
+    <h3 data-zh="調控基因體 AI" data-en="Regulatory Genomics AI">調控基因體 AI</h3>
+    <p data-lang="zh">DeepSEA、Basenji、Enformer、Borzoi、AlphaGenome：從序列預測表達與染色質。</p>
+    <p data-lang="en">DeepSEA, Basenji, Enformer, Borzoi, AlphaGenome — predicting expression and chromatin from sequence.</p>
+  </a>
+
+  <a href="09-variant-splicing.html" class="hub-card"><span class="tier-tag tier-inter" data-zh="進階" data-en="Inter.">進階</span>
+    <div class="hub-emoji">🧪</div><span class="step-num">Chapter 09</span>
+    <h3 data-zh="變異判讀與剪接預測" data-en="Variant Calling & Splicing">變異判讀與剪接預測</h3>
+    <p data-lang="zh">DeepVariant 取代 GATK 的爭論、SpliceAI 在臨床診斷的應用與限制。</p>
+    <p data-lang="en">DeepVariant vs GATK debate; SpliceAI in clinical diagnostics — strengths and pitfalls.</p>
+  </a>
+
+  <a href="10-singlecell-ai.html" class="hub-card"><span class="tier-tag tier-adv" data-zh="前沿" data-en="Adv.">前沿</span>
+    <div class="hub-emoji">🦠</div><span class="step-num">Chapter 10</span>
+    <h3 data-zh="單細胞基礎模型" data-en="Single-Cell Foundation Models">單細胞基礎模型</h3>
+    <p data-lang="zh">scVI、scGPT、Geneformer、scFoundation；zero-shot 擾動預測與細胞類型遷移。</p>
+    <p data-lang="en">scVI, scGPT, Geneformer, scFoundation — zero-shot perturbation prediction and cell-type transfer.</p>
+  </a>
+</div>
+
+<h2 class="hub-section-title"><span>IV</span> <span data-zh="前沿應用 — Frontier" data-en="Part IV — Frontier">前沿應用 — Frontier</span></h2>
+<div class="hub-steps-grid">
+
+  <a href="11-drug-discovery.html" class="hub-card"><span class="tier-tag tier-adv" data-zh="前沿" data-en="Adv.">前沿</span>
+    <div class="hub-emoji">💊</div><span class="step-num">Chapter 11</span>
+    <h3 data-zh="AI 驅動藥物發現" data-en="AI-Driven Drug Discovery">AI 驅動藥物發現</h3>
+    <p data-lang="zh">虛擬篩選、生成式藥物設計、ADMET 預測、靶點探索 (Open Targets) 的端到端流程。</p>
+    <p data-lang="en">Virtual screening, generative drug design, ADMET prediction, target discovery — end-to-end.</p>
+  </a>
+
+  <a href="12-bio-llm.html" class="hub-card"><span class="tier-tag tier-adv" data-zh="前沿" data-en="Adv.">前沿</span>
+    <div class="hub-emoji">📚</div><span class="step-num">Chapter 12</span>
+    <h3 data-zh="生醫大型語言模型" data-en="Biomedical LLMs">生醫大型語言模型</h3>
+    <p data-lang="zh">BioGPT、BioMedLM、Med-PaLM 2、Evo 2 跨模態：文獻挖掘、臨床問答、序列推理。</p>
+    <p data-lang="en">BioGPT, BioMedLM, Med-PaLM 2, cross-modal Evo 2 — literature mining, clinical QA, sequence reasoning.</p>
+  </a>
+
+  <a href="13-ai-agents.html" class="hub-card"><span class="tier-tag tier-adv" data-zh="前沿" data-en="Adv.">前沿</span>
+    <div class="hub-emoji">🤖</div><span class="step-num">Chapter 13</span>
+    <h3 data-zh="生資 AI Agents 與工作流" data-en="AI Agents for Bioinformatics">生資 AI Agents 與工作流</h3>
+    <p data-lang="zh">RAG over PubMed、tool-using agents、自動分析腳本生成 (Crispr Design、Variant Triage)。</p>
+    <p data-lang="en">RAG over PubMed, tool-using agents, auto-pipeline generation (CRISPR design, variant triage).</p>
+  </a>
+
+  <a href="14-ethics.html" class="hub-card"><span class="tier-tag tier-basic" data-zh="基礎" data-en="Basic">基礎</span>
+    <div class="hub-emoji">⚖️</div><span class="step-num">Chapter 14</span>
+    <h3 data-zh="倫理、可重現性與最佳實踐" data-en="Ethics, Reproducibility & Best Practices">倫理、可重現性與最佳實踐</h3>
+    <p data-lang="zh">資料偏差、模型卡、FAIR 原則、HIPAA/GDPR、Hallucination 控制與 benchmark 真相。</p>
+    <p data-lang="en">Data bias, model cards, FAIR, HIPAA/GDPR, controlling hallucinations — and reading benchmarks honestly.</p>
+  </a>
+</div>
+
+<h2 class="hub-section-title"><span>V</span> <span data-zh="延伸學習" data-en="Further Learning">延伸學習</span></h2>
+<div class="hub-steps-grid">
+  <a href="references/index.html" class="hub-card">
+    <div class="hub-emoji">📚</div><span class="step-num">References</span>
+    <h3 data-zh="完整文獻整理（學術引文）" data-en="Full References (Academic Citations)">完整文獻整理（學術引文）</h3>
+    <p data-lang="zh">14 章主題的原始論文、benchmark、官方文件、開放資料集；含 DOI/arXiv/GitHub 連結與更新疑義注記。</p>
+    <p data-lang="en">Primary papers, benchmarks, docs, datasets across 14 chapters — DOI/arXiv/GitHub links plus an errata & nuance section.</p>
+  </a>
+  <a href="references.html" class="hub-card">
+    <div class="hub-emoji">📑</div><span class="step-num">Quick Refs</span>
+    <h3 data-zh="精簡延伸閱讀" data-en="Quick Reading List">精簡延伸閱讀</h3>
+    <p data-lang="zh">每章重點論文與工具的單頁速查；想看完整版請走「完整文獻整理」。</p>
+    <p data-lang="en">Per-chapter quick reading list — for the comprehensive version see "Full References".</p>
+  </a>
+  <a href="ai-bioinfo-quiz/index.html" class="hub-card" target="_blank" rel="noopener">
+    <div class="hub-emoji">📝</div><span class="step-num">Quiz</span>
+    <h3 data-zh="互動式考題" data-en="Interactive Quiz">互動式考題</h3>
+    <p data-lang="zh">14 章單選、多選、是非題；練習/考試雙模式、多使用者、錯題複習、隨機練習。</p>
+    <p data-lang="en">Single-choice, multi-select, and true/false across 14 chapters — practice/exam modes, multi-user, wrong-answer review, random practice.</p>
+  </a>
+  <a href="../../../F_Omics_組學分析/scRNA-seq/scrna-interactive-tutorial/index.html" class="hub-card">
+    <div class="hub-emoji">🧪</div><span class="step-num">Sister Tutorial</span>
+    <h3 data-zh="scRNA-seq 互動式教學" data-en="scRNA-seq Interactive Tutorial">scRNA-seq 互動式教學</h3>
+    <p data-lang="zh">姊妹站：12 章節單細胞 RNA-seq 完整流程，從 QC 到 trajectory。</p>
+    <p data-lang="en">Sister site: complete 12-step single-cell RNA-seq pipeline, QC to trajectory.</p>
+  </a>
+</div>
+<div style="height:60px"></div>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial · 2026</footer>
+<script src="i18n.js"></script>
+</body></html>

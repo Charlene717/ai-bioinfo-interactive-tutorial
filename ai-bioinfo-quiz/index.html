@@ -1,0 +1,1497 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI × 生資 互動考題</title>
+<style>
+:root{
+  --bg:#f5f8fa; --card:#fff; --ink:#1a2733; --soft:#5a6b7b; --line:#e0e6eb;
+  --primary:#1a6b5a; --primary-soft:#e6f4f0; --primary-dark:#0f4a3e;
+  --accent:#2563a8; --accent-soft:#e6eff7;
+  --exam:#7c3aed; --exam-soft:#f3e8ff;
+  --green:#2f9e44; --green-soft:#d3f9d8;
+  --red:#c92a2a; --red-soft:#ffe3e3;
+  --yellow:#d9a700; --yellow-soft:#fff4c2;
+  --grey:#f1f3f5; --grey-soft:#f8f9fa;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:16px}
+
+header{background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 100%);color:#fff;padding:14px 22px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.h-row{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+h1{font-size:18px;margin:0;font-weight:700;display:flex;align-items:center;gap:8px}
+.homelink{color:#fff;text-decoration:none;font-size:13px;padding:5px 12px;border:1px solid rgba(255,255,255,.5);border-radius:999px;white-space:nowrap;cursor:pointer;background:transparent;font-family:inherit}
+.homelink:hover{background:rgba(255,255,255,.15);border-color:#fff}
+.profile-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(255,255,255,.12);cursor:pointer;font-size:13px;color:#fff;font-family:inherit}
+.profile-pill:hover{background:rgba(255,255,255,.22)}
+.profile-pill .pdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#7be08d}
+.profile-pill .pname{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mode-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.5px;border:1px solid}
+.mode-pill.practice{background:var(--primary-soft);color:var(--primary-dark);border-color:var(--primary)}
+.mode-pill.exam{background:var(--exam-soft);color:#5b21b6;border-color:var(--exam)}
+.stat{margin-left:auto;color:rgba(255,255,255,.95);font-size:13px}
+.stat strong{color:#fff;font-size:17px}
+
+main{max-width:1280px;margin:22px auto;padding:0 18px 40px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:18px}
+.panel h2{margin:0 0 6px;font-size:16px;font-weight:600}
+.panel .desc{color:var(--soft);font-size:13px;margin-bottom:14px}
+
+.global-prog{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--primary-soft);border:1px solid var(--primary);border-radius:8px;margin-bottom:14px;font-size:13px;flex-wrap:wrap}
+.global-prog .gp-label{color:var(--primary);font-weight:600;min-width:90px}
+.global-prog .gp-bar{flex:1;height:8px;background:#fff;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line);min-width:160px}
+.global-prog .gp-fill{height:100%;background:var(--green);transition:width .35s;width:0%}
+.global-prog .gp-text{color:var(--ink);font-variant-numeric:tabular-nums}
+.global-prog .gp-reset{background:#fff;border:1px solid var(--red);color:var(--red);padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+.global-prog .gp-reset:hover{background:var(--red);color:#fff}
+.global-prog .gp-mark{background:#fff;border:1px solid var(--yellow);color:#a06a00;padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+.global-prog .gp-mark:hover{background:var(--yellow);color:#fff}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.ycard{background:var(--grey-soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ytitle{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ytitle .ycount{color:var(--soft);font-weight:400;font-size:12px}
+.ystatus{font-size:12px;color:var(--soft);display:flex;align-items:center;gap:4px}
+.ystatus .badge-status{padding:2px 8px;border-radius:999px;font-weight:600;font-size:11px}
+.ystatus .badge-status.ip{background:var(--yellow-soft);color:#a06a00}
+.ystatus .badge-status.done{background:var(--green-soft);color:var(--green)}
+.ystatus .badge-status.exam-ip{background:var(--exam-soft);color:#5b21b6}
+.action-row{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;border:1px solid;transition:all .12s;flex:1;min-width:120px;justify-content:center}
+.chip.practice{border-color:var(--primary);background:var(--primary-soft);color:var(--primary-dark)}
+.chip.practice:hover{background:var(--primary);color:#fff;transform:translateY(-1px)}
+.chip.exam{border-color:var(--exam);background:var(--exam-soft);color:#5b21b6}
+.chip.exam:hover{background:var(--exam);color:#fff;transform:translateY(-1px)}
+.chip.export{border-color:var(--line);background:#fff;color:var(--soft);flex:0;min-width:auto;padding:7px 10px}
+.chip.export:hover{border-color:var(--accent);color:var(--accent)}
+.legend{font-size:12px;color:var(--soft);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.ldot{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle;margin-right:5px;border:1px solid var(--line)}
+.ldot.r{background:var(--primary-soft);border-color:var(--primary)}
+.ldot.ip{background:var(--yellow-soft);border-color:var(--yellow)}
+.ldot.done{background:var(--green-soft);border-color:var(--green)}
+.ldot.exam{background:var(--exam-soft);border-color:var(--exam)}
+
+.special-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.special-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--ink);cursor:pointer;font-family:inherit;transition:all .12s}
+.special-btn:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+.special-btn .badge{background:var(--red-soft);color:var(--red);font-weight:700;padding:0 8px;border-radius:999px;font-size:11px}
+.special-btn.mark .badge{background:var(--yellow-soft);color:#6b4e00}
+
+/* Quiz layout */
+.layout{display:grid;grid-template-columns:300px 1fr;gap:22px;max-width:1280px;margin:18px auto;padding:0 18px}
+@media (max-width:880px){.layout{grid-template-columns:1fr;padding:0 14px}.sidebar{order:2;position:static}}
+.sidebar{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;height:fit-content;position:sticky;top:78px}
+.sidebar.exam{border-color:var(--exam);background:#fdfaff}
+.grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.gbtn{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--soft);font-size:13px;cursor:pointer;font-variant-numeric:tabular-nums;font-family:inherit;position:relative;padding:0}
+.gbtn:hover{border-color:var(--primary)}
+.gbtn.cur{background:var(--primary);color:#fff;border-color:var(--primary)}
+.gbtn.right{background:var(--green-soft);color:var(--green);border-color:var(--green)}
+.gbtn.wrong{background:var(--red-soft);color:var(--red);border-color:var(--red)}
+.gbtn.answered-exam{background:var(--exam-soft);color:#5b21b6;border-color:var(--exam)}
+.gbtn.cur.answered-exam{background:var(--exam);color:#fff;border-color:var(--exam)}
+.gbtn.marked::after{content:"\2605";position:absolute;top:1px;right:3px;font-size:10px;color:var(--yellow);line-height:1;text-shadow:0 0 2px #fff}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle;margin-right:4px;border:1px solid var(--line)}
+.dot.r{background:var(--green-soft);border-color:var(--green)}
+.dot.w{background:var(--red-soft);border-color:var(--red)}
+.dot.exam{background:var(--exam-soft);border-color:var(--exam)}
+.submit-exam-btn{margin-top:12px;width:100%;font-size:14px;padding:12px;font-weight:700}
+
+.btn{background:var(--primary);color:#fff;border:0;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;transition:all .12s}
+.btn:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-1px)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover:not(:disabled){border-color:var(--primary);color:var(--primary);background:#fff}
+.btn.danger{background:#fff;color:var(--red);border:1px solid var(--red)}
+.btn.danger:hover:not(:disabled){background:var(--red);color:#fff}
+.btn.exam-c{background:var(--exam);color:#fff}
+.btn.exam-c:hover:not(:disabled){background:#5b21b6}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.main-col{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.card.exam-card{border-color:var(--exam);box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(124,58,237,.08)}
+.qhead{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.qnum{font-size:22px;font-weight:700;color:var(--primary)}
+.qhead.exam .qnum{color:var(--exam)}
+.qmeta{color:var(--soft);font-size:13px}
+.qtype{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.5px;border:1px solid var(--line)}
+.qtype.single{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.qtype.multi{background:#f3e8ff;color:#7c3aed;border-color:#7c3aed}
+.qtype.tf{background:#fff7e6;color:#d97706;border-color:#d97706}
+.markbtn{margin-left:auto;background:#fff;border:1px solid var(--line);color:var(--soft);padding:6px 13px;border-radius:999px;font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.markbtn:hover{border-color:var(--yellow);color:var(--yellow)}
+.markbtn.marked{background:var(--yellow-soft);color:#6b4e00;border-color:var(--yellow);font-weight:600}
+.stem{font-size:16px;white-space:pre-wrap;word-break:break-word;margin-bottom:12px}
+.opts{display:flex;flex-direction:column;gap:8px;margin:14px 0 4px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:8px;cursor:pointer;transition:all .12s;text-align:left;font-size:15.5px;color:var(--ink);font-family:inherit;width:100%}
+.opt:hover:not(.locked){background:var(--primary-soft);border-color:var(--primary)}
+.opt.locked{cursor:default}
+.opt.selected{background:var(--accent-soft);border-color:var(--accent)}
+.opt .label{font-weight:700;min-width:22px}
+.opt.correct{background:var(--green-soft);border-color:var(--green);color:var(--green)}
+.opt.wrong{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+.submit-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.submit-row .submit-btn{font-size:14px;padding:10px 22px;font-weight:600}
+.submit-hint{color:var(--soft);font-size:13px}
+.exam-hint{padding:10px 14px;background:var(--exam-soft);border:1px solid var(--exam);border-radius:8px;font-size:13px;color:#5b21b6;margin-top:8px}
+.verdict{margin-top:14px;padding:12px 14px;border-radius:8px;font-size:14px;line-height:1.7}
+.verdict.right{background:var(--green-soft);color:#186b29}
+.verdict.wrong{background:var(--red-soft);color:#861818}
+.verdict h3{margin:0 0 6px;font-size:14px}
+.verdict .ans-line{font-weight:600;margin-bottom:4px}
+.nav{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.summary{padding:18px}
+.summary h2{margin:0 0 8px}
+.score{font-size:32px;font-weight:700;color:var(--primary)}
+.summary.exam .score{color:var(--exam)}
+.summary-row{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0}
+.summary-row .item{font-size:13px;color:var(--soft)}
+.summary-row .item strong{color:var(--ink);font-weight:700;font-size:18px;display:block;margin-top:2px}
+.wrong-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.wrong-row{padding:8px 12px;border:1px solid var(--line);border-radius:6px;display:flex;gap:10px;align-items:center;cursor:pointer;font-size:14px}
+.wrong-row:hover{background:var(--primary-soft);border-color:var(--primary)}
+.wrong-row .wno{font-weight:700;color:var(--primary);min-width:36px}
+
+.empty{padding:40px;text-align:center;color:var(--soft)}
+.footer{color:var(--soft);font-size:12px;text-align:center;margin:18px 0 28px}
+.hidden{display:none !important}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,20,30,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
+.modal-bg.show{display:flex}
+.modal-card{background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.18);max-width:580px;width:100%;padding:22px;max-height:90vh;overflow:auto}
+.modal-card h3{margin:0 0 4px;font-size:17px;font-weight:700}
+.modal-card .modal-sub{color:var(--soft);font-size:13px;margin-bottom:14px}
+.modal-card .hint{color:var(--soft);font-size:12px;line-height:1.6;margin:0 0 12px;background:var(--grey-soft);padding:10px 12px;border-radius:6px}
+.modal-card .modal-actions{display:flex;justify-content:flex-end;gap:8px}
+.modal-card label{display:block;font-size:13px;color:var(--soft);margin:8px 0 4px}
+.modal-card input[type="text"],.modal-card select,.modal-card input[type="number"]{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:6px;font-size:14px;font-family:inherit;background:#fff}
+.modal-card .row-2{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.profile-list{display:flex;flex-direction:column;gap:6px;margin:8px 0 14px}
+.profile-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.profile-row.active{border-color:var(--primary);background:var(--primary-soft)}
+.profile-row .pname{flex:1;font-size:14px}
+.profile-row .pdate{color:var(--soft);font-size:11px}
+.profile-row button{font-size:12px;padding:4px 10px;background:#fff;border:1px solid var(--line);border-radius:6px;cursor:pointer;color:var(--soft);font-family:inherit}
+.profile-row button:hover{border-color:var(--primary);color:var(--primary)}
+.profile-row button.danger:hover{border-color:var(--red);color:var(--red)}
+
+.exp-row{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.exp-opt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:var(--grey-soft);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:14px;text-align:left;color:var(--ink);font-family:inherit;width:100%;transition:all .12s}
+.exp-opt:hover{background:var(--primary-soft);border-color:var(--primary)}
+.exp-opt:disabled{opacity:.5;cursor:not-allowed}
+.exp-opt .icon-side{display:flex;align-items:center;gap:8px}
+.exp-opt .desc{color:var(--soft);font-size:12px;font-weight:400}
+
+.src-btn,.cnt-btn,.mode-btn{transition:all .12s;font-family:inherit}
+.src-btn.active,.cnt-btn.active{
+  background:var(--primary)!important;color:#fff!important;border-color:var(--primary)!important;
+  box-shadow:0 0 0 3px rgba(26,107,90,.18),0 2px 6px rgba(26,107,90,.25);
+  transform:translateY(-1px);font-weight:600;
+}
+.mode-btn[data-mode="practice"].active{background:var(--primary)!important;color:#fff!important;border-color:var(--primary)!important;box-shadow:0 0 0 3px rgba(26,107,90,.18),0 2px 6px rgba(26,107,90,.25);transform:translateY(-1px);font-weight:600}
+.mode-btn[data-mode="exam"].active{background:var(--exam)!important;color:#fff!important;border-color:var(--exam)!important;box-shadow:0 0 0 3px rgba(124,58,237,.18),0 2px 6px rgba(124,58,237,.25);transform:translateY(-1px);font-weight:600}
+.src-btn.active::before,.cnt-btn.active::before,.mode-btn.active::before{content:"✓ ";font-weight:700}
+.src-btn .cnt,.cnt-btn .cnt{font-size:11px;opacity:.85;margin-left:4px}
+
+.share-textarea{width:100%;min-height:120px;max-height:50vh;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.4;background:var(--grey-soft);resize:vertical;color:var(--ink)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;transition:opacity .2s;z-index:200;pointer-events:none}
+.toast.show{opacity:1}
+
+@media (max-width:600px){
+  h1{font-size:16px}
+  main{padding:0 12px 30px}
+  .panel{padding:14px}
+  .card{padding:16px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-row" id="headerRow">
+    <a class="homelink" href="../index.html" data-zh="&larr; 教學首頁" data-en="&larr; Tutorial home">&larr; 教學首頁</a>
+    <button class="homelink hidden" id="homeBtn" data-zh="&larr; 回首頁" data-en="&larr; Home">&larr; 回首頁</button>
+    <h1 id="hdrTitle" data-zh="🧠 AI 生物資訊 互動式考題" data-en="🧠 AI for Bioinformatics Interactive Quiz">🧠 AI 生物資訊 互動式考題</h1>
+    <span id="hdrModePill"></span>
+    <button class="profile-pill" id="profileBtn" title="切換 / 管理使用者"><span class="pdot"></span><span class="pname" id="profileName" data-zh="預設使用者" data-en="Default user">預設使用者</span> ▾</button>
+    <div class="stat" id="stat"></div>
+  </div>
+</header>
+
+<!-- Home view -->
+<main id="homeView">
+  <div class="panel">
+    <div class="global-prog">
+      <span class="gp-label" data-zh="總體進度" data-en="Overall progress">總體進度</span>
+      <div class="gp-bar"><div class="gp-fill" id="gpFill"></div></div>
+      <span class="gp-text" id="gpText" data-zh="尚未開始作答" data-en="Not started">尚未開始作答</span>
+      <button class="gp-reset" id="gpReset" title="重置作答" data-zh="🗑️ 重置作答" data-en="🗑️ Reset answers">🗑️ 重置作答</button>
+      <button class="gp-mark" id="clearMarksBtn" title="清除標記" data-zh="🗑️ 清除標記" data-en="🗑️ Clear marks">🗑️ 清除標記</button>
+    </div>
+    <h2 data-zh="章節列表" data-en="Chapter list">章節列表</h2>
+    <div class="desc" data-lang="zh">
+      每個章節提供「📝 練習模式」（每題立即顯示對錯與解析）與「📋 考試模式」（全部答完後一次性交卷看結果）兩種進入方式。<br>
+      鍵盤：←/→ 切題；單選 A/B/C/D 或 1-4；是非 T/F；多選空白鍵切換；Enter 送出（練習）。
+    </div>
+    <div class="desc" data-lang="en">
+      Each chapter offers two entries: "📝 Practice Mode" (per-question feedback) and "📋 Exam Mode" (single submit at the end).<br>
+      Keyboard: ←/→ navigate; single A/B/C/D or 1-4; T/F for true/false; Space toggles in multi; Enter to submit (practice).
+    </div>
+    <div class="special-row">
+      <button class="special-btn" id="reviewWrongBtn"><span data-zh="📝 錯題複習" data-en="📝 Wrong review">📝 錯題複習</span> <span class="badge" id="wrongBadge">0</span></button>
+      <button class="special-btn mark" id="reviewMarkBtn"><span data-zh="🔖 標記題複習" data-en="🔖 Marked review">🔖 標記題複習</span> <span class="badge" id="markBadge">0</span></button>
+      <button class="special-btn" id="randomBtn" data-zh="🎲 隨機練習" data-en="🎲 Random practice">🎲 隨機練習</button>
+      <button class="special-btn" id="exportHomeBtn" data-zh="📤 匯入 / 匯出" data-en="📤 Import / Export">📤 匯入 / 匯出</button>
+    </div>
+    <div class="legend" style="margin-top:14px">
+      <span><i class="ldot r"></i><span data-zh="尚未作答" data-en="Not answered">尚未作答</span></span>
+      <span><i class="ldot ip"></i><span data-zh="練習中／已完成練習" data-en="Practicing / completed">練習中／已完成練習</span></span>
+      <span><i class="ldot exam"></i><span data-zh="考試進行中" data-en="Exam in progress">考試進行中</span></span>
+    </div>
+  </div>
+  <div id="subjectsContainer"></div>
+  <div class="footer"><span data-zh="資料來源：AI × Bioinformatics Tutorial · 共 " data-en="Source: AI × Bioinformatics Tutorial · Total ">資料來源：scRNA-seq Interactive Tutorial · 共 </span><span id="totalCount"></span><span data-zh=" 題" data-en=" questions"> 題</span></div>
+</main>
+
+<!-- Quiz view -->
+<div class="layout hidden" id="quizView">
+  <aside class="sidebar" id="sidebar">
+    <div style="font-size:13px;color:var(--soft);margin-bottom:6px"><span id="sbTotal">— 題</span></div>
+    <div class="grid" id="grid"></div>
+    <div class="legend" id="sbLegend">
+      <span><i class="dot r"></i>答對</span>
+      <span><i class="dot w"></i>答錯</span>
+      <span style="color:var(--yellow)">★ 已標記</span>
+    </div>
+    <button id="submitExamBtn" class="btn exam-c submit-exam-btn hidden">📋 交卷查看結果</button>
+    <button id="resetBtn" class="btn danger" style="margin-top:12px;width:100%;font-size:13px" data-zh="重置本卷作答" data-en="Reset this quiz">重置本卷作答</button>
+    <button id="summaryBtn" class="btn ghost" style="margin-top:6px;width:100%;font-size:13px" data-zh="📊 查看本卷總結" data-en="📊 Show summary">📊 查看本卷總結</button>
+    <button id="exportQuizBtn" class="btn ghost" style="margin-top:6px;width:100%;font-size:13px" data-zh="📤 匯入／匯出本卷" data-en="📤 Import / Export quiz">📤 匯入／匯出本卷</button>
+    <button id="shuffleBtn" class="btn ghost" style="margin-top:6px;width:100%;font-size:13px" data-zh="🔀 切換順序／隨機" data-en="🔀 Toggle order / shuffle">🔀 切換順序／隨機</button>
+  </aside>
+  <main class="main-col" id="quizMain"></main>
+</div>
+
+<!-- Profile modal -->
+<div class="modal-bg" id="profileModal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3 data-zh="👤 使用者管理" data-en="👤 User Management">👤 使用者管理</h3>
+    <div class="modal-sub" data-zh="同一台電腦可以建立多個使用者，作答進度互不干擾。" data-en="Multiple users can be created on the same device with independent progress.">同一台電腦可以建立多個使用者，作答進度互不干擾。</div>
+    <div class="profile-list" id="profileList"></div>
+    <label data-zh="新增使用者" data-en="Add user">新增使用者</label>
+    <div class="row-2">
+      <input type="text" id="newProfileName" placeholder="輸入名字…" maxlength="30" data-zh-ph="輸入名字…" data-en-ph="Enter name…">
+      <button class="btn" id="addProfileBtn" data-zh="＋ 新增" data-en="＋ Add">＋ 新增</button>
+    </div>
+    <p class="hint" data-lang="zh">💡 進度儲存在瀏覽器 localStorage；換瀏覽器/裝置或清除快取會遺失。可使用「📤 匯入／匯出」備份。</p>
+    <p class="hint" data-lang="en">💡 Progress is saved in browser localStorage; switching browsers/devices or clearing cache will lose it. Use "📤 Import / Export" to back up.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="closeProfileBtn" data-zh="關閉" data-en="Close">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- Random picker -->
+<div class="modal-bg" id="randomPickerModal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3 id="randomPickerTitle" data-zh="🎲 隨機練習" data-en="🎲 Random practice">🎲 隨機練習</h3>
+    <div class="modal-sub" id="randomPickerSub">—</div>
+    <label data-zh="① 題目來源" data-en="① Question source">① 題目來源</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 0">
+      <button class="btn ghost src-btn" data-src="all"    id="srcAll"><span data-zh="完全隨機" data-en="All random">完全隨機</span> <span class="cnt"></span></button>
+      <button class="btn ghost src-btn" data-src="wrong"  id="srcWrong"><span data-zh="錯題隨機" data-en="Wrong random">錯題隨機</span> <span class="cnt"></span></button>
+      <button class="btn ghost src-btn" data-src="marked" id="srcMarked"><span data-zh="標記隨機" data-en="Marked random">標記隨機</span> <span class="cnt"></span></button>
+    </div>
+    <div id="srcEmptyWarn" style="display:none;margin-top:6px;padding:8px 12px;background:var(--red-soft);color:var(--red);border:1px solid var(--red);border-radius:6px;font-size:12px"></div>
+    <label style="margin-top:14px" data-zh="② 抽幾題" data-en="② How many?">② 抽幾題</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 8px">
+      <button class="btn ghost cnt-btn" data-n="10"  id="cnt10" data-zh="10 題" data-en="10 Q">10 題</button>
+      <button class="btn ghost cnt-btn" data-n="25"  id="cnt25" data-zh="25 題" data-en="25 Q">25 題</button>
+      <button class="btn ghost cnt-btn" data-n="50"  id="cnt50" data-zh="50 題" data-en="50 Q">50 題</button>
+      <button class="btn ghost cnt-btn" data-n="all" id="cntAll" data-zh="全部" data-en="All">全部</button>
+    </div>
+    <div class="row-2" style="align-items:center">
+      <input type="number" id="randomCount" min="1" value="10">
+      <span style="font-size:13px;color:var(--soft)" data-zh="題" data-en="Q">題</span>
+    </div>
+    <label style="margin-top:14px" data-zh="③ 作答模式" data-en="③ Mode">③ 作答模式</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 0">
+      <button class="btn ghost mode-btn" data-mode="practice" id="rndModePractice" data-zh="📝 練習模式" data-en="📝 Practice">📝 練習模式</button>
+      <button class="btn ghost mode-btn" data-mode="exam" id="rndModeExam" data-zh="📋 考試模式" data-en="📋 Exam">📋 考試模式</button>
+    </div>
+    <p class="hint" style="margin-top:14px" data-lang="zh">💡 練習模式採「重答模式」：每題立即顯示對錯與解析，答對後該題的錯題記錄會自動清掉。<br>📋 考試模式：作答中無反饋，全部答完後一次性交卷查看結果。</p>
+    <p class="hint" style="margin-top:14px" data-lang="en">💡 Practice Mode is "retry mode": instant feedback per question; correct answers clear from the wrong-list automatically.<br>📋 Exam Mode: no feedback during answering; submit at end to see results.</p>
+    <div class="modal-actions" style="gap:8px">
+      <button class="btn ghost" id="randomCancelBtn" data-zh="取消" data-en="Cancel">取消</button>
+      <button class="btn" id="randomStartBtn" data-zh="開始作答" data-en="Start">開始作答</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export / Import modal -->
+<div class="modal-bg" id="exportModal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3 id="exportTitle" data-zh="📤 匯入 / 匯出" data-en="📤 Import / Export">📤 匯入 / 匯出</h3>
+    <div class="modal-sub" id="exportSub">—</div>
+    <label style="margin-top:0" data-zh="📤 匯出格式" data-en="📤 Export format">📤 匯出格式</label>
+    <div class="exp-row">
+      <button class="exp-opt" data-fmt="json"><span class="icon-side"><span>📦</span><span><strong>JSON</strong> <span data-zh="進度備份" data-en="progress backup">進度備份</span><br><span class="desc" data-zh="完整作答、標記、考試狀態，可在另一台裝置匯入還原" data-en="Full answers, marks, exam state — restorable on another device">完整作答、標記、考試狀態，可在另一台裝置匯入還原</span></span></span></button>
+      <button class="exp-opt" data-fmt="html_score"><span class="icon-side"><span>📄</span><span><strong data-zh="HTML 成績單" data-en="HTML Score Sheet">HTML 成績單</strong><br><span class="desc" data-zh="本卷成績、各題對錯、答題狀態，方便列印或分享" data-en="Score, per-question correctness, answer status — printable / shareable">本卷成績、各題對錯、答題狀態，方便列印或分享</span></span></span></button>
+      <button class="exp-opt" data-fmt="html_errata"><span class="icon-side"><span>📚</span><span><strong data-zh="HTML 錯題講義" data-en="HTML Errata Sheet">HTML 錯題講義</strong><br><span class="desc" data-zh="僅含錯題與解析，做為離線複習教材" data-en="Wrong questions with explanations — offline review material">僅含錯題與解析，做為離線複習教材</span></span></span></button>
+    </div>
+    <label id="importLabel" style="margin-top:14px" data-zh="📥 匯入 JSON 還原" data-en="📥 Import JSON to restore">📥 匯入 JSON 還原</label>
+    <div class="row-2" style="margin-bottom:6px">
+      <input type="file" id="importFile" accept=".json,application/json">
+      <span style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn" id="importThisBtn" data-zh="📥 僅匯入本範圍" data-en="📥 Import this scope">📥 僅匯入本範圍</button>
+        <button class="btn ghost" id="importAllBtn" data-zh="📥 完整還原" data-en="📥 Full restore">📥 完整還原</button>
+      </span>
+    </div>
+    <details style="margin:6px 0 10px">
+      <summary style="cursor:pointer;color:var(--accent);font-size:13px" data-zh="📋 或從剪貼簿貼上 JSON" data-en="📋 Or paste JSON from clipboard">📋 或從剪貼簿貼上 JSON</summary>
+      <textarea id="pasteImportArea" class="share-textarea" placeholder="把 JSON 內容貼進這裡…" style="margin-top:8px" data-zh-ph="把 JSON 內容貼進這裡…" data-en-ph="Paste JSON content here…"></textarea>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn" id="pasteImportThisBtn" data-zh="📥 僅匯入本範圍" data-en="📥 Import this scope">📥 僅匯入本範圍</button>
+        <button class="btn ghost" id="pasteImportAllBtn" data-zh="📥 完整還原" data-en="📥 Full restore">📥 完整還原</button>
+      </div>
+    </details>
+    <p class="hint" data-lang="zh">💡 跨裝置同步：在裝置 A 匯出 JSON、傳到裝置 B（雲端硬碟／Email／LINE 訊息），再點「📥 匯入」即可還原。</p>
+    <p class="hint" data-lang="en">💡 Cross-device sync: export JSON on device A, transfer to device B (cloud drive / email / chat), then click "📥 Import" to restore.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="closeExportBtn" data-zh="關閉" data-en="Close">關閉</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="i18n.js"></script>
+<script>
+(function(){
+  const D = window.QUIZ_DATA;
+  if(!D){ document.body.innerHTML = '<div style="padding:40px;text-align:center;color:#c92a2a">⚠️ 找不到題庫檔 data.js</div>'; return; }
+  const EXAM_KEY = "aibio";
+  const exam = D[EXAM_KEY];
+  // ==== i18n helpers (read _en variants when lang=en, fallback to default) ====
+  function L(){ return (window.I18n && window.I18n.get) ? window.I18n.get() : 'en'; }
+  function getQStem(q){ return (L()==='en' && q.stem_en) ? q.stem_en : q.stem; }
+  function getQOpt(q, k){ return (L()==='en' && q[k+'_en']) ? q[k+'_en'] : q[k]; }
+  function getQExp(q){ return (L()==='en' && q.exp_en) ? q.exp_en : q.exp; }
+  function getSecName(name){
+    if(L()!=='en') return name;
+    const map = (window.QUIZ_DATA && window.QUIZ_DATA.aibio && window.QUIZ_DATA.aibio.labels_en) || {};
+    return map[name] || name;
+  }
+
+
+  // Profile
+  const KEY_PROFILES = "aibioquiz_profiles_v1";
+  const KEY_ACTIVE   = "aibioquiz_active_v1";
+  function loadJSON(k, def){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch(e){ return def; } }
+  function saveJSON(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  function nowISO(){ return new Date().toISOString(); }
+  function genId(){ return "p_" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  let profiles = loadJSON(KEY_PROFILES, null);
+  let activeId = localStorage.getItem(KEY_ACTIVE);
+  if(!profiles){
+    profiles = {};
+    const id = genId();
+    profiles[id] = { name:"預設使用者", createdAt: nowISO() };
+    saveJSON(KEY_PROFILES, profiles);
+    localStorage.setItem(KEY_ACTIVE, id);
+    activeId = id;
+  }
+  if(!activeId || !profiles[activeId]){
+    activeId = Object.keys(profiles)[0];
+    localStorage.setItem(KEY_ACTIVE, activeId);
+  }
+  function pkey(base){ return base + "::" + activeId; }
+  function loadActive(base, def){ return loadJSON(pkey(base), def); }
+  function saveActive(base, val){ saveJSON(pkey(base), val); }
+
+  // Stores
+  let progress  = loadActive("aibioquiz_progress_v1", {}); // committed answers (with feedback)
+  let marks     = loadActive("aibioquiz_marks_v1", {});
+  let shuffle   = loadActive("aibioquiz_shuffle_v1", {});
+  // examOngoing[si][ci] = {tentative:{qi:ans}, startedAt}; absent → not in exam
+  let examOngoing = loadActive("aibioquiz_exam_v1", {});
+
+  function reloadActiveData(){
+    progress    = loadActive("aibioquiz_progress_v1", {});
+    marks       = loadActive("aibioquiz_marks_v1", {});
+    shuffle     = loadActive("aibioquiz_shuffle_v1", {});
+    examOngoing = loadActive("aibioquiz_exam_v1", {});
+  }
+
+  const state = { view:"home", quiz:null };
+
+  // ==== Helpers ====
+  function escHTML(s){ return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+  function $(id){ return document.getElementById(id); }
+  function setHidden(el,h){ el.classList.toggle("hidden", h); }
+
+  // ==== Stores accessors ====
+  function getSecAns(si,ci){ return ((progress[si]||{})[ci])||{}; }
+  function setSecAns(si,ci,qi,ans){
+    progress[si]=progress[si]||{}; progress[si][ci]=progress[si][ci]||{};
+    progress[si][ci][qi]=ans; saveActive("aibioquiz_progress_v1", progress);
+  }
+  function clearSecAns(si,ci){ if(progress[si]&&progress[si][ci]){ delete progress[si][ci]; saveActive("aibioquiz_progress_v1", progress); } }
+  function isMarked(si,ci,qi){ return !!(((marks[si]||{})[ci]||{})[qi]); }
+  function toggleMark(si,ci,qi){
+    marks[si]=marks[si]||{}; marks[si][ci]=marks[si][ci]||{};
+    if(marks[si][ci][qi]) delete marks[si][ci][qi]; else marks[si][ci][qi]=true;
+    saveActive("aibioquiz_marks_v1", marks);
+  }
+  function getShuffleOrder(si,ci){ return ((shuffle[si]||{})[ci])||null; }
+  function setShuffleOrder(si,ci,arr){
+    shuffle[si]=shuffle[si]||{};
+    if(arr) shuffle[si][ci]=arr; else if(shuffle[si][ci]) delete shuffle[si][ci];
+    saveActive("aibioquiz_shuffle_v1", shuffle);
+  }
+  function getExamOngoing(si,ci){ return ((examOngoing[si]||{})[ci])||null; }
+  function setExamOngoing(si,ci,obj){
+    examOngoing[si]=examOngoing[si]||{};
+    if(obj) examOngoing[si][ci]=obj;
+    else { if(examOngoing[si][ci]) delete examOngoing[si][ci]; if(Object.keys(examOngoing[si]||{}).length===0) delete examOngoing[si]; }
+    saveActive("aibioquiz_exam_v1", examOngoing);
+  }
+
+  function shuffleArr(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function eqAns(a,b){
+    if(Array.isArray(a) && Array.isArray(b)){
+      if(a.length!==b.length) return false;
+      return a.slice().sort().join(",")===b.slice().sort().join(",");
+    }
+    return a===b;
+  }
+  function fmtAns(q){
+    if(q.type==="multi") return Array.isArray(q.ans)?q.ans.slice().sort().join("、"):"";
+    if(q.type==="tf") return q.ans==="T"?"○ 正確":"✕ 錯誤";
+    return q.ans;
+  }
+  function fmtUserAns(q,ua){
+    if(ua==null||ua==="") return "（未作答）";
+    if(q.type==="multi") return Array.isArray(ua)?(ua.length?ua.slice().sort().join("、"):"（未勾選）"):String(ua);
+    if(q.type==="tf") return ua==="T"?"○ 正確":"✕ 錯誤";
+    return ua;
+  }
+
+  function totalQs(){ let n=0; Object.values(exam.subjects).forEach(s=>Object.values(s).forEach(a=>n+=a.length)); return n; }
+  function answeredCount(){
+    let n=0;
+    const subKeys = Object.keys(exam.subjects);
+    subKeys.forEach((sk,si)=>{
+      Object.keys(exam.subjects[sk]).forEach((ck,ci)=>{
+        n += Object.keys(getSecAns(si,ci)).length;
+      });
+    });
+    return n;
+  }
+  function correctCount(){
+    let n=0;
+    const subKeys = Object.keys(exam.subjects);
+    subKeys.forEach((sk,si)=>{
+      const sub = exam.subjects[sk];
+      Object.keys(sub).forEach((ck,ci)=>{
+        const arr = sub[ck];
+        const ans = getSecAns(si,ci);
+        arr.forEach((q,qi)=>{ if(ans[qi]!=null && eqAns(ans[qi], q.ans)) n++; });
+      });
+    });
+    return n;
+  }
+  function wrongList(){
+    const out=[];
+    const subKeys = Object.keys(exam.subjects);
+    subKeys.forEach((sk,si)=>{
+      const sub = exam.subjects[sk];
+      Object.keys(sub).forEach((ck,ci)=>{
+        const arr = sub[ck]; const ans = getSecAns(si,ci);
+        arr.forEach((q,qi)=>{ if(ans[qi]!=null && !eqAns(ans[qi], q.ans)) out.push({si,ci,qi,q,subLabel:sk,secLabel:ck,ua:ans[qi]}); });
+      });
+    });
+    return out;
+  }
+  function markedList(){
+    const out=[];
+    const subKeys = Object.keys(exam.subjects);
+    subKeys.forEach((sk,si)=>{
+      Object.keys(exam.subjects[sk]).forEach((ck,ci)=>{
+        const arr = exam.subjects[sk][ck];
+        arr.forEach((q,qi)=>{ if(isMarked(si,ci,qi)) out.push({si,ci,qi,q,subLabel:sk,secLabel:ck}); });
+      });
+    });
+    return out;
+  }
+  function allItems(){
+    const out=[];
+    const subKeys = Object.keys(exam.subjects);
+    subKeys.forEach((sk,si)=>{
+      Object.keys(exam.subjects[sk]).forEach((ck,ci)=>{
+        exam.subjects[sk][ck].forEach((q,qi)=>out.push({si,ci,qi,q,subLabel:sk,secLabel:ck}));
+      });
+    });
+    return out;
+  }
+
+  // ==== Toast ====
+  let toastT=null;
+  function toast(msg){
+    const t = $("toast"); t.textContent=msg; t.classList.add("show");
+    clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"), 1800);
+  }
+
+  // ==== Render dispatcher ====
+  function render(){
+    if(state.view==="home") renderHome();
+    else if(state.view==="quiz") renderQuiz();
+    else if(state.view==="summary") renderSummary();
+  }
+
+  // ==== Home ====
+  function renderHome(){
+    setHidden($("homeView"), false); setHidden($("quizView"), true);
+    $("homeBtn").classList.add("hidden");
+    $("hdrTitle").textContent = I18n.t("appTitle");
+    $("hdrModePill").innerHTML = "";
+    $("profileName").textContent = (profiles[activeId]?.name === "預設使用者" || !profiles[activeId]?.name) ? I18n.t("defaultUser") : profiles[activeId].name;
+    $("totalCount").textContent = totalQs();
+
+    const total = totalQs(), ans = answeredCount(), correct = correctCount();
+    $("gpFill").style.width = (total ? (ans/total*100) : 0) + "%";
+    $("gpText").textContent = ans===0 ? I18n.t("notStarted") : I18n.t("progressLine", ans, total, correct);
+    $("stat").innerHTML = I18n.t("answeredOf", ans, total);
+
+    $("wrongBadge").textContent = wrongList().length;
+    $("markBadge").textContent  = markedList().length;
+
+    const c = $("subjectsContainer"); c.innerHTML = "";
+    Object.entries(exam.subjects).forEach(([subName, secs], si)=>{
+      const card = document.createElement("div");
+      card.className = "panel";
+      card.innerHTML = '<h2>'+escHTML(getSecName(subName))+'</h2><div class="cards" id="cards_'+si+'"></div>';
+      c.appendChild(card);
+      const cardsEl = card.querySelector("#cards_"+si);
+      Object.entries(secs).forEach(([secName, arr], ci)=>{
+        const sa = getSecAns(si,ci);
+        const ansN = Object.keys(sa).length;
+        const tot = arr.length;
+        const correctN = arr.reduce((acc,q,qi)=>acc+(sa[qi]!=null && eqAns(sa[qi],q.ans)?1:0),0);
+        const examOn = getExamOngoing(si,ci);
+        let statusBadge = "";
+        if(examOn){
+          const tn = Object.keys(examOn.tentative||{}).length;
+          statusBadge = '<span class="badge-status exam-ip">'+I18n.t("examOngoing", tn, tot)+'</span>';
+        } else if(ansN===0){
+          statusBadge = '<span style="color:var(--soft)">'+I18n.t("notAnswered")+'</span>';
+        } else if(ansN===tot){
+          statusBadge = '<span class="badge-status done">'+I18n.t("sectionDone", correctN, tot)+'</span>';
+        } else {
+          statusBadge = '<span class="badge-status ip">'+I18n.t("practicing", ansN, tot, correctN)+'</span>';
+        }
+        const yc = document.createElement("div");
+        yc.className = "ycard";
+        yc.innerHTML =
+          '<div class="ytitle">'+escHTML(getSecName(secName))+' <span class="ycount">'+I18n.t("qCount",tot)+'</span></div>'+
+          '<div class="ystatus">'+statusBadge+'</div>'+
+          '<div class="action-row">'+
+            '<button class="chip practice" data-act="practice">'+I18n.t("practiceMode")+'</button>'+
+            '<button class="chip exam" data-act="exam">'+I18n.t("examMode")+'</button>'+
+            '<button class="chip export" data-act="export" title="匯入/匯出本卷">📤</button>'+
+          '</div>';
+        cardsEl.appendChild(yc);
+        yc.querySelector('[data-act="practice"]').onclick = ()=>enterSection(si, ci, "practice");
+        yc.querySelector('[data-act="exam"]').onclick = ()=>enterSection(si, ci, "exam");
+        yc.querySelector('[data-act="export"]').onclick = ()=>openExportModal({ scope:"quiz", si, ci, subLabel:subName, secLabel:secName });
+      });
+    });
+  }
+
+  // ==== Section entry ====
+  function enterSection(si, ci, mode){
+    const subKeys = Object.keys(exam.subjects);
+    const subLabel = subKeys[si];
+    const secKeys = Object.keys(exam.subjects[subLabel]);
+    const secLabel = secKeys[ci];
+    const arr = exam.subjects[subLabel][secLabel];
+    const order = getShuffleOrder(si,ci);
+    const indices = order || arr.map((_,i)=>i);
+    const items = indices.map(qi=>({ si, ci, qi, q:arr[qi], subLabel, secLabel }));
+
+    if(mode==="exam"){
+      const existingProgress = Object.keys(getSecAns(si,ci)).length;
+      const examOn = getExamOngoing(si,ci);
+      if(examOn){
+        if(!confirm(I18n.t("confirmContExam", Object.keys(examOn.tentative||{}).length+"/"+arr.length))){
+          // restart: clear ongoing exam
+          setExamOngoing(si,ci,null);
+          if(!confirm(I18n.t("confirmRestartExam"))) return;
+          clearSecAns(si,ci);
+          setExamOngoing(si,ci,{ tentative:{}, startedAt: nowISO() });
+        }
+      } else {
+        if(existingProgress>0){
+          if(!confirm(I18n.t("confirmEnterExamCleansec", existingProgress))) return;
+          clearSecAns(si,ci);
+        }
+        setExamOngoing(si,ci,{ tentative:{}, startedAt: nowISO() });
+      }
+    } else {
+      // practice mode
+      const examOn = getExamOngoing(si,ci);
+      if(examOn){
+        if(!confirm(I18n.t("confirmEnterPracticeFromExam", Object.keys(examOn.tentative||{}).length+"/"+arr.length))) return;
+        setExamOngoing(si,ci,null);
+      }
+    }
+
+    enterQuiz({ type:"section", mode, title: getSecName(secLabel)+" · "+getSecName(subLabel), titleZh:secLabel+" · "+subLabel, titleSecKey:secLabel, titleSubKey:subLabel, items, sectionRef:{si,ci,total:arr.length} });
+  }
+  function enterQuiz(quiz){
+    state.view="quiz"; state.quiz=quiz;
+    state.quiz.idx=0;
+    state.quiz.draft={};  // {qIdx: tentative ans} for practice mode pending submissions
+    render();
+    window.scrollTo(0,0);
+  }
+
+  // ==== Quiz render ====
+  function renderQuiz(){
+    setHidden($("homeView"), true); setHidden($("quizView"), false);
+    $("homeBtn").classList.remove("hidden");
+    const quiz = state.quiz; const items = quiz.items;
+    const isExam = quiz.mode==="exam";
+    const isReview = quiz.type==="review" || quiz.type==="random";
+    if(quiz.titleSecKey && quiz.titleSubKey) quiz.title = getSecName(quiz.titleSecKey)+" · "+getSecName(quiz.titleSubKey);
+    $("hdrTitle").textContent = quiz.title || I18n.t("appTitle");
+    $("hdrModePill").innerHTML = isExam ? '<span class="mode-pill exam">'+I18n.t("examModePill")+'</span>' :
+                                  (quiz.retryMode ? '<span class="mode-pill practice">'+I18n.t("retryPill")+'</span>' : '<span class="mode-pill practice">'+I18n.t("practicePill")+'</span>');
+
+    if(!items.length){
+      $("quizMain").innerHTML = '<div class="card empty">沒有題目可顯示。</div>';
+      $("grid").innerHTML="";
+      return;
+    }
+
+    // sidebar styling
+    $("sidebar").classList.toggle("exam", isExam);
+
+    // fetch ongoing exam data: section-mode uses persistent examOngoing; random/review uses in-memory examTentative
+    const sec = quiz.sectionRef || null;
+    const examOn = isExam ? (sec
+      ? (getExamOngoing(sec.si, sec.ci) || { tentative:{} })
+      : { tentative: (quiz.examTentative = quiz.examTentative || {}) }
+    ) : null;
+
+    // Build sidebar grid
+    const grid = $("grid"); grid.innerHTML = "";
+    let ansN=0, correctN=0;
+    items.forEach((it,i)=>{
+      let stored, isCorrect=false, isWrong=false, isAnsweredExam=false;
+      if(isExam){
+        stored = sec ? examOn.tentative[it.qi] : examOn.tentative[i];
+        if(stored!=null && (Array.isArray(stored)?stored.length>0:true)){ ansN++; isAnsweredExam=true; }
+      } else {
+        const a = getSecAns(it.si,it.ci)[it.qi];
+        const retried = quiz.retryMode && quiz.retried && quiz.retried[i];
+        const showState = !quiz.retryMode || retried;
+        isCorrect = showState && a!=null && eqAns(a, it.q.ans);
+        isWrong   = showState && a!=null && !eqAns(a, it.q.ans);
+        if(showState && a!=null){ ansN++; if(isCorrect) correctN++; }
+      }
+      const b = document.createElement("button");
+      b.className = "gbtn"+(i===quiz.idx?" cur":"")+(isCorrect?" right":"")+(isWrong?" wrong":"")+(isAnsweredExam?" answered-exam":"")+(isMarked(it.si,it.ci,it.qi)?" marked":"");
+      b.textContent = String(i+1);
+      b.onclick = ()=>{ quiz.idx=i; render(); };
+      grid.appendChild(b);
+    });
+
+    if(isExam){
+      $("sbTotal").textContent = I18n.t("sbTotalExam", ansN, items.length);
+      $("sbLegend").innerHTML = '<span><i class="dot exam"></i>'+I18n.t("legendAnswered")+'</span><span style="color:var(--yellow)">★ '+I18n.t("legendMarked")+'</span>';
+    } else {
+      $("sbTotal").textContent = I18n.t("sbTotal", items.length, ansN, correctN);
+      $("sbLegend").innerHTML = '<span><i class="dot r"></i>'+I18n.t("legendCorrect")+'</span><span><i class="dot w"></i>'+I18n.t("legendWrong")+'</span><span style="color:var(--yellow)">★ '+I18n.t("legendMarked")+'</span>';
+    }
+
+    // sidebar buttons
+    const isSection = quiz.type==="section";
+    // resetBtn shows for: section mode, OR exam mode (any type) so user can clear ongoing exam
+    $("resetBtn").style.display = (isSection || isExam) ? "" : "none";
+    $("shuffleBtn").style.display = isSection?"":"none";
+    $("submitExamBtn").classList.toggle("hidden", !isExam);
+    $("exportQuizBtn").classList.toggle("hidden", !isSection);
+    $("submitExamBtn").textContent = I18n.t("submitExamSidebarN", ansN, items.length);
+
+    $("resetBtn").onclick = ()=>{
+      if(isExam){
+        if(!confirm(I18n.t("confirmResetExam"))) return;
+        if(sec){ setExamOngoing(sec.si,sec.ci,{ tentative:{}, startedAt: nowISO() }); }
+        else { quiz.examTentative = {}; }
+        render();
+      } else {
+        if(!confirm(I18n.t("confirmResetSec"))) return;
+        const r=quiz.sectionRef; clearSecAns(r.si, r.ci); render();
+      }
+    };
+    $("shuffleBtn").onclick = ()=>{
+      const r=quiz.sectionRef;
+      const cur=getShuffleOrder(r.si,r.ci);
+      if(cur){ setShuffleOrder(r.si,r.ci,null); toast(I18n.t("toastUnshuffled")); }
+      else { setShuffleOrder(r.si,r.ci, shuffleArr(Array.from({length:r.total},(_,i)=>i))); toast(I18n.t("toastShuffled")); }
+      enterSection(r.si, r.ci, quiz.mode);
+    };
+    $("summaryBtn").onclick = ()=>renderSummary();
+    $("exportQuizBtn").onclick = ()=>openExportModal({ scope:"quiz", si:sec.si, ci:sec.ci, subLabel:items[0]?.subLabel, secLabel:items[0]?.secLabel });
+    $("submitExamBtn").onclick = ()=>submitExam();
+
+    // Render current question
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion(){
+    const quiz = state.quiz; const items = quiz.items;
+    const isExam = quiz.mode==="exam";
+    const it = items[quiz.idx], q = it.q;
+    const sec = quiz.sectionRef || null;
+    const examOn = isExam ? (sec
+      ? (getExamOngoing(sec.si, sec.ci) || { tentative:{} })
+      : { tentative: (quiz.examTentative = quiz.examTentative || {}) }
+    ) : null;
+
+    let stored, locked, draft;
+    if(isExam){
+      stored = sec ? examOn.tentative[it.qi] : examOn.tentative[quiz.idx];
+      locked = false; // never locked in exam mode pre-submission
+      draft = stored;
+    } else {
+      stored = getSecAns(it.si, it.ci)[it.qi];
+      const retriedHere = quiz.retryMode && quiz.retried && quiz.retried[quiz.idx];
+      locked = quiz.retryMode ? !!retriedHere : (stored!=null);
+      draft = locked ? stored : (quiz.draft && quiz.draft[quiz.idx]);
+    }
+    const qtype = q.type || "single";
+
+    // Build options HTML
+    let optsHTML = "";
+    if(qtype==="single"){
+      for(const k of ["A","B","C","D"]){
+        if(q[k]==null) continue;
+        let cls="opt";
+        if(locked){ cls += " locked"; if(k===q.ans) cls+=" correct"; else if(k===stored) cls+=" wrong"; }
+        else if(!isExam && draft===k){ cls+=" selected"; }
+        else if(isExam && stored===k){ cls+=" selected"; }
+        optsHTML += '<button class="'+cls+'" data-k="'+k+'" '+(locked?"disabled":"")+'>'+
+          '<span class="label">'+k+'.</span><span>'+escHTML(q[k])+'</span></button>';
+      }
+    } else if(qtype==="multi"){
+      const draftSet = (Array.isArray(draft) ? draft : []);
+      const selectedSet = isExam ? (Array.isArray(stored)?stored:[]) : draftSet;
+      const ansSet = Array.isArray(q.ans)? q.ans: [];
+      for(const k of ["A","B","C","D"]){
+        if(q[k]==null) continue;
+        let cls="opt";
+        const inSel = selectedSet.includes(k);
+        if(locked){
+          cls += " locked";
+          if(ansSet.includes(k)) cls+=" correct";
+          else if(Array.isArray(stored) && stored.includes(k)) cls+=" wrong";
+        } else if(inSel){
+          cls += " selected";
+        }
+        optsHTML += '<button class="'+cls+'" data-k="'+k+'" '+(locked?"disabled":"")+'>'+
+          '<span class="label">'+(inSel?"☑":"☐")+' '+k+'.</span><span>'+escHTML(getQOpt(q,k))+'</span></button>';
+      }
+    } else if(qtype==="tf"){
+      const opts = [["T","○ 正確"],["F","✕ 錯誤"]];
+      for(const [k,lab] of opts){
+        let cls="opt";
+        if(locked){ cls += " locked"; if(k===q.ans) cls+=" correct"; else if(k===stored) cls+=" wrong"; }
+        else if(!isExam && draft===k){ cls+=" selected"; }
+        else if(isExam && stored===k){ cls+=" selected"; }
+        optsHTML += '<button class="'+cls+'" data-k="'+k+'" '+(locked?"disabled":"")+'>'+
+          '<span class="label">'+(k==="T"?"T":"F")+'.</span><span>'+escHTML(lab)+'</span></button>';
+      }
+    }
+
+    // Submit row (only in practice mode, not yet locked)
+    let submitRowHTML = "";
+    if(!isExam && !locked){
+      let hint;
+      if(qtype==="multi"){
+        const n = Array.isArray(draft) ? draft.length : 0;
+        hint = I18n.t("multiHint", n);
+      } else if(qtype==="tf") hint = I18n.t("tfHint");
+      else hint = I18n.t("singleHint");
+      const canSubmit = (qtype==="multi") ? (Array.isArray(draft) && draft.length>0) : (draft!=null);
+      submitRowHTML = '<div class="submit-row">'+
+        '<button class="btn submit-btn" id="submitAnsBtn" '+(canSubmit?"":"disabled")+'>'+I18n.t("submitAnswer")+'</button>'+
+        '<button class="btn ghost" id="clearDraftBtn" '+(draft==null||(Array.isArray(draft)&&draft.length===0)?"disabled":"")+'>'+I18n.t("clearChoice")+'</button>'+
+        '<span class="submit-hint">'+escHTML(hint)+'</span>'+
+        '</div>';
+    }
+    // Exam-mode hint: render OUTSIDE the question card as a standalone banner above it; only on first question to reduce noise
+    let examHintHTML = "";
+    if(isExam && quiz.idx===0){
+      examHintHTML = '<div class="exam-hint" style="margin:0">'+I18n.t("examHintBanner")+'</div>';
+    }
+
+    // Verdict (practice locked)
+    let verdictHTML = "";
+    if(locked && !isExam){
+      const ok = eqAns(stored, q.ans);
+      verdictHTML = '<div class="verdict '+(ok?"right":"wrong")+'">'+
+        '<h3>'+(ok?I18n.t("correct"):I18n.t("incorrect"))+'</h3>'+
+        '<div class="ans-line">'+I18n.t("correctAnswer")+escHTML(fmtAns(q))+(ok?'':I18n.t("yourAnswer")+escHTML(fmtUserAns(q,stored)))+'</div>'+
+        (q.exp ? '<div>'+escHTML(getQExp(q))+'</div>' : '<div style="opacity:.7">'+I18n.t("noExp")+'</div>')+
+        '</div>';
+    }
+
+    const marked = isMarked(it.si, it.ci, it.qi);
+    const typeBadge = qtype==="single" ? '<span class="qtype single">'+I18n.t("typeSingle")+'</span>'
+                    : qtype==="multi"  ? '<span class="qtype multi">'+I18n.t("typeMulti")+'</span>'
+                    : '<span class="qtype tf">'+I18n.t("typeTF")+'</span>';
+    $("quizMain").innerHTML = examHintHTML +
+      '<div class="card '+(isExam?"exam-card":"")+'">'+
+      '<div class="qhead '+(isExam?"exam":"")+'">'+
+        '<span class="qnum">'+I18n.t("qNum", quiz.idx+1, items.length)+'</span>'+
+        typeBadge+
+        '<span class="qmeta">'+escHTML(getSecName(it.subLabel))+' · '+escHTML(getSecName(it.secLabel))+'</span>'+
+        '<button class="markbtn '+(marked?"marked":"")+'" id="markBtn">'+(marked?I18n.t("markedBtn"):I18n.t("markBtn"))+'</button>'+
+      '</div>'+
+      '<div class="stem">'+escHTML(getQStem(q))+'</div>'+
+      '<div class="opts" id="opts">'+optsHTML+'</div>'+
+      submitRowHTML +
+      verdictHTML+
+      '<div class="nav">'+
+        '<button class="btn ghost" id="prevBtn" '+(quiz.idx===0?"disabled":"")+'>'+I18n.t("prev")+'</button>'+
+        '<button class="btn" id="nextBtn" '+(quiz.idx===items.length-1?"disabled":"")+'>'+I18n.t("next")+'</button>'+
+        (locked && !isExam ? '<button class="btn ghost" id="redoBtn">'+I18n.t("redo")+'</button>' : '')+
+        (isExam && quiz.idx===items.length-1 ? '<button class="btn exam-c" id="submitExamInlineBtn" style="margin-left:auto;font-weight:700">'+I18n.t("submitExamInline")+'</button>' : '')+
+      '</div>'+
+      '</div>';
+
+    // ==== Wire interactions ====
+    function setExamTentative(i, ans){
+      if(sec){
+        const eo = getExamOngoing(sec.si, sec.ci) || { tentative:{}, startedAt: nowISO() };
+        const qi = items[i].qi;
+        eo.tentative[qi] = ans;
+        setExamOngoing(sec.si, sec.ci, eo);
+      } else {
+        quiz.examTentative = quiz.examTentative || {};
+        quiz.examTentative[i] = ans;
+      }
+    }
+    function setDraft(qi, ans){
+      quiz.draft = quiz.draft || {};
+      quiz.draft[qi] = ans;
+    }
+    function commitPractice(ans){
+      setSecAns(it.si, it.ci, it.qi, ans);
+      if(quiz.retryMode){ quiz.retried = quiz.retried || {}; quiz.retried[quiz.idx] = true; if(eqAns(ans,q.ans)) toast(I18n.t("toastCorrect")); }
+      if(quiz.draft) delete quiz.draft[quiz.idx];
+      render();
+    }
+
+    $("quizMain").querySelectorAll(".opt").forEach(btn=>{
+      btn.onclick = ()=>{
+        if(locked) return;
+        const k = btn.dataset.k;
+        if(qtype==="multi"){
+          if(isExam){
+            const cur = Array.isArray(stored)? stored.slice() : [];
+            const idx = cur.indexOf(k);
+            if(idx>=0) cur.splice(idx,1); else cur.push(k);
+            setExamTentative(quiz.idx, cur);
+          } else {
+            const cur = Array.isArray(draft)? draft.slice() : [];
+            const idx = cur.indexOf(k);
+            if(idx>=0) cur.splice(idx,1); else cur.push(k);
+            setDraft(quiz.idx, cur);
+          }
+          renderQuiz();
+        } else {
+          if(isExam){
+            setExamTentative(quiz.idx, k);
+            renderQuiz();
+          } else {
+            setDraft(quiz.idx, k);
+            renderQuiz();
+          }
+        }
+      };
+    });
+
+    if(!isExam && !locked){
+      const sb = $("submitAnsBtn");
+      if(sb) sb.onclick = ()=>{
+        const d = quiz.draft && quiz.draft[quiz.idx];
+        if(d==null || (Array.isArray(d) && d.length===0)){ toast(I18n.t("chooseAnswer")); return; }
+        commitPractice(qtype==="multi" ? d.slice() : d);
+      };
+      const cb = $("clearDraftBtn");
+      if(cb) cb.onclick = ()=>{
+        if(quiz.draft) delete quiz.draft[quiz.idx];
+        renderQuiz();
+      };
+    }
+
+    $("markBtn").onclick = ()=>{ toggleMark(it.si,it.ci,it.qi); renderQuiz(); };
+    $("prevBtn").onclick = ()=>{ if(quiz.idx>0){ quiz.idx--; render(); window.scrollTo(0,0); } };
+    $("nextBtn").onclick = ()=>{ if(quiz.idx<items.length-1){ quiz.idx++; render(); window.scrollTo(0,0); } };
+    const sb2 = $("submitExamInlineBtn");
+    if(sb2) sb2.onclick = ()=>submitExam();
+    const rb = $("redoBtn");
+    if(rb) rb.onclick = ()=>{
+      const sec2 = (progress[it.si]||{})[it.ci];
+      if(sec2){ delete sec2[it.qi]; saveActive("aibioquiz_progress_v1", progress); }
+      if(quiz.retryMode && quiz.retried){ delete quiz.retried[quiz.idx]; }
+      if(quiz.draft) delete quiz.draft[quiz.idx];
+      render();
+    };
+
+    document.onkeydown = (ev)=>{
+      if(ev.target && ["INPUT","TEXTAREA"].includes(ev.target.tagName)) return;
+      if(ev.key==="ArrowLeft" && quiz.idx>0){ quiz.idx--; render(); }
+      else if(ev.key==="ArrowRight" && quiz.idx<items.length-1){ quiz.idx++; render(); }
+      else if(ev.key==="Enter"){
+        if(!isExam && !locked){
+          const sb=$("submitAnsBtn"); if(sb && !sb.disabled) sb.click();
+        }
+      } else if(qtype==="single" && ["a","b","c","d","A","B","C","D","1","2","3","4"].includes(ev.key)){
+        if(locked) return;
+        const map={a:"A",b:"B",c:"C",d:"D","1":"A","2":"B","3":"C","4":"D"};
+        const k = map[ev.key.toLowerCase()] || ev.key.toUpperCase();
+        if(["A","B","C","D"].includes(k) && q[k]!=null){
+          if(isExam){ setExamTentative(quiz.idx, k); renderQuiz(); }
+          else { setDraft(quiz.idx, k); renderQuiz(); }
+        }
+      } else if(qtype==="tf" && ["t","T","f","F","y","Y","n","N","1","2","o","O","x","X"].includes(ev.key)){
+        if(locked) return;
+        const k = ev.key.toLowerCase();
+        const ans = (k==="t"||k==="y"||k==="1"||k==="o") ? "T" : "F";
+        if(isExam){ setExamTentative(quiz.idx, ans); renderQuiz(); }
+        else { setDraft(quiz.idx, ans); renderQuiz(); }
+      } else if(qtype==="multi" && ["a","b","c","d","A","B","C","D","1","2","3","4"," "].includes(ev.key)){
+        if(locked) return;
+        const map={a:"A",b:"B",c:"C",d:"D","1":"A","2":"B","3":"C","4":"D"};
+        const k = map[ev.key.toLowerCase()];
+        if(["A","B","C","D"].includes(k) && q[k]!=null){
+          if(isExam){
+            const cur = Array.isArray(stored)? stored.slice() : [];
+            const idx = cur.indexOf(k);
+            if(idx>=0) cur.splice(idx,1); else cur.push(k);
+            setExamTentative(quiz.idx, cur); renderQuiz();
+          } else {
+            const cur = Array.isArray(quiz.draft && quiz.draft[quiz.idx])? quiz.draft[quiz.idx].slice() : [];
+            const idx = cur.indexOf(k);
+            if(idx>=0) cur.splice(idx,1); else cur.push(k);
+            setDraft(quiz.idx, cur); renderQuiz();
+          }
+        }
+      }
+    };
+  }
+
+  // ==== Submit Exam ====
+  function submitExam(){
+    const quiz = state.quiz;
+    const sec = quiz.sectionRef;
+    const total = quiz.items.length;
+    let answered = 0;
+    if(sec){
+      const eo = getExamOngoing(sec.si, sec.ci);
+      if(!eo){ toast(I18n.t("toastNoExam")); return; }
+      const tentative = eo.tentative || {};
+      answered = Object.keys(tentative).filter(qi=>{
+        const v = tentative[qi];
+        return v!=null && (Array.isArray(v) ? v.length>0 : true);
+      }).length;
+      if(!confirm(I18n.t("confirmSubmitExam", total, answered, total-answered))) return;
+      Object.entries(tentative).forEach(([qi, ans])=>{
+        if(ans!=null && (Array.isArray(ans) ? ans.length>0 : true)){
+          setSecAns(sec.si, sec.ci, qi, Array.isArray(ans) ? ans.slice() : ans);
+        }
+      });
+      setExamOngoing(sec.si, sec.ci, null);
+    } else {
+      // Non-section exam (random / wrong / marked review)
+      const tentative = quiz.examTentative || {};
+      answered = Object.keys(tentative).filter(i=>{
+        const v = tentative[i];
+        return v!=null && (Array.isArray(v) ? v.length>0 : true);
+      }).length;
+      if(!confirm("確定要交卷？\n\n本卷共 "+total+" 題，已作答 "+answered+" 題（"+(total-answered)+" 題未答將計為錯）。\n交卷後將顯示成績與每題對錯。")) return;
+      Object.entries(tentative).forEach(([i, ans])=>{
+        const it = quiz.items[+i];
+        if(it && ans!=null && (Array.isArray(ans) ? ans.length>0 : true)){
+          setSecAns(it.si, it.ci, it.qi, Array.isArray(ans) ? ans.slice() : ans);
+        }
+      });
+    }
+    state.quiz.mode = "exam_review";
+    state.view = "summary";
+    render();
+    window.scrollTo(0,0);
+  }
+
+  // ==== Summary ====
+  function renderSummary(){
+    state.view = "summary";
+    setHidden($("homeView"), true); setHidden($("quizView"), false);
+    const quiz = state.quiz;
+    const isExamReview = quiz.mode==="exam_review";
+    $("hdrTitle").textContent = (isExamReview?I18n.t("examResultHeader"):I18n.t("summaryHeader")) + (quiz.title||"");
+    $("hdrModePill").innerHTML = isExamReview ? '<span class="mode-pill exam">'+I18n.t("examSubmittedPill")+'</span>' : '';
+
+    let ansN=0, correctN=0, wrongN=0, markedN=0, unansweredN=0; const wList=[];
+    quiz.items.forEach((it,i)=>{
+      const a = getSecAns(it.si,it.ci)[it.qi];
+      if(a!=null){
+        ansN++;
+        if(eqAns(a,it.q.ans)) correctN++;
+        else { wrongN++; wList.push({i, it, ua:a}); }
+      } else {
+        unansweredN++;
+      }
+      if(isMarked(it.si,it.ci,it.qi)) markedN++;
+    });
+    const total = quiz.items.length;
+    const pct = total ? Math.round(correctN/total*100) : 0;
+    let html = '<div class="card summary '+(isExamReview?"exam":"")+'">'+
+      '<h2>'+(isExamReview?I18n.t("examResultTitle"):I18n.t("summaryTitle"))+'</h2>'+
+      '<div class="score">'+pct+I18n.t("points")+'</div>'+
+      '<div class="summary-row">'+
+        '<div class="item">'+I18n.t("qTotal")+'<strong>'+total+'</strong></div>'+
+        '<div class="item">'+I18n.t("correctN")+'<strong style="color:var(--green)">'+correctN+'</strong></div>'+
+        '<div class="item">'+I18n.t("wrongN")+'<strong style="color:var(--red)">'+wrongN+'</strong></div>'+
+        (unansweredN?'<div class="item">'+I18n.t("unansN")+'<strong style="color:var(--soft)">'+unansweredN+'</strong></div>':"")+
+        '<div class="item">'+I18n.t("markedN")+'<strong style="color:var(--yellow)">'+markedN+'</strong></div>'+
+      '</div>';
+    if(wList.length){
+      html += '<h3 style="margin-top:18px;font-size:15px">'+I18n.t("wrongList")+'</h3><div class="wrong-list">';
+      wList.forEach(w=>{
+        html += '<div class="wrong-row" data-i="'+w.i+'"><span class="wno">#'+(w.i+1)+'</span>'+
+          '<span style="flex:1">'+escHTML(getQStem(w.it.q).slice(0,60))+(getQStem(w.it.q).length>60?'…':'')+'</span>'+
+          '<span style="color:var(--red);font-weight:600">'+I18n.t("youLabel")+escHTML(fmtUserAns(w.it.q,w.ua))+'</span>'+
+          '<span style="color:var(--green);font-weight:600">'+I18n.t("answerLabel")+escHTML(fmtAns(w.it.q))+'</span>'+
+          '</div>';
+      });
+      html += '</div>';
+    }
+    html += '<div class="nav" style="margin-top:18px">'+
+      '<button class="btn" id="backToQuizBtn">'+I18n.t("backToQuiz")+'</button>'+
+      '<button class="btn ghost" id="backHomeBtn">'+I18n.t("backHomeBtn")+'</button>'+
+      (quiz.sectionRef?'<button class="btn ghost" id="exportSummaryBtn">'+I18n.t("exportThisQuiz")+'</button>':'')+
+      '</div></div>';
+    $("quizMain").innerHTML = html;
+    $("grid").innerHTML="";
+    $("sbTotal").textContent = I18n.t("summaryMode");
+    $("submitExamBtn").classList.add("hidden");
+    $("backToQuizBtn").onclick = ()=>{
+      if(isExamReview) state.quiz.mode = "practice";
+      state.view="quiz"; render();
+    };
+    $("backHomeBtn").onclick = ()=>{ state.view="home"; render(); };
+    const exb = $("exportSummaryBtn");
+    if(exb) exb.onclick = ()=>{
+      const r = quiz.sectionRef;
+      openExportModal({ scope:"quiz", si:r.si, ci:r.ci, subLabel:quiz.items[0].subLabel, secLabel:quiz.items[0].secLabel });
+    };
+    $("quizMain").querySelectorAll(".wrong-row").forEach(r=>{
+      r.onclick = ()=>{
+        if(isExamReview) state.quiz.mode = "practice";
+        state.view="quiz"; state.quiz.idx = +r.dataset.i; render(); window.scrollTo(0,0);
+      };
+    });
+  }
+
+  // ==== Profile UI ====
+  function renderProfileList(){
+    const list = $("profileList"); list.innerHTML="";
+    Object.entries(profiles).forEach(([id,p])=>{
+      const row = document.createElement("div");
+      row.className = "profile-row" + (id===activeId?" active":"");
+      row.innerHTML = '<span class="pname">'+escHTML(p.name==="預設使用者"?I18n.t("defaultUser"):p.name)+(id===activeId?' <span style="color:var(--primary);font-size:11px">'+(I18n.get()==="en"?" (active)":"（使用中）")+'</span>':'')+'</span>'+
+        '<span class="pdate">'+(p.createdAt||"").slice(0,10)+'</span>'+
+        (id===activeId?'':'<button data-act="switch" data-id="'+id+'">切換</button>')+
+        (Object.keys(profiles).length>1?'<button class="danger" data-act="del" data-id="'+id+'">刪除</button>':'');
+      list.appendChild(row);
+    });
+    list.querySelectorAll("button").forEach(b=>{
+      b.onclick = ()=>{
+        const act = b.dataset.act, id = b.dataset.id;
+        if(act==="switch"){
+          activeId = id; localStorage.setItem(KEY_ACTIVE, id);
+          reloadActiveData(); renderProfileList(); render(); toast(I18n.t("toastSwitched", profiles[id].name));
+        } else if(act==="del"){
+          if(!confirm(I18n.t("confirmDelUser", profiles[id].name))) return;
+          ["aibioquiz_progress_v1","aibioquiz_marks_v1","aibioquiz_shuffle_v1","aibioquiz_exam_v1"].forEach(k=>localStorage.removeItem(k+"::"+id));
+          delete profiles[id]; saveJSON(KEY_PROFILES, profiles);
+          if(id===activeId){ activeId = Object.keys(profiles)[0]; localStorage.setItem(KEY_ACTIVE, activeId); reloadActiveData(); }
+          renderProfileList(); render();
+        }
+      };
+    });
+  }
+
+  // ==== Export / Import ====
+  let currentExportContext = null;
+
+  function openExportModal(ctx){
+    currentExportContext = ctx;
+    const isQuiz = ctx.scope==="quiz";
+    $("exportTitle").textContent = isQuiz ? I18n.t("expHeaderQuiz") : I18n.t("expHeaderAll");
+    $("exportSub").textContent = I18n.t("rangeUserLabel") + (profiles[activeId]?.name||"") + I18n.t("rangeScopeLabel") +
+      (isQuiz ? (getSecName(ctx.subLabel)+" / "+getSecName(ctx.secLabel)) : I18n.t("rangeAll"));
+    document.querySelectorAll(".exp-opt").forEach(b=>{ b.disabled = false; });
+    $("importLabel").textContent = I18n.t("importJsonRestore");
+    $("importThisBtn").textContent = isQuiz ? I18n.t("importThisRange") : I18n.t("importThisRangeBig");
+    $("importAllBtn").textContent = I18n.t("importAll");
+    $("exportModal").classList.add("show");
+  }
+
+  function downloadFile(filename, content, mime){
+    const blob = new Blob([content], {type: mime || "application/octet-stream"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+  }
+
+  function buildJSONExport(){
+    const ctx = currentExportContext;
+    const dump = {
+      meta: {
+        kind: "aibio-quiz-export",
+        version: 1,
+        exportedAt: nowISO(),
+        profile: profiles[activeId]?.name || "",
+        scope: ctx.scope,
+        si: ctx.si, ci: ctx.ci, subLabel: ctx.subLabel, secLabel: ctx.secLabel
+      }
+    };
+    if(ctx.scope==="quiz"){
+      const sec = (progress[ctx.si]||{})[ctx.ci] || {};
+      const mk  = (marks[ctx.si]||{})[ctx.ci] || {};
+      const eo  = (examOngoing[ctx.si]||{})[ctx.ci] || null;
+      const sh  = (shuffle[ctx.si]||{})[ctx.ci] || null;
+      dump.progress = { [ctx.si]: { [ctx.ci]: sec } };
+      dump.marks    = { [ctx.si]: { [ctx.ci]: mk  } };
+      if(eo) dump.examOngoing = { [ctx.si]: { [ctx.ci]: eo } };
+      if(sh) dump.shuffle = { [ctx.si]: { [ctx.ci]: sh } };
+    } else {
+      dump.progress = progress;
+      dump.marks    = marks;
+      dump.examOngoing = examOngoing;
+      dump.shuffle = shuffle;
+    }
+    return JSON.stringify(dump, null, 2);
+  }
+
+  function buildItemsForExport(){
+    const ctx = currentExportContext;
+    const subKeys = Object.keys(exam.subjects);
+    const items = [];
+    if(ctx.scope==="quiz"){
+      const subLabel = subKeys[ctx.si];
+      const secKeys = Object.keys(exam.subjects[subLabel]);
+      const secLabel = secKeys[ctx.ci];
+      const arr = exam.subjects[subLabel][secLabel];
+      arr.forEach((q,qi)=>items.push({si:ctx.si,ci:ctx.ci,qi,q,subLabel,secLabel}));
+    } else {
+      subKeys.forEach((sk,si)=>{
+        Object.keys(exam.subjects[sk]).forEach((ck,ci)=>{
+          exam.subjects[sk][ck].forEach((q,qi)=>items.push({si,ci,qi,q,subLabel:sk,secLabel:ck}));
+        });
+      });
+    }
+    return items;
+  }
+
+  function buildHTMLScore(){
+    const ctx = currentExportContext;
+    const items = buildItemsForExport();
+    let ansN=0, correctN=0, wrongN=0, unansN=0;
+    const rows = items.map((it,i)=>{
+      const a = getSecAns(it.si,it.ci)[it.qi];
+      let st=I18n.t("statusUnans"), color="#888";
+      if(a!=null){ ansN++; if(eqAns(a,it.q.ans)){ correctN++; st=I18n.t("statusRight"); color="#2f9e44"; } else { wrongN++; st=I18n.t("statusWrong"); color="#c92a2a"; } }
+      else unansN++;
+      return { i, it, a, st, color };
+    });
+    const pct = items.length ? Math.round(correctN/items.length*100) : 0;
+    const profileName = profiles[activeId]?.name || "";
+    const title = ctx.scope==="quiz" ? (getSecName(ctx.subLabel)+" · "+getSecName(ctx.secLabel)) : I18n.t("quizAllChapters");
+    const css = 'body{font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;color:#1a2733;line-height:1.6;max-width:920px;margin:24px auto;padding:0 20px}h1{color:#1a6b5a;font-size:22px;margin:0 0 4px}.sub{color:#5a6b7b;font-size:13px;margin-bottom:16px}.score{font-size:36px;font-weight:700;color:#1a6b5a;margin:8px 0}.summary{display:flex;gap:18px;flex-wrap:wrap;background:#f8f9fa;border:1px solid #e0e6eb;border-radius:8px;padding:14px 18px;margin:14px 0}.summary div{font-size:13px;color:#5a6b7b}.summary div strong{display:block;font-size:18px;color:#1a2733}table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}th,td{border:1px solid #e0e6eb;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f1f3f5;font-weight:600}tr.right{background:#f1faf3}tr.wrong{background:#fff5f5}tr.unans{background:#fff7e6}.lbl{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;color:#fff}.lbl.s{background:#2563a8}.lbl.m{background:#7c3aed}.lbl.t{background:#d97706}@media print{body{margin:0}}';
+    let body = '<h1>📊 '+escHTML(title)+'</h1>'+
+      '<div class="sub">'+I18n.t("userLabel")+escHTML(profileName)+I18n.t("exportTimeLabel")+escHTML(nowISO().replace("T"," ").slice(0,16))+'</div>'+
+      '<div class="score">'+pct+I18n.t("points")+'</div>'+
+      '<div class="summary">'+
+        '<div>'+I18n.t("qTotal")+'<strong>'+items.length+'</strong></div>'+
+        '<div>'+I18n.t("correctN")+'<strong style="color:#2f9e44">'+correctN+'</strong></div>'+
+        '<div>'+I18n.t("wrongN")+'<strong style="color:#c92a2a">'+wrongN+'</strong></div>'+
+        '<div>'+I18n.t("unansN")+'<strong style="color:#888">'+unansN+'</strong></div>'+
+      '</div>'+
+      '<table><thead><tr><th style="width:40px">'+I18n.t("columnNum")+'</th><th style="width:80px">'+I18n.t("columnType")+'</th><th>'+I18n.t("columnQ")+'</th><th style="width:80px">'+I18n.t("columnYourAns")+'</th><th style="width:80px">'+I18n.t("columnAns")+'</th><th style="width:60px">'+I18n.t("columnStatus")+'</th></tr></thead><tbody>';
+    rows.forEach(r=>{
+      const lbl = r.it.q.type==="multi" ? '<span class="lbl m">'+I18n.t("typeMulti")+'</span>' : r.it.q.type==="tf" ? '<span class="lbl t">'+I18n.t("typeTF")+'</span>' : '<span class="lbl s">'+I18n.t("typeSingle")+'</span>';
+      const trCls = r.a==null ? "unans" : (eqAns(r.a, r.it.q.ans) ? "right" : "wrong");
+      body += '<tr class="'+trCls+'"><td>'+(r.i+1)+'</td><td>'+lbl+'</td><td><strong>'+escHTML(getQStem(r.it.q))+'</strong>'+
+        (ctx.scope!=="quiz" ? '<br><span style="color:#888;font-size:11px">'+escHTML(getSecName(r.it.subLabel))+' / '+escHTML(getSecName(r.it.secLabel))+'</span>' : '')+
+        '</td><td>'+escHTML(fmtUserAns(r.it.q, r.a))+'</td><td>'+escHTML(fmtAns(r.it.q))+'</td><td style="color:'+r.color+';font-weight:600">'+r.st+'</td></tr>';
+    });
+    body += '</tbody></table>';
+    return '<!doctype html><html lang="'+(L()==='en'?'en':'zh-Hant')+'"><head><meta charset="utf-8"><title>'+escHTML(title)+I18n.t("examScoreSheet")+'</title><style>'+css+'</style></head><body>'+body+'</body></html>';
+  }
+
+  function buildHTMLErrata(){
+    const ctx = currentExportContext;
+    const items = buildItemsForExport();
+    const wrongs = items.filter(it=>{
+      const a = getSecAns(it.si,it.ci)[it.qi];
+      return a!=null && !eqAns(a, it.q.ans);
+    });
+    const profileName = profiles[activeId]?.name || "";
+    const title = (ctx.scope==="quiz" ? (getSecName(ctx.subLabel)+" · "+getSecName(ctx.secLabel)) : I18n.t("quizErrataTitle")) + I18n.t("examErrataSheet");
+    const css = 'body{font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;color:#1a2733;line-height:1.7;max-width:780px;margin:24px auto;padding:0 20px}h1{color:#c92a2a;font-size:22px;margin:0 0 4px}.sub{color:#5a6b7b;font-size:13px;margin-bottom:20px}.q{border:1px solid #e0e6eb;border-radius:8px;padding:16px 18px;margin-bottom:14px;background:#fff5f5;page-break-inside:avoid}.q .meta{font-size:12px;color:#888;margin-bottom:6px}.q .stem{font-weight:600;font-size:15px;margin-bottom:10px}.q .opts{margin:8px 0}.q .opts div{padding:4px 0;font-size:13.5px}.q .opts .ans{color:#2f9e44;font-weight:600}.q .opts .ua{color:#c92a2a;font-weight:600}.q .ansline{margin-top:10px;padding:10px 12px;background:#fff;border:1px solid #e0e6eb;border-radius:6px;font-size:13px}.q .ansline strong{color:#2f9e44}.q .exp{margin-top:8px;color:#1a2733;font-size:13.5px}.empty{padding:40px;text-align:center;color:#5a6b7b;background:#f8f9fa;border-radius:8px}.lbl{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;color:#fff;margin-right:4px}.lbl.s{background:#2563a8}.lbl.m{background:#7c3aed}.lbl.t{background:#d97706}@media print{body{margin:0}.q{break-inside:avoid}}';
+    let body = '<h1>📚 '+escHTML(title)+'</h1>'+
+      '<div class="sub">'+I18n.t("userLabel")+escHTML(profileName)+I18n.t("countWrong", wrongs.length)+I18n.t("exportTimeLabel")+escHTML(nowISO().replace("T"," ").slice(0,16))+'</div>';
+    if(!wrongs.length){
+      body += '<div class="empty">'+I18n.t("noErrataMsg")+'</div>';
+    } else {
+      wrongs.forEach((it,i)=>{
+        const a = getSecAns(it.si,it.ci)[it.qi];
+        const lbl = it.q.type==="multi" ? '<span class="lbl m">'+I18n.t("typeMulti")+'</span>' : it.q.type==="tf" ? '<span class="lbl t">'+I18n.t("typeTF")+'</span>' : '<span class="lbl s">'+I18n.t("typeSingle")+'</span>';
+        let optsHTML = "";
+        if(it.q.type==="tf"){
+          [["T","○ 正確"],["F","✕ 錯誤"]].forEach(([k,lab])=>{
+            const cls = k===it.q.ans ? " ans" : (k===a ? " ua" : "");
+            optsHTML += '<div class="'+cls.trim()+'">'+(k===it.q.ans?'✓ ':k===a?'✗ ':'　 ')+lab+'</div>';
+          });
+        } else {
+          const ansSet = it.q.type==="multi" ? (Array.isArray(it.q.ans)?it.q.ans:[]) : null;
+          const uaSet = it.q.type==="multi" ? (Array.isArray(a)?a:[]) : null;
+          ["A","B","C","D"].forEach(k=>{
+            if(it.q[k]==null) return;
+            let isAns, isUa;
+            if(it.q.type==="multi"){ isAns = ansSet.includes(k); isUa = uaSet.includes(k); }
+            else { isAns = k===it.q.ans; isUa = k===a; }
+            const cls = isAns ? "ans" : (isUa ? "ua" : "");
+            const mk  = isAns ? "✓" : (isUa ? "✗" : "　");
+            optsHTML += '<div class="'+cls+'">'+mk+' '+k+'. '+escHTML(getQOpt(it.q,k))+'</div>';
+          });
+        }
+        body += '<div class="q">'+
+          '<div class="meta">#'+(i+1)+' '+lbl+escHTML(getSecName(it.subLabel))+' / '+escHTML(getSecName(it.secLabel))+'</div>'+
+          '<div class="stem">'+escHTML(getQStem(it.q))+'</div>'+
+          '<div class="opts">'+optsHTML+'</div>'+
+          '<div class="ansline">'+I18n.t("answerLabel")+'<strong>'+escHTML(fmtAns(it.q))+'</strong>'+I18n.t("yourAnsErrata")+'<span style="color:#c92a2a;font-weight:600">'+escHTML(fmtUserAns(it.q,a))+'</span></div>'+
+          (it.q.exp ? '<div class="exp"><strong>'+I18n.t("expLabelStrong")+'</strong>'+escHTML(getQExp(it.q))+'</div>' : '')+
+          '</div>';
+      });
+    }
+    return '<!doctype html><html lang="'+(L()==='en'?'en':'zh-Hant')+'"><head><meta charset="utf-8"><title>'+escHTML(title)+'</title><style>'+css+'</style></head><body>'+body+'</body></html>';
+  }
+
+  function tsName(prefix, ext){
+    const t = new Date();
+    const pad=n=>String(n).padStart(2,"0");
+    return prefix + "_" + t.getFullYear() + pad(t.getMonth()+1) + pad(t.getDate()) + "_" + pad(t.getHours()) + pad(t.getMinutes()) + "." + ext;
+  }
+  function exportFmt(fmt){
+    const ctx = currentExportContext;
+    const tag = ctx.scope==="quiz" ? (ctx.secLabel||"section").replace(/[^\w一-龥]+/g,"_") : "all";
+    if(fmt==="json"){
+      downloadFile(tsName("aibio_quiz_"+tag+"_progress","json"), buildJSONExport(), "application/json");
+      toast(I18n.t("toastExpJSON"));
+    } else if(fmt==="html_score"){
+      downloadFile(tsName("aibio_quiz_"+tag+"_score","html"), buildHTMLScore(), "text/html;charset=utf-8");
+      toast(I18n.t("toastExpScore"));
+    } else if(fmt==="html_errata"){
+      downloadFile(tsName("aibio_quiz_"+tag+"_errata","html"), buildHTMLErrata(), "text/html;charset=utf-8");
+      toast(I18n.t("toastExpErrata"));
+    }
+  }
+  function importJSON(text, mode){
+    let dump;
+    try{ dump = JSON.parse(text); }catch(e){ toast(I18n.t("parseFail", e.message)); return; }
+    if(!dump || dump.meta?.kind !== "aibio-quiz-export"){
+      if(!confirm(I18n.t("notRecognised"))) return;
+    }
+    if(mode==="all"){
+      progress    = dump.progress    || {};
+      marks       = dump.marks       || {};
+      shuffle     = dump.shuffle     || {};
+      examOngoing = dump.examOngoing || {};
+    } else {
+      function merge(into, from){
+        Object.entries(from||{}).forEach(([si, secs])=>{
+          into[si] = into[si] || {};
+          Object.entries(secs).forEach(([ci, val])=>{
+            into[si][ci] = val;
+          });
+        });
+      }
+      merge(progress, dump.progress);
+      merge(marks, dump.marks);
+      merge(shuffle, dump.shuffle);
+      merge(examOngoing, dump.examOngoing);
+    }
+    saveActive("aibioquiz_progress_v1", progress);
+    saveActive("aibioquiz_marks_v1", marks);
+    saveActive("aibioquiz_shuffle_v1", shuffle);
+    saveActive("aibioquiz_exam_v1", examOngoing);
+    $("exportModal").classList.remove("show");
+    render();
+    toast(I18n.t("importDone"));
+  }
+
+  // ==== Wire controls ====
+  $("profileBtn").onclick = ()=>{ renderProfileList(); $("profileModal").classList.add("show"); };
+  $("closeProfileBtn").onclick = ()=>$("profileModal").classList.remove("show");
+  $("profileModal").addEventListener("click", e=>{ if(e.target.id==="profileModal") $("profileModal").classList.remove("show"); });
+  $("addProfileBtn").onclick = ()=>{
+    const name = $("newProfileName").value.trim();
+    if(!name){ toast(I18n.t("toastEnterName")); return; }
+    const id = genId(); profiles[id] = { name, createdAt: nowISO() };
+    saveJSON(KEY_PROFILES, profiles);
+    $("newProfileName").value="";
+    activeId = id; localStorage.setItem(KEY_ACTIVE, id); reloadActiveData();
+    renderProfileList(); render(); toast(I18n.t("toastCreated", name));
+  };
+
+  $("homeBtn").onclick = ()=>{ state.view="home"; state.quiz=null; render(); };
+
+  $("gpReset").onclick = ()=>{
+    if(!confirm(I18n.t("confirmReset", profiles[activeId]?.name||""))) return;
+    progress    = {}; saveActive("aibioquiz_progress_v1", progress);
+    shuffle     = {}; saveActive("aibioquiz_shuffle_v1", shuffle);
+    examOngoing = {}; saveActive("aibioquiz_exam_v1", examOngoing);
+    render(); toast(I18n.t("toastResetDone"));
+  };
+  $("clearMarksBtn").onclick = ()=>{
+    if(!confirm(I18n.t("confirmClearMk"))) return;
+    marks = {}; saveActive("aibioquiz_marks_v1", marks);
+    render(); toast(I18n.t("toastClearMk"));
+  };
+
+  $("reviewWrongBtn").onclick = ()=>{
+    if(!wrongList().length){ toast(I18n.t("noWrong")); return; }
+    openRandomPicker("wrong","wrong");
+  };
+  $("reviewMarkBtn").onclick = ()=>{
+    if(!markedList().length){ toast(I18n.t("noMarked")); return; }
+    openRandomPicker("marked","marked");
+  };
+
+  $("exportHomeBtn").onclick = ()=>openExportModal({ scope:"all" });
+
+  // ==== Random picker ====
+  let rndSrc="all", rndN=10, rndMode="practice", rndPickerCtx="random"; // ctx: random / wrong / marked
+  function refreshRandomSrc(){
+    $("srcAll").querySelector(".cnt").textContent = "("+totalQs()+")";
+    $("srcWrong").querySelector(".cnt").textContent = "("+wrongList().length+")";
+    $("srcMarked").querySelector(".cnt").textContent = "("+markedList().length+")";
+    document.querySelectorAll(".src-btn").forEach(b=>b.classList.toggle("active", b.dataset.src===rndSrc));
+    document.querySelectorAll(".cnt-btn").forEach(b=>b.classList.toggle("active", String(b.dataset.n)===String(rndN)));
+    document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===rndMode));
+    let pool;
+    if(rndSrc==="all") pool=totalQs(); else if(rndSrc==="wrong") pool=wrongList().length; else pool=markedList().length;
+    $("randomPickerSub").textContent = I18n.t("poolAvail", pool);
+    $("srcEmptyWarn").style.display = pool===0?"block":"none";
+    if(pool===0){
+      $("srcEmptyWarn").textContent = rndSrc==="wrong" ? I18n.t("poolEmptyWrong") : (rndSrc==="marked" ? I18n.t("poolEmptyMarked") : I18n.t("poolEmptyAll"));
+    }
+  }
+  function openRandomPicker(presetSrc, ctx){
+    rndPickerCtx = ctx || "random";
+    rndSrc = presetSrc || "all";
+    rndN = 10; rndMode = "practice";
+    $("randomCount").value = 10;
+    if(rndPickerCtx==="wrong"){
+      document.querySelector("#randomPickerModal .modal-card h3").textContent = I18n.t("wrongPickerTitle");
+    } else if(rndPickerCtx==="marked"){
+      document.querySelector("#randomPickerModal .modal-card h3").textContent = I18n.t("markedPickerTitle");
+    } else {
+      document.querySelector("#randomPickerModal .modal-card h3").textContent = I18n.t("rndPickerTitle");
+    }
+    refreshRandomSrc();
+    $("randomPickerModal").classList.add("show");
+  }
+  $("randomBtn").onclick = ()=>openRandomPicker("all","random");
+  $("randomCancelBtn").onclick = ()=>$("randomPickerModal").classList.remove("show");
+  $("randomPickerModal").addEventListener("click", e=>{ if(e.target.id==="randomPickerModal") $("randomPickerModal").classList.remove("show"); });
+  document.querySelectorAll(".src-btn").forEach(b=>b.onclick=()=>{ rndSrc=b.dataset.src; refreshRandomSrc(); });
+  document.querySelectorAll(".cnt-btn").forEach(b=>b.onclick=()=>{
+    rndN = b.dataset.n==="all" ? "all" : (+b.dataset.n);
+    $("randomCount").value = rndN==="all" ? "" : rndN;
+    refreshRandomSrc();
+  });
+  document.querySelectorAll(".mode-btn").forEach(b=>b.onclick=()=>{ rndMode=b.dataset.mode; refreshRandomSrc(); });
+  $("randomCount").oninput = ()=>{
+    const v = +$("randomCount").value;
+    rndN = (v && v>0) ? v : 10;
+    document.querySelectorAll(".cnt-btn").forEach(b=>b.classList.toggle("active", String(b.dataset.n)===String(rndN)));
+  };
+  $("randomStartBtn").onclick = ()=>{
+    let pool;
+    if(rndSrc==="all") pool=allItems(); else if(rndSrc==="wrong") pool=wrongList(); else pool=markedList();
+    if(!pool.length){ toast(I18n.t("nothingToPick")); return; }
+    const want = (rndN==="all"||rndN>=pool.length) ? pool.length : Math.max(1, +rndN);
+    const picked = shuffleArr(pool).slice(0, want);
+    $("randomPickerModal").classList.remove("show");
+    const srcLabel = rndSrc==="all" ? I18n.t("srcAll") : rndSrc==="wrong" ? I18n.t("srcWrong") : I18n.t("srcMarked");
+    const titlePrefix = rndPickerCtx==="wrong" ? I18n.t("titleWrongPrefix") : rndPickerCtx==="marked" ? I18n.t("titleMarkedPrefix") : I18n.t("titleRandomPrefix");
+    if(rndMode==="exam"){
+      enterQuiz({ type:"random", mode:"exam", title:titlePrefix+" · "+I18n.t("examMode")+I18n.t("quesUnit", picked.length), items:picked, examTentative:{} });
+    } else {
+      enterQuiz({ type:"random", mode:"practice", title:titlePrefix+" · "+I18n.t("practiceMode")+" · "+srcLabel+I18n.t("quesUnit", picked.length), items:picked, retryMode:true, retried:{} });
+    }
+  };
+
+  // ==== Export modal wiring ====
+  document.querySelectorAll(".exp-opt").forEach(b=>{
+    b.onclick = ()=> exportFmt(b.dataset.fmt);
+  });
+  $("closeExportBtn").onclick = ()=>$("exportModal").classList.remove("show");
+  $("exportModal").addEventListener("click", e=>{ if(e.target.id==="exportModal") $("exportModal").classList.remove("show"); });
+  function readImportFile(cb){
+    const f = $("importFile").files[0];
+    if(!f){ toast(I18n.t("chooseFile")); return; }
+    const r = new FileReader();
+    r.onload = ()=>cb(r.result);
+    r.onerror = ()=>toast(I18n.t("readFail"));
+    r.readAsText(f);
+  }
+  $("importThisBtn").onclick = ()=>readImportFile(text=>importJSON(text, "this"));
+  $("importAllBtn").onclick  = ()=>readImportFile(text=>importJSON(text, "all"));
+  $("pasteImportThisBtn").onclick = ()=>{ const t=$("pasteImportArea").value.trim(); if(!t){ toast(I18n.t("pasteEmpty")); return; } importJSON(t, "this"); };
+  $("pasteImportAllBtn").onclick  = ()=>{ const t=$("pasteImportArea").value.trim(); if(!t){ toast(I18n.t("pasteEmpty")); return; } importJSON(t, "all"); };
+
+  // ==== Re-render on language change ====
+  document.addEventListener("langchange", ()=>{
+    // Update placeholders that need translation
+    document.querySelectorAll("[data-zh-ph][data-en-ph]").forEach(el=>{
+      el.placeholder = el.dataset[(I18n.get()==="zh"?"zhPh":"enPh")];
+    });
+    // Re-render current view to refresh dynamic content
+    render();
+  });
+
+  // ==== First render ====
+  render();
+})();
+</script>
+</body>
+</html>
+                                                                 

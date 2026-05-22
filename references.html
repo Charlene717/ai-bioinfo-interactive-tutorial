@@ -1,0 +1,210 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>參考文獻 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html" class="active">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">REFERENCES & READING LIST</div>
+<h1 data-zh="參考文獻與延伸閱讀" data-en="References & Reading List">參考文獻與延伸閱讀</h1>
+<p class="subtitle" data-lang="zh">14 章核心論文、官方文件、教學影片、開放資料集——附 DOI / arXiv / GitHub 連結。</p>
+<p class="subtitle" data-lang="en">Core papers, official docs, tutorials, and open datasets for all 14 chapters — with DOI / arXiv / GitHub links.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Ch 01–03 -->
+<section class="section">
+<div class="section-label">Chapters 01–03 · Foundations</div>
+<h2 data-zh="基礎篇" data-en="Foundations">基礎篇</h2>
+<ul>
+<li>Goodfellow, Bengio, Courville. <em>Deep Learning</em>. MIT Press 2016. <a href="https://www.deeplearningbook.org/" target="_blank">deeplearningbook.org</a></li>
+<li>Murphy. <em>Probabilistic Machine Learning</em>. MIT Press 2022. <a href="https://probml.github.io/pml-book/" target="_blank">probml.github.io</a></li>
+<li>Vaswani et al. "Attention Is All You Need." NeurIPS 2017. <a href="https://arxiv.org/abs/1706.03762" target="_blank">arXiv:1706.03762</a></li>
+<li>Greener et al. "A guide to machine learning for biologists." Nat Rev Mol Cell Biol 2022. <a href="https://doi.org/10.1038/s41580-021-00407-0" target="_blank">DOI</a></li>
+<li>scikit-learn user guide — <a href="https://scikit-learn.org/stable/user_guide.html" target="_blank">scikit-learn.org</a></li>
+<li>PyTorch official tutorials — <a href="https://pytorch.org/tutorials/" target="_blank">pytorch.org</a></li>
+</ul>
+</section>
+
+<!-- Ch 04 -->
+<section class="section">
+<div class="section-label">Chapter 04 · Sequence Embeddings</div>
+<h2 data-zh="生物序列嵌入" data-en="Sequence Embeddings">生物序列嵌入</h2>
+<ul>
+<li>Lin et al. "Evolutionary-scale prediction of atomic-level protein structure" (ESM-2). Science 2023. <a href="https://doi.org/10.1126/science.ade2574" target="_blank">DOI</a></li>
+<li>Hayes et al. "Simulating 500 million years of evolution with a language model" (ESM3). Science 2025. <a href="https://www.science.org/doi/10.1126/science.ads0018" target="_blank">DOI</a></li>
+<li>Zhou et al. "DNABERT-2: Efficient foundation model for multi-species genomes." ICLR 2024. <a href="https://arxiv.org/abs/2306.15006" target="_blank">arXiv</a></li>
+<li>Dalla-Torre et al. "The Nucleotide Transformer." bioRxiv 2023. <a href="https://www.biorxiv.org/content/10.1101/2023.01.11.523679" target="_blank">DOI</a></li>
+<li>Nguyen et al. "Sequence modeling and design from molecular to genome scale with Evo." Science 2024. <a href="https://www.science.org/doi/10.1126/science.ado9336" target="_blank">DOI</a></li>
+<li>Brixi et al. "Genome modeling and design across all domains of life with Evo 2." Nature 2026. <a href="https://www.nature.com/articles/s41586-026-10176-5" target="_blank">DOI</a></li>
+</ul>
+</section>
+
+<!-- Ch 05 -->
+<section class="section">
+<div class="section-label">Chapter 05 · Protein Structure</div>
+<h2 data-zh="蛋白質結構預測" data-en="Protein Structure Prediction">蛋白質結構預測</h2>
+<ul>
+<li>Jumper et al. "Highly accurate protein structure prediction with AlphaFold." Nature 2021. <a href="https://www.nature.com/articles/s41586-021-03819-2" target="_blank">DOI</a></li>
+<li>Abramson et al. "Accurate structure prediction of biomolecular interactions with AlphaFold 3." Nature 2024. <a href="https://www.nature.com/articles/s41586-024-07487-w" target="_blank">DOI</a></li>
+<li>Lin et al. "Language models of protein sequences at the scale of evolution enable accurate structure prediction" (ESMFold). bioRxiv 2022. <a href="https://www.biorxiv.org/content/10.1101/2022.07.20.500902" target="_blank">DOI</a></li>
+<li>Baek et al. RoseTTAFold (Science 2021); RoseTTAFold-AllAtom (Science 2024). <a href="https://www.science.org/doi/10.1126/science.adl2528" target="_blank">DOI</a></li>
+<li>AlphaFold Protein Structure DB — <a href="https://alphafold.ebi.ac.uk/" target="_blank">alphafold.ebi.ac.uk</a></li>
+<li>AlphaFold Server — <a href="https://alphafoldserver.com/" target="_blank">alphafoldserver.com</a></li>
+<li>ColabFold — <a href="https://github.com/sokrypton/ColabFold" target="_blank">github.com/sokrypton/ColabFold</a></li>
+</ul>
+</section>
+
+<!-- Ch 06 -->
+<section class="section">
+<div class="section-label">Chapter 06 · Protein Design</div>
+<h2 data-zh="蛋白質設計" data-en="Protein Design">蛋白質設計</h2>
+<ul>
+<li>Watson et al. "De novo design of protein structure and function with RFdiffusion." Nature 2023. <a href="https://www.nature.com/articles/s41586-023-06415-8" target="_blank">DOI</a></li>
+<li>Dauparas et al. "Robust deep learning–based protein sequence design using ProteinMPNN." Science 2022. <a href="https://www.science.org/doi/10.1126/science.add2187" target="_blank">DOI</a></li>
+<li>Bennett et al. "Atomically accurate de novo design of antibodies with RFdiffusion" (RFdiffusion-Ab). Nature 2024. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10983868/" target="_blank">PMC</a></li>
+<li>Krishna et al. RoseTTAFold All-Atom & RFdiffusion-AA. <a href="https://www.science.org/doi/10.1126/science.adl2528" target="_blank">DOI</a></li>
+<li>RFdiffusion code — <a href="https://github.com/RosettaCommons/RFdiffusion" target="_blank">github.com/RosettaCommons/RFdiffusion</a></li>
+<li>ProteinMPNN code — <a href="https://github.com/dauparas/ProteinMPNN" target="_blank">github.com/dauparas/ProteinMPNN</a></li>
+</ul>
+</section>
+
+<!-- Ch 07 -->
+<section class="section">
+<div class="section-label">Chapter 07 · Protein–Ligand</div>
+<h2 data-zh="蛋白-配體交互作用" data-en="Protein–Ligand">蛋白-配體</h2>
+<ul>
+<li>Corso et al. "DiffDock: Diffusion Steps, Twists, and Turns for Molecular Docking." ICLR 2023. <a href="https://arxiv.org/abs/2210.01776" target="_blank">arXiv</a></li>
+<li>Buttenschoen et al. "PoseBusters: AI-based docking methods fail to generate physically valid poses." Chem Sci 2024. <a href="https://pubs.rsc.org/en/content/articlehtml/2024/sc/d3sc04185a" target="_blank">DOI</a></li>
+<li>Wallach et al. "GNINA 1.0: molecular docking with deep learning." J Cheminform 2021. <a href="https://doi.org/10.1186/s13321-021-00522-2" target="_blank">DOI</a></li>
+<li>Wohlwend et al. "Boltz-1 democratizing biomolecular structure modeling." 2024. <a href="https://github.com/jwohlwend/boltz" target="_blank">GitHub</a></li>
+<li>"Decoding the limits of deep learning in molecular docking for drug discovery." Chem Sci 2025. <a href="https://pubs.rsc.org/en/content/articlehtml/2025/sc/d5sc05395a" target="_blank">DOI</a></li>
+</ul>
+</section>
+
+<!-- Ch 08 -->
+<section class="section">
+<div class="section-label">Chapter 08 · Regulatory Genomics</div>
+<h2 data-zh="調控基因體" data-en="Regulatory Genomics">調控基因體</h2>
+<ul>
+<li>Avsec et al. "Effective gene expression prediction from sequence by integrating long-range interactions" (Enformer). Nat Methods 2021. <a href="https://www.nature.com/articles/s41592-021-01252-x" target="_blank">DOI</a></li>
+<li>Linder et al. "Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation" (Borzoi). Nat Genet 2025. <a href="https://www.nature.com/articles/s41588-024-02053-6" target="_blank">DOI</a></li>
+<li>Hingerl et al. "Flashzoi: an enhanced Borzoi for accelerated genomic analysis." Bioinformatics 2025. <a href="https://academic.oup.com/bioinformatics/article/41/9/btaf467/8248080" target="_blank">DOI</a></li>
+<li>Zhou & Troyanskaya. "Predicting effects of noncoding variants with deep learning–based sequence model" (DeepSEA). Nat Methods 2015. <a href="https://www.nature.com/articles/nmeth.3547" target="_blank">DOI</a></li>
+<li>Avsec et al. "Base-resolution models of transcription-factor binding reveal soft motif syntax" (BPNet). Nat Genet 2021. <a href="https://www.nature.com/articles/s41588-021-00782-6" target="_blank">DOI</a></li>
+<li>"AlphaGenome Enhances Personal Gene Expression Prediction but Retains Key Limitations." bioRxiv 2025. <a href="https://www.biorxiv.org/content/10.1101/2025.08.05.668750v2.full" target="_blank">DOI</a></li>
+</ul>
+</section>
+
+<!-- Ch 09 -->
+<section class="section">
+<div class="section-label">Chapter 09 · Variant & Splicing</div>
+<h2 data-zh="變異判讀與剪接" data-en="Variant & Splicing">變異與剪接</h2>
+<ul>
+<li>Poplin et al. "A universal SNP and small-indel variant caller using deep neural networks" (DeepVariant). Nat Biotechnol 2018. <a href="https://www.nature.com/articles/nbt.4235" target="_blank">DOI</a></li>
+<li>Jaganathan et al. "Predicting Splicing from Primary Sequence with Deep Learning" (SpliceAI). Cell 2019. <a href="https://www.cell.com/cell/fulltext/S0092-8674(18)31629-5" target="_blank">DOI</a></li>
+<li>Cheng et al. "Accurate proteome-wide missense variant effect prediction with AlphaMissense." Science 2023. <a href="https://www.science.org/doi/10.1126/science.adg7492" target="_blank">DOI</a></li>
+<li>Brandes et al. "Genome-wide prediction of disease variant effects with a deep protein language model." Nat Genet 2023. <a href="https://www.nature.com/articles/s41588-023-01465-0" target="_blank">DOI</a></li>
+<li>"Using SpliceAI to triage splice-altering variants in 7,220 individuals with rare conditions." medRxiv 2025. <a href="https://www.medrxiv.org/content/10.1101/2025.08.27.25334471v1" target="_blank">DOI</a></li>
+<li>"Frontiers: Artificial intelligence in variant calling: a review." 2025. <a href="https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2025.1574359/full" target="_blank">DOI</a></li>
+</ul>
+</section>
+
+<!-- Ch 10 -->
+<section class="section">
+<div class="section-label">Chapter 10 · Single-Cell AI</div>
+<h2 data-zh="單細胞 AI" data-en="Single-Cell AI">單細胞 AI</h2>
+<ul>
+<li>Lopez et al. "Deep generative modeling for single-cell transcriptomics" (scVI). Nat Methods 2018. <a href="https://www.nature.com/articles/s41592-018-0229-2" target="_blank">DOI</a></li>
+<li>Cui et al. "scGPT: toward building a foundation model for single-cell multi-omics using generative AI." Nat Methods 2024. <a href="https://www.nature.com/articles/s41592-024-02201-0" target="_blank">DOI</a></li>
+<li>Theodoris et al. "Transfer learning enables predictions in network biology" (Geneformer). Nature 2023. <a href="https://www.nature.com/articles/s41586-023-06139-9" target="_blank">DOI</a></li>
+<li>Hao et al. "Large scale foundation model on single-cell transcriptomics" (scFoundation). Nat Methods 2024. <a href="https://www.nature.com/articles/s41592-024-02305-7" target="_blank">DOI</a></li>
+<li>"Single-cell foundation models: bringing artificial intelligence into cell biology." 2025 review. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12586647/" target="_blank">PMC</a></li>
+<li>"A Systematic Evaluation of Single-Cell Foundation Models on Cell-Type Classification." WSDM 2025. <a href="https://dl.acm.org/doi/10.1145/3701551.3708811" target="_blank">DOI</a></li>
+</ul>
+</section>
+
+<!-- Ch 11 -->
+<section class="section">
+<div class="section-label">Chapter 11 · Drug Discovery</div>
+<h2 data-zh="藥物發現" data-en="Drug Discovery">藥物發現</h2>
+<ul>
+<li>Stokes et al. "A Deep Learning Approach to Antibiotic Discovery" (halicin). Cell 2020. <a href="https://www.cell.com/cell/fulltext/S0092-8674(20)30102-1" target="_blank">DOI</a></li>
+<li>Loeffler et al. "REINVENT 4: Modern AI-driven generative molecule design." J Cheminform 2024. <a href="https://doi.org/10.1186/s13321-024-00812-5" target="_blank">DOI</a></li>
+<li>Swanson et al. "ADMET-AI: a machine learning ADMET platform for evaluation of large-scale chemical libraries." Bioinformatics 2024. <a href="https://academic.oup.com/bioinformatics/article/40/7/btae416" target="_blank">DOI</a></li>
+<li>Ren et al. "AI-discovered drug candidate INS018_055 enters Phase II for IPF." Nat Biotechnol 2024. <a href="https://www.nature.com/articles/s41587-024-02143-0" target="_blank">DOI</a></li>
+<li>Open Targets Platform — <a href="https://platform.opentargets.org/" target="_blank">opentargets.org</a></li>
+</ul>
+</section>
+
+<!-- Ch 12 -->
+<section class="section">
+<div class="section-label">Chapter 12 · Biomedical LLMs</div>
+<h2 data-zh="生醫 LLM" data-en="Biomedical LLMs">生醫 LLM</h2>
+<ul>
+<li>Luo et al. "BioGPT: generative pre-trained transformer for biomedical text generation and mining." Brief Bioinform 2022. <a href="https://academic.oup.com/bib/article/23/6/bbac409" target="_blank">DOI</a></li>
+<li>Bolton et al. "BioMedLM: A 2.7B Parameter Language Model Trained On Biomedical Text." arXiv 2024. <a href="https://arxiv.org/abs/2403.18421" target="_blank">arXiv</a></li>
+<li>Singhal et al. "Towards Expert-Level Medical Question Answering with Large Language Models" (Med-PaLM 2). Nat Med 2025. <a href="https://www.nature.com/articles/s41591-024-03423-7" target="_blank">DOI</a></li>
+<li>Lewis et al. "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks." NeurIPS 2020. <a href="https://arxiv.org/abs/2005.11401" target="_blank">arXiv</a></li>
+<li>"Benchmarking large language models for biomedical natural language processing applications and recommendations." Nat Commun 2025. <a href="https://www.nature.com/articles/s41467-025-56989-2" target="_blank">DOI</a></li>
+</ul>
+</section>
+
+<!-- Ch 13 -->
+<section class="section">
+<div class="section-label">Chapter 13 · Agents</div>
+<h2 data-zh="AI Agents" data-en="AI Agents">AI Agents</h2>
+<ul>
+<li>Yao et al. "ReAct: Synergizing Reasoning and Acting in Language Models." ICLR 2023. <a href="https://arxiv.org/abs/2210.03629" target="_blank">arXiv</a></li>
+<li>Schick et al. "Toolformer: Language Models Can Teach Themselves to Use Tools." NeurIPS 2023. <a href="https://arxiv.org/abs/2302.04761" target="_blank">arXiv</a></li>
+<li>"AI Tools NHS Deployments Log" v3. NHS Genomics Network 2025. <a href="https://genomicainetwork.nhs.uk/wp-content/uploads/2025/01/AI-Tools-NHS-Deployments-Log-V3.pdf" target="_blank">PDF</a></li>
+<li>LangChain docs — <a href="https://python.langchain.com/docs/get_started/introduction" target="_blank">python.langchain.com</a></li>
+<li>nf-core community pipelines — <a href="https://nf-co.re/" target="_blank">nf-co.re</a></li>
+</ul>
+</section>
+
+<!-- Ch 14 -->
+<section class="section">
+<div class="section-label">Chapter 14 · Ethics & Reproducibility</div>
+<h2 data-zh="倫理與可重現性" data-en="Ethics & Reproducibility">倫理與可重現性</h2>
+<ul>
+<li>Mitchell et al. "Model Cards for Model Reporting." FAT* 2019. <a href="https://arxiv.org/abs/1810.03993" target="_blank">arXiv</a></li>
+<li>Wilkinson et al. "The FAIR Guiding Principles for scientific data management and stewardship." Sci Data 2016. <a href="https://www.nature.com/articles/sdata201618" target="_blank">DOI</a></li>
+<li>Martin et al. "Clinical use of current polygenic risk scores may exacerbate health disparities." Nat Genet 2019. <a href="https://www.nature.com/articles/s41588-019-0379-x" target="_blank">DOI</a></li>
+<li>Sirugo et al. "The Missing Diversity in Human Genetic Studies." Cell 2019. <a href="https://www.cell.com/cell/fulltext/S0092-8674(19)30231-4" target="_blank">DOI</a></li>
+<li>Heil et al. "Reproducibility standards for machine learning in the life sciences." Nat Methods 2021. <a href="https://www.nature.com/articles/s41592-021-01256-7" target="_blank">DOI</a></li>
+<li>NIH Genomic Data Sharing Policy — <a href="https://sharing.nih.gov/genomic-data-sharing-policy" target="_blank">sharing.nih.gov</a></li>
+</ul>
+</section>
+
+<!-- Datasets -->
+<section class="section">
+<div class="section-label">Open Datasets</div>
+<h2 data-zh="開放資料集" data-en="Open Datasets">開放資料集</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>UniProt / UniRef</h4><p><a href="https://www.uniprot.org/" target="_blank">uniprot.org</a></p></div>
+<div class="card"><h4>PDB / AlphaFold DB</h4><p><a href="https://www.rcsb.org/" target="_blank">rcsb.org</a> · <a href="https://alphafold.ebi.ac.uk/" target="_blank">alphafold.ebi.ac.uk</a></p></div>
+<div class="card"><h4>gnomAD / ClinVar</h4><p><a href="https://gnomad.broadinstitute.org/" target="_blank">gnomad</a> · <a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">ClinVar</a></p></div>
+<div class="card"><h4>ENCODE / GTEx</h4><p><a href="https://www.encodeproject.org/" target="_blank">ENCODE</a> · <a href="https://gtexportal.org/" target="_blank">GTEx</a></p></div>
+<div class="card"><h4>UK Biobank</h4><p><a href="https://www.ukbiobank.ac.uk/" target="_blank">ukbiobank.ac.uk</a></p></div>
+<div class="card"><h4>Human Cell Atlas / Tabula Sapiens</h4><p><a href="https://data.humancellatlas.org/" target="_blank">HCA</a> · <a href="https://tabula-sapiens-portal.ds.czbiohub.org/" target="_blank">Tabula Sapiens</a></p></div>
+<div class="card"><h4>CELLxGENE</h4><p><a href="https://cellxgene.cziscience.com/" target="_blank">cellxgene.cziscience.com</a></p></div>
+<div class="card"><h4>HuggingFace bio</h4><p><a href="https://huggingface.co/InstaDeepAI" target="_blank">InstaDeepAI</a> · <a href="https://huggingface.co/facebook" target="_blank">facebook/esm</a></p></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="14-ethics.html"><span class="nav-dir" data-zh="← 倫理章" data-en="← Ethics">← 倫理章</span><span class="nav-title" data-zh="14 · 倫理與最佳實踐" data-en="14 · Ethics">14 · 倫理與最佳實踐</span></a>
+<a href="index.html"><span class="nav-dir" data-zh="↑ 首頁" data-en="↑ Home">↑ 首頁</span><span class="nav-title" data-zh="回到 14 章地圖" data-en="Back to chapter map">回到 14 章地圖</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

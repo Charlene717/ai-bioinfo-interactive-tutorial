@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 05: 蛋白質結構預測 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html" class="active">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 05 / 14 · INTERMEDIATE</div>
+<h1 data-zh="蛋白質結構預測" data-en="Protein Structure Prediction">蛋白質結構預測</h1>
+<p class="subtitle" data-lang="zh">AlphaFold 2、AlphaFold 3、ESMFold、RoseTTAFold——AI 解開了 50 年的 protein folding problem。本章帶你看懂這些模型的核心思想、輸出與限制。</p>
+<p class="subtitle" data-lang="en">AlphaFold 2, AlphaFold 3, ESMFold, RoseTTAFold — AI cracked a 50-year-old problem. Here's how to read the outputs and avoid the gotchas.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: Problem -->
+<section class="section">
+<div class="section-label" data-zh="背景" data-en="Background">背景</div>
+<h2 data-zh="一、Protein folding 問題的 50 年" data-en="I. The 50-year protein folding problem">一、Protein folding 問題的 50 年</h2>
+<div data-lang="zh">
+<p>1972 年 Anfinsen 提出「序列決定結構」的 dogma，但用物理模擬精確算出折疊所需的算力過於龐大 (Levinthal 悖論)。從 1994 年起每兩年一次的 CASP 比賽記錄了這個領域的進展：</p>
+<ul>
+<li>CASP 1-12 (1994-2016)：物理 + 統計能量函數，平均 GDT-TS 30-50 分。</li>
+<li>CASP 13 (2018)：DeepMind 首次參賽 (AlphaFold 1)，平均 ~58 分，首次大幅領先。</li>
+<li><strong>CASP 14 (2020)：AlphaFold 2 平均 ~92 分</strong>——進入「實驗等級」，本領域被認為已基本解決。</li>
+<li>CASP 15 (2022)：RosettaFold-AllAtom、ESMFold 在無 MSA 場景接近 AlphaFold 2。</li>
+<li>2024：<strong>AlphaFold 3</strong> 公開論文 (Nature)；<strong>2025</strong> 發布權重供非商業使用。</li>
+</ul>
+</div>
+<div data-lang="en">
+<p>Anfinsen's 1972 dogma — sequence determines structure — was clear, but the compute to fold a protein from physics is intractable (Levinthal paradox). The CASP competition (held biennially since 1994) tracks the field:</p>
+<ul>
+<li>CASP 1–12 (1994–2016): physics + statistical potentials, average GDT-TS 30–50.</li>
+<li>CASP 13 (2018): DeepMind's first AlphaFold scored ~58 — first major leap.</li>
+<li><strong>CASP 14 (2020): AlphaFold 2 averaged ~92</strong> — experimental quality. Considered the problem largely solved.</li>
+<li>CASP 15 (2022): RoseTTAFold-AllAtom, ESMFold approach AlphaFold 2 without MSAs.</li>
+<li>2024: <strong>AlphaFold 3</strong> paper (Nature). <strong>2025</strong>: weights released for non-commercial use.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: How AlphaFold works -->
+<section class="section">
+<div class="section-label" data-zh="架構" data-en="Architecture">架構</div>
+<h2 data-zh="二、AlphaFold 2 vs 3：兩種思路" data-en="II. AlphaFold 2 vs 3 — Two Philosophies">二、AlphaFold 2 vs 3：兩種思路</h2>
+<table class="comp-table">
+<thead><tr><th></th><th>AlphaFold 2 (2020)</th><th>AlphaFold 3 (2024)</th></tr></thead>
+<tbody>
+<tr><td data-zh="輸入" data-en="Input">輸入</td><td data-zh="MSA + 模板結構 (templates)" data-en="MSA + structural templates">MSA + 模板結構</td><td data-zh="MSA + 任意分子 (蛋白、DNA、RNA、配體、離子、修飾)" data-en="MSA + arbitrary molecules (protein, DNA, RNA, ligand, ions, modifications)">MSA + 任意分子</td></tr>
+<tr><td data-zh="主幹" data-en="Core">主幹</td><td>Evoformer + Structure Module</td><td><strong>Pairformer</strong> + <strong>Diffusion module</strong></td></tr>
+<tr><td data-zh="輸出" data-en="Output">輸出</td><td data-zh="僅蛋白質單體/同源多聚體" data-en="Protein monomer / homomeric only">僅蛋白質</td><td data-zh="任意分子複合物（含修飾、配體、共價鍵）" data-en="Arbitrary molecular complexes (including modifications, ligands, covalent bonds)">任意分子複合物</td></tr>
+<tr><td data-zh="配信賴度" data-en="Confidence">置信度</td><td>pLDDT, PAE</td><td>pLDDT, PAE, ipTM</td></tr>
+<tr><td data-zh="精度" data-en="Accuracy">精度</td><td data-zh="蛋白單體 ~92 GDT" data-en="Protein monomer ~92 GDT">蛋白單體 ~92 GDT</td><td data-zh="protein-ligand 較 docking 工具提升 50%；antibody-antigen 大幅優於 AF-Multimer 2.3" data-en="50% better than docking on protein-ligand; substantial gains over AF-Multimer 2.3 for antibody-antigen">protein-ligand 較 docking 工具提升 50%</td></tr>
+</tbody>
+</table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>關鍵直覺：</strong>AF2 用「<strong>幾何回歸</strong>」直接預測座標；AF3 用「<strong>擴散去噪</strong>」從原子雲逐步精修——後者天然支持任意分子，因為去噪不依賴特定原子類型。</span>
+<span data-lang="en"><strong>Key intuition:</strong> AF2 directly regresses coordinates ("geometric regression"); AF3 starts from an atom cloud and iteratively denoises ("diffusion"). The latter naturally supports any molecule because denoising is atom-type agnostic.</span>
+</div></div>
+</section>
+
+<!-- Section 3: pLDDT -->
+<section class="section">
+<div class="section-label" data-zh="解讀輸出" data-en="Reading Outputs">解讀輸出</div>
+<h2 data-zh="三、看懂 pLDDT 顏色等於看懂結果" data-en="III. Reading pLDDT colors = reading the result">三、看懂 pLDDT 顏色等於看懂結果</h2>
+<div data-lang="zh">
+<p>pLDDT (predicted Local Distance Difference Test) 是模型對「<strong>每個原子位置</strong>」的自信度，範圍 0-100。AlphaFold 在所有結構上以「<strong>顏色</strong>」傳達：</p>
+</div>
+<div data-lang="en">
+<p>pLDDT (predicted Local Distance Difference Test) is the model's per-atom confidence, on a 0–100 scale. AlphaFold encodes it visually:</p>
+</div>
+<div class="card-grid cols-2">
+<div class="card" style="border-left:6px solid #003cff"><h4 data-zh="pLDDT &gt; 90 — 深藍" data-en="pLDDT > 90 — Dark blue">pLDDT &gt; 90 — 深藍</h4><div data-lang="zh"><p>非常自信。Side-chain 與骨架皆可信，可用於 docking、突變設計。</p></div><div data-lang="en"><p>Very high confidence. Side chains and backbone trustworthy — usable for docking and mutation design.</p></div></div>
+<div class="card" style="border-left:6px solid #75bfff"><h4 data-zh="70-90 — 淺藍" data-en="70-90 — Light blue">70-90 — 淺藍</h4><div data-lang="zh"><p>自信。骨架可信；side-chain 需謹慎。</p></div><div data-lang="en"><p>Confident. Backbone reliable; treat side chains with care.</p></div></div>
+<div class="card" style="border-left:6px solid #ffdb13"><h4 data-zh="50-70 — 黃" data-en="50-70 — Yellow">50-70 — 黃</h4><div data-lang="zh"><p>低信心。可能是柔性區段，或 MSA 訊息不足。</p></div><div data-lang="en"><p>Low confidence. Possibly flexible region or thin MSA.</p></div></div>
+<div class="card" style="border-left:6px solid #ff7d45"><h4 data-zh="&lt; 50 — 橘" data-en="< 50 — Orange">&lt; 50 — 橘</h4><div data-lang="zh"><p>極低信心，通常是<span class="term">內在無序區 (IDR)<span class="term-tip">Intrinsically disordered region：天然就沒有固定結構</span></span>或預測失敗。<strong>不要直接用做下游分析</strong>。</p></div><div data-lang="en"><p>Very low confidence — usually an <span class="term">intrinsically disordered region (IDR)<span class="term-tip">Naturally has no fixed structure</span></span> or a prediction failure. <strong>Do not use for downstream analysis</strong>.</p></div></div>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>常見誤用：</strong>把整個結構平均成一個「pLDDT 分數」就是浪費資訊。正確做法是逐殘基檢查；多體 (multimer) 還要看 <strong>PAE</strong> (predicted aligned error) 與 <strong>ipTM</strong> (interface pTM)。</span>
+<span data-lang="en"><strong>Common misuse:</strong> averaging pLDDT to one number throws away the per-residue signal. Always inspect per-residue, and for multimers, also check <strong>PAE</strong> (predicted aligned error) and <strong>ipTM</strong> (interface pTM).</span>
+</div></div>
+</section>
+
+<!-- Section 4: Code with ESMFold -->
+<section class="section">
+<div class="section-label" data-zh="動手" data-en="Hands-on">動手</div>
+<h2 data-zh="四、用 ESMFold 5 行程式碼預測一個結構" data-en="IV. Predict a structure in 5 lines with ESMFold">四、用 ESMFold 5 行程式碼預測一個結構</h2>
+<div data-lang="zh"><p>ESMFold 不需要 MSA，速度比 AlphaFold 2 快約 60 倍，雖然精度略低 (~85 GDT)，是 prototype 與大規模篩選的首選。</p></div>
+<div data-lang="en"><p>ESMFold needs no MSA, runs ~60× faster than AlphaFold 2, and is ~85 GDT. The go-to for prototyping and large-scale screening.</p></div>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python (ESMFold)</button><button class="code-tab-btn">Bash (AlphaFold 3 server)</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install fair-esm[esmfold]</span>
+<span class="kw">import</span> torch
+<span class="kw">from</span> esm.pretrained <span class="kw">import</span> esmfold_v1
+
+model = <span class="func">esmfold_v1</span>().<span class="func">eval</span>().cuda()
+seq = <span class="str">"MKTFFVAGNWKMNGNRELLGEEFLKTLDS"</span>
+<span class="kw">with</span> torch.<span class="func">no_grad</span>():
+    out = model.<span class="func">infer_pdb</span>(seq)             <span class="comment"># PDB string</span>
+<span class="kw">with</span> <span class="func">open</span>(<span class="str">"out.pdb"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f: f.<span class="func">write</span>(out)
+<span class="comment"># Then visualize in PyMOL: pymol out.pdb</span></pre></div>
+<div class="code-tab-content"><pre><span class="comment"># AlphaFold 3 — public server is the easiest entry point</span>
+<span class="comment"># https://alphafoldserver.com/  (free, non-commercial)</span>
+<span class="comment"># For local: clone the released github repo, use NVIDIA H100/A100, follow weights request flow.</span>
+
+<span class="comment"># For programmatic AlphaFold 2 use, ColabFold is the practical choice:</span>
+<span class="kw">pip install</span> colabfold
+colabfold_batch input.fasta out_dir/ \
+    --num-recycle <span class="num">3</span> --templates --use-gpu-relax</pre></div>
+</div>
+</section>
+
+<!-- Section 5: When AF fails -->
+<section class="section">
+<div class="section-label" data-zh="陷阱" data-en="Pitfalls">陷阱</div>
+<h2 data-zh="五、AlphaFold 不是萬能：什麼時候會失敗？" data-en="V. AlphaFold isn't magic — when does it fail?">五、AlphaFold 不是萬能：什麼時候會失敗？</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4 data-zh="🌀 內在無序區 (IDR)" data-en="🌀 Intrinsically disordered regions">🌀 內在無序區 (IDR)</h4><div data-lang="zh"><p>本來就沒有固定結構，模型只能猜。<strong>低 pLDDT 在這裡不是模型的錯——是反映生物學現實</strong>。</p></div><div data-lang="en"><p>No fixed structure to predict. <strong>Low pLDDT here isn't a model failure — it reflects biology</strong>.</p></div></div>
+<div class="card"><h4 data-zh="🧬 突變對結構的影響" data-en="🧬 Effect of mutations">🧬 突變對結構的影響</h4><div data-lang="zh"><p>AlphaFold 2 對單點突變的結構變化通常無感；想看突變影響應改用 <strong>AlphaMissense</strong>、<strong>ESM-1v</strong> 或進行 free-energy 模擬。</p></div><div data-lang="en"><p>AlphaFold 2 is largely insensitive to single mutations. Use <strong>AlphaMissense</strong>, <strong>ESM-1v</strong>, or free-energy simulations instead.</p></div></div>
+<div class="card"><h4 data-zh="🔗 多狀態構象" data-en="🔗 Multi-state conformations">🔗 多狀態構象</h4><div data-lang="zh"><p>離子通道、轉運蛋白通常有 active/inactive 雙態，AlphaFold 只給一個答案；可借助多 seed 採樣 + AF-Cluster 啟動。</p></div><div data-lang="en"><p>Channels and transporters have active/inactive states. AF gives one. Try multiple seeds + AF-Cluster.</p></div></div>
+<div class="card"><h4 data-zh="🪨 條件相依結構" data-en="🪨 Condition-dependent structures">🪨 條件相依結構</h4><div data-lang="zh"><p>pH、磷酸化、配體結合會誘導構型變化——AlphaFold 沒看過這些條件。</p></div><div data-lang="en"><p>pH, phosphorylation, ligand binding can induce changes — AF has no awareness of those conditions.</p></div></div>
+</div>
+</section>
+
+<!-- Section 6: pLDDT visualization -->
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="Interactive">互動模擬</div>
+<h2 data-zh="六、pLDDT profile 模擬器" data-en="VI. pLDDT profile simulator">六、pLDDT profile 模擬器</h2>
+<div data-lang="zh"><p>下方圖示一條 200 殘基蛋白質的 pLDDT 分佈。N/C-端和 IDR 段通常較低；折疊核心較高。試著從 profile 推測這條蛋白質的結構特徵。</p></div>
+<div data-lang="en"><p>Below: simulated pLDDT for a 200-residue protein. N/C-termini and IDRs are typically low; folded cores are high.</p></div>
+<div class="interactive-panel">
+<div class="chart-container"><canvas id="plddtChart"></canvas></div>
+<p style="font-size:.82rem;color:var(--c-ink-muted);text-align:center;" data-zh="X：殘基位置 · Y：pLDDT (0-100) · 顏色帶區段標示" data-en="X: residue position · Y: pLDDT (0-100) · Colored bands indicate confidence tiers">X：殘基位置 · Y：pLDDT (0-100)</p>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. AlphaFold 3 相對於 AlphaFold 2 最關鍵的突破是？" data-en="Q1. AlphaFold 3's biggest breakthrough vs AlphaFold 2?">Q1. AlphaFold 3 相對於 AlphaFold 2 最關鍵的突破是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 蛋白質單體精度大幅提升" data-en="(A) Big jump in monomer accuracy">(A) 蛋白質單體精度大幅提升</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 用擴散模組支援任意分子（蛋白+DNA/RNA+配體+離子）的複合物預測" data-en="(B) Diffusion module supports complexes of arbitrary molecules (protein + DNA/RNA + ligand + ion)">(B) 用擴散模組支援任意分子的複合物預測</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 不再需要序列輸入" data-en="(C) No sequence input needed">(C) 不再需要序列輸入</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 改用 RNN 架構" data-en="(D) Switched to RNN">(D) 改用 RNN 架構</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. 你拿到一個 AlphaFold 結果，pLDDT 在 1-30 殘基為 35，30-200 為 88，最合理的解釋？" data-en="Q2. AlphaFold output: pLDDT 35 for residues 1–30, 88 for 30–200. Most likely interpretation?">Q2. 你拿到一個 AlphaFold 結果，pLDDT 在 1-30 殘基為 35，30-200 為 88，最合理的解釋？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 模型完全失敗，整個結構不可信" data-en="(A) Model completely failed, ignore the whole structure">(A) 模型完全失敗，整個結構不可信</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) N-端可能是訊號肽或 IDR；30-200 折疊核心可信" data-en="(B) N-terminus is likely signal peptide or IDR; the 30–200 folded core is reliable">(B) N-端可能是訊號肽或 IDR；30-200 折疊核心可信</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 序列輸入錯了" data-en="(C) Wrong sequence input">(C) 序列輸入錯了</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 這個蛋白質不存在" data-en="(D) The protein doesn't exist">(D) 這個蛋白質不存在</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。應截掉低信心區段再做下游分析。" data-en="✅ (B). Crop the low-confidence segment before downstream analysis.">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 對「快速預測 10 萬條沒有同源序列的蛋白結構」最合適的工具？" data-en="Q3. Best tool to predict 100k protein structures with no homologs?">Q3. 對「快速預測 10 萬條沒有同源序列的蛋白結構」最合適的工具？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) AlphaFold 2 全 MSA 流程" data-en="(A) AlphaFold 2 with full MSA">(A) AlphaFold 2 全 MSA 流程</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) ESMFold（無 MSA、~60× 快）" data-en="(B) ESMFold (no MSA, ~60× faster)">(B) ESMFold（無 MSA、~60× 快）</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 經典 Rosetta ab initio" data-en="(C) Classic Rosetta ab initio">(C) 經典 Rosetta ab initio</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) X-ray 結晶" data-en="(D) X-ray crystallography">(D) X-ray 結晶</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。MSA 為瓶頸的場景，ESMFold 為最佳實務。" data-en="✅ (B). When MSAs are the bottleneck, ESMFold is the practical choice.">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="04-sequence-embeddings.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="04 · 序列嵌入" data-en="04 · Sequence Embeddings">04 · 序列嵌入</span></a>
+<a href="06-protein-design.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="06 · 蛋白質從頭設計" data-en="06 · Protein Design">06 · 蛋白質從頭設計</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+const labels = Array.from({length:200}, (_,i)=> i+1);
+const plddt = labels.map(i => {
+  if(i < 25) return 35 + Math.random()*15;          // disordered N-term
+  if(i > 180) return 60 + Math.random()*15;          // disordered C-term
+  if(i > 110 && i < 140) return 55 + Math.random()*10; // loop
+  return 80 + Math.random()*15;                       // folded core
+});
+const colors = plddt.map(v => v>90?'#003cff':v>70?'#75bfff':v>50?'#ffdb13':'#ff7d45');
+new Chart(document.getElementById('plddtChart'), {
+  type:'bar',
+  data:{ labels,
+    datasets:[{label:'pLDDT', data: plddt, backgroundColor: colors, borderWidth:0}]
+  },
+  options:{ responsive:true, maintainAspectRatio:false,
+    scales:{ x:{title:{display:true,text:'Residue position'}, ticks:{maxTicksLimit:10}},
+             y:{min:0,max:100,title:{display:true,text:'pLDDT'}} },
+    plugins:{legend:{display:false}}
+  }
+});
+</script>
+</body></html>

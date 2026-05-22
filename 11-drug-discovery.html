@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 11: AI 驅動藥物發現 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html" class="active">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 11 / 14 · ADVANCED</div>
+<h1 data-zh="AI 驅動藥物發現" data-en="AI-Driven Drug Discovery">AI 驅動藥物發現</h1>
+<p class="subtitle" data-lang="zh">標靶識別 → 分子生成 → 虛擬篩選 → ADMET → 臨床候選分子。AI 把「10 年 + 26 億美金」的傳統流程縮短了多少？又有哪些是仍未解決的硬限制？</p>
+<p class="subtitle" data-lang="en">Target ID → molecule generation → virtual screening → ADMET → clinical candidate. How much has AI shortened the canonical 10-year, $2.6B pipeline — and what hard limits remain?</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: Pipeline -->
+<section class="section">
+<div class="section-label" data-zh="總覽" data-en="Overview">總覽</div>
+<h2 data-zh="一、AI 在藥物發現的五個關卡" data-en="I. Five gates where AI plays a role">一、AI 在藥物發現的五個關卡</h2>
+<div class="workflow">
+<div class="wf-step" data-num="1"><h5 data-zh="標靶識別 (Target ID)" data-en="Target identification">標靶識別 (Target ID)</h5><p data-lang="zh">Open Targets、PandaOmics、CausalDB：整合 GWAS、scRNA-seq、文獻證據打分基因。</p><p data-lang="en">Open Targets, PandaOmics, CausalDB: integrate GWAS, scRNA-seq, and literature to score genes.</p></div>
+<div class="wf-step" data-num="2"><h5 data-zh="先導化合物 (Hit-to-Lead)" data-en="Hit-to-Lead">先導化合物 (Hit-to-Lead)</h5><p data-lang="zh">DiffDock + AlphaFold 3 做虛擬篩選；Pharmacophore-AI 找化學起點。</p><p data-lang="en">DiffDock + AlphaFold 3 for virtual screening; Pharmacophore-AI for chemical starts.</p></div>
+<div class="wf-step" data-num="3"><h5 data-zh="分子生成與最佳化" data-en="Molecule generation/optimization">分子生成與最佳化</h5><p data-lang="zh">REINVENT 4、MolMIM、Pocket2Mol：條件生成滿足 docking + ADMET 多目標。</p><p data-lang="en">REINVENT 4, MolMIM, Pocket2Mol: conditional generation meeting docking + ADMET multi-objective constraints.</p></div>
+<div class="wf-step" data-num="4"><h5 data-zh="ADMET 預測" data-en="ADMET prediction">ADMET 預測</h5><p data-lang="zh">ADMET-AI、SwissADME、Ersilia models：CYP 抑制、hERG 心毒性、口服吸收等。</p><p data-lang="en">ADMET-AI, SwissADME, Ersilia models: CYP inhibition, hERG cardio toxicity, oral bioavailability.</p></div>
+<div class="wf-step" data-num="5"><h5 data-zh="臨床試驗預測" data-en="Clinical trial prediction">臨床試驗預測</h5><p data-lang="zh">HINT、TrialGPT：預測 Phase I/II 成功率、患者匹配。</p><p data-lang="en">HINT, TrialGPT: predict Phase I/II success rate; patient matching.</p></div>
+</div>
+</section>
+
+<!-- Section 2: Generative -->
+<section class="section">
+<div class="section-label" data-zh="生成式 AI" data-en="Generative AI">生成式 AI</h2>
+<h2 data-zh="二、條件式分子生成的三種典範" data-en="II. Three paradigms for conditional molecule generation">二、條件式分子生成的三種典範</h2>
+<div class="card-grid cols-3">
+<div class="card"><div class="card-icon">🧪</div><h4>SMILES LM</h4><div data-lang="zh"><p>把 SMILES 當文字，用 GPT/RNN 生成。代表：REINVENT、Mol-CycleGAN。最簡單、容易控制屬性。</p></div><div data-lang="en"><p>Treat SMILES as text, generate with GPT/RNN. Examples: REINVENT, Mol-CycleGAN. Simplest, easiest to constrain.</p></div></div>
+<div class="card"><div class="card-icon">🎨</div><h4>Graph diffusion</h4><div data-lang="zh"><p>把分子當圖，用 diffusion 學原子 + 鍵的去噪。GraphDiff、DiGress。可保證價數合法。</p></div><div data-lang="en"><p>Treat molecules as graphs, denoise atoms + bonds. GraphDiff, DiGress. Valence-correct by construction.</p></div></div>
+<div class="card"><div class="card-icon">🧲</div><h4>3D pocket-aware</h4><div data-lang="zh"><p>給定蛋白口袋，直接在 3D 空間生成配體。Pocket2Mol、TargetDiff、PocketFlow。最有潛力但訓練資料有限。</p></div><div data-lang="en"><p>Given a pocket, generate ligand atoms in 3D. Pocket2Mol, TargetDiff, PocketFlow. Most ambitious but data-limited.</p></div></div>
+</div>
+</section>
+
+<!-- Section 3: Code -->
+<section class="section">
+<div class="section-label" data-zh="動手" data-en="Hands-on">動手</div>
+<h2 data-zh="三、用 REINVENT 4 做多目標分子生成" data-en="III. Multi-objective molecule design with REINVENT 4">三、用 REINVENT 4 做多目標分子生成</h2>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">REINVENT 4 (config)</button><button class="code-tab-btn">ADMET-AI (Python)</button></div>
+<div class="code-tab-content active"><pre><span class="comment"># pip install reinvent</span>
+<span class="comment"># reinvent_v4_config.toml — generate aspirin-like, low MW, hERG-safe</span>
+[parameters]
+num_smiles = <span class="num">10000</span>
+randomize_smiles = <span class="kw">true</span>
+
+[scoring_function]
+name = <span class="str">"custom_product"</span>
+
+[[scoring_components]]
+component_type = <span class="str">"qed"</span>             <span class="comment"># Drug-likeness</span>
+weight = <span class="num">1</span>
+
+[[scoring_components]]
+component_type = <span class="str">"matching_substructure"</span>
+specific_parameters.smarts = [<span class="str">"c1ccccc1C(=O)O"</span>]
+weight = <span class="num">1</span>
+
+[[scoring_components]]
+component_type = <span class="str">"predictive_property"</span>     <span class="comment"># hERG model</span>
+specific_parameters.model_path = <span class="str">"hERG_classifier.pkl"</span>
+specific_parameters.transformation.type = <span class="str">"reverse_sigmoid"</span>
+weight = <span class="num">1.5</span>
+
+<span class="comment"># Run: reinvent reinvent_v4_config.toml</span></pre></div>
+<div class="code-tab-content"><pre><span class="kw">from</span> admet_ai <span class="kw">import</span> ADMETModel
+
+mdl = <span class="func">ADMETModel</span>()
+smiles = [<span class="str">"CC(=O)Oc1ccccc1C(=O)O"</span>,                       <span class="comment"># aspirin</span>
+          <span class="str">"CC(=O)NC1=CC=C(O)C=C1"</span>,                        <span class="comment"># acetaminophen</span>
+          <span class="str">"CC(C)Cc1ccc(C(C)C(=O)O)cc1"</span>]                    <span class="comment"># ibuprofen</span>
+df = mdl.<span class="func">predict</span>(smiles=smiles)
+
+<span class="comment"># Returns 41 properties: solubility, hERG, CYP isoforms, BBB, oral_bioavailability...</span>
+<span class="func">print</span>(df[[<span class="str">"hERG_inhibition"</span>, <span class="str">"BBB_Martins"</span>, <span class="str">"Lipinski"</span>]])</pre></div>
+</div>
+</section>
+
+<!-- Section 4: Insilico medicine case -->
+<section class="section">
+<div class="section-label" data-zh="案例" data-en="Case Study">案例</h2>
+<h2 data-zh="四、案例：INS018_055，第一個 AI-驅動的 Phase II 分子" data-en="IV. Case study: INS018_055 — the first AI-driven Phase II molecule">四、案例：INS018_055，第一個 AI-驅動的 Phase II 分子</h2>
+<div data-lang="zh">
+<p>2024 年 Insilico Medicine 將其用 AI 從新標靶 (TNIK) 發現的纖維化新藥 INS018_055 推進到 Phase II。從靶點識別到 Phase I 候選分子只用了 18 個月、260 萬美金——相較傳統 4-5 年、數千萬美金的標桿。</p>
+<p>關鍵 AI 組件：(1) <strong>PandaOmics</strong> 從多組學資料識別 TNIK 為 IPF 標靶；(2) <strong>Chemistry42</strong> 生成 ~80,000 候選分子並排序；(3) 實驗合成 78 個分子，9 個在動物模型有效。</p>
+</div>
+<div data-lang="en">
+<p>In 2024 Insilico Medicine advanced INS018_055, an AI-discovered fibrosis drug against the novel TNIK target, into Phase II. From target ID to Phase I candidate took 18 months and $2.6M — vs the traditional 4–5 years and tens of millions.</p>
+<p>Key AI components: (1) <strong>PandaOmics</strong> identified TNIK as an IPF target from multi-omics; (2) <strong>Chemistry42</strong> generated ~80,000 candidates with ranking; (3) 78 molecules synthesized, 9 active in animal models.</p>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>但別過度樂觀：</strong>2026 年仍沒有「100% AI 設計、未經人工修改」的分子上市。AI 大幅加速「<strong>探索與排序</strong>」階段，但<strong>合成、安全性、臨床</strong>這些晚期環節依然是時間與失敗主因。</span>
+<span data-lang="en"><strong>Don't get carried away:</strong> as of 2026 no "100% AI-designed, untouched-by-humans" molecule has been approved. AI accelerates <strong>exploration and ranking</strong> hugely, but <strong>synthesis, safety, and clinical phases</strong> remain dominant in cost and failure.</span>
+</div></div>
+</section>
+
+<!-- Section 5: Open vs Closed -->
+<section class="section">
+<div class="section-label" data-zh="生態" data-en="Ecosystem">生態</h2>
+<h2 data-zh="五、開源資源 vs 商業平台" data-en="V. Open Resources vs Commercial Platforms">五、開源 vs 商業</h2>
+<table class="comp-table">
+<thead><tr><th>Layer</th><th>Open Source</th><th>Commercial</th></tr></thead>
+<tbody>
+<tr><td>Target ID</td><td>Open Targets, PrimeKG</td><td>PandaOmics, BenevolentAI</td></tr>
+<tr><td>Docking</td><td>DiffDock-L, AutoDock Vina, GNINA</td><td>Schrödinger Glide, Cresset Flare</td></tr>
+<tr><td>Generation</td><td>REINVENT 4, MolMIM, Pocket2Mol</td><td>Chemistry42, Atomwise, Iktos</td></tr>
+<tr><td>ADMET</td><td>ADMET-AI, SwissADME, ChemProp</td><td>StarDrop, ADMET Predictor</td></tr>
+<tr><td>FEP</td><td>PMX, BFEE2, gmxMMPBSA</td><td>FEP+ (Schrödinger), Flare FEP</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. 條件式分子生成的「3D pocket-aware」相對於 SMILES LM 的優勢？" data-en="Q1. Advantage of 3D pocket-aware generation over SMILES LMs?">Q1. 條件式分子生成的「3D pocket-aware」相對於 SMILES LM 的優勢？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 速度更快" data-en="(A) Faster">(A) 速度更快</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 直接受蛋白口袋幾何約束生成 3D 結構，原則上更易找到形狀互補的配體" data-en="(B) Directly conditioned on pocket geometry — in principle better at finding shape-complementary ligands">(B) 直接受蛋白口袋幾何約束，更易找到形狀互補的配體</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 不需要訓練" data-en="(C) No training needed">(C) 不需要訓練</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 不需要 GPU" data-en="(D) No GPU needed">(D) 不需要 GPU</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. 即便 AI 工具強大，2026 年仍沒有「完全 AI 設計分子」上市，最主要原因？" data-en="Q2. Despite powerful AI, no fully-AI-designed drug is on the market in 2026. Main reason?">Q2. 即便 AI 工具強大，2026 年仍沒有「完全 AI 設計分子」上市，最主要原因？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) AI 模型不夠好" data-en="(A) AI models not good enough">(A) AI 模型不夠好</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 合成可行性、安全性、臨床試驗仍是主要瓶頸；AI 加速的是早期探索" data-en="(B) Synthesis, safety, and clinical trials remain the bottleneck — AI mainly speeds up early exploration">(B) 合成可行性、安全性、臨床試驗仍是主要瓶頸</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) FDA 禁止 AI" data-en="(C) FDA bans AI">(C) FDA 禁止 AI</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) AI 太貴" data-en="(D) AI too expensive">(D) AI 太貴</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 你想初步篩選 100 個 SMILES 對 hERG 心毒性與 BBB 通透性，最快路徑？" data-en="Q3. Quickest way to triage 100 SMILES for hERG and BBB?">Q3. 你想初步篩選 100 個 SMILES 對 hERG 心毒性與 BBB 通透性，最快路徑？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 全部跑分子動力學" data-en="(A) Full MD on each">(A) 全部跑分子動力學</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) ADMET-AI / SwissADME 線上工具，5 分鐘出結果" data-en="(B) ADMET-AI / SwissADME web tools — results in 5 min">(B) ADMET-AI / SwissADME 線上工具，5 分鐘出結果</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 跑 AlphaFold" data-en="(C) Run AlphaFold">(C) 跑 AlphaFold</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) BLAST" data-en="(D) BLAST">(D) BLAST</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="10-singlecell-ai.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="10 · 單細胞 AI" data-en="10 · Single-cell AI">10 · 單細胞 AI</span></a>
+<a href="12-bio-llm.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="12 · 生醫 LLM" data-en="12 · Biomedical LLMs">12 · 生醫 LLM</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>

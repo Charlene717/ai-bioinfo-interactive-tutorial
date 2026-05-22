@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 03: 深度學習基礎 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html" class="active">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 03 / 14 · BASIC</div>
+<h1 data-zh="深度學習基礎" data-en="Deep Learning Basics">深度學習基礎</h1>
+<p class="subtitle" data-lang="zh">神經元 → 反向傳播 → CNN/RNN/Transformer 三大架構，搭配活互動 sigmoid/softmax 計算與 PyTorch + R torch 雙語範例。</p>
+<p class="subtitle" data-lang="en">From neurons to backprop to the three pillars (CNN/RNN/Transformer), with live sigmoid/softmax demos and side-by-side PyTorch + R torch code.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: Neuron -->
+<section class="section">
+<div class="section-label" data-zh="神經元" data-en="Neuron">神經元</div>
+<h2 data-zh="一、一個神經元到底在算什麼？" data-en="I. What does a neuron actually compute?">一、一個神經元到底在算什麼？</h2>
+<div data-lang="zh">
+<p>一個神經元做兩件事：(1) 把所有輸入<strong>線性加權求和再加 bias</strong>；(2) 通過<strong>非線性激活函數</strong>。整個深度學習就是這兩個動作的堆疊。</p>
+</div>
+<div data-lang="en">
+<p>One neuron does two things: (1) take a <strong>weighted sum of inputs plus bias</strong>; (2) pass through a <strong>nonlinear activation</strong>. All of deep learning is a stack of these two operations.</p>
+</div>
+<div class="formula-box">y = σ( w<sub>1</sub>·x<sub>1</sub> + w<sub>2</sub>·x<sub>2</sub> + ... + w<sub>n</sub>·x<sub>n</sub> + b )</div>
+<div class="card-grid cols-3">
+<div class="card"><h4>ReLU</h4><div data-lang="zh"><p>max(0, x)。最常用，計算便宜，深層 CNN/MLP 默認選擇。</p></div><div data-lang="en"><p>max(0, x). The default — cheap and works for deep MLPs/CNNs.</p></div></div>
+<div class="card"><h4>Sigmoid</h4><div data-lang="zh"><p>1 / (1+e<sup>-x</sup>)。輸出 (0,1)，二元分類最後一層。深層中間用會 vanish。</p></div><div data-lang="en"><p>1 / (1+e<sup>-x</sup>). Output (0,1) — final layer for binary classification. Vanishes when stacked deep.</p></div></div>
+<div class="card"><h4>GELU / SiLU</h4><div data-lang="zh"><p>近年 Transformer 主流選擇 (GPT、ESM、AlphaFold 都用)。比 ReLU 平滑、收斂更快。</p></div><div data-lang="en"><p>Default in modern Transformers (GPT, ESM, AlphaFold). Smoother than ReLU, converges faster.</p></div></div>
+</div>
+</section>
+
+<!-- Section 2: Backprop interactive -->
+<section class="section">
+<div class="section-label" data-zh="互動模擬" data-en="Interactive">互動模擬</div>
+<h2 data-zh="二、Sigmoid 神經元計算器" data-en="II. Sigmoid Neuron Calculator">二、Sigmoid 神經元計算器</h2>
+<div data-lang="zh"><p>調整權重 w 與 bias b，看單一神經元如何把輸入 x∈[-5,5] 映射到 (0,1)。注意 w 越大邊界越陡，b 改變決策邊界位置。</p></div>
+<div data-lang="en"><p>Adjust weight w and bias b to see how a single sigmoid neuron maps inputs to (0,1). Larger |w| sharpens the boundary; b shifts it.</p></div>
+<div class="interactive-panel">
+<div class="slider-group"><label><span>weight w</span> <span id="valW">1.0</span></label><input type="range" id="sliderW" min="-5" max="5" value="1" step="0.1"></div>
+<div class="slider-group"><label><span>bias b</span> <span id="valB">0.0</span></label><input type="range" id="sliderB" min="-5" max="5" value="0" step="0.1"></div>
+<div class="chart-container"><canvas id="sigChart"></canvas></div>
+</div>
+</section>
+
+<!-- Section 3: Three pillars -->
+<section class="section">
+<div class="section-label" data-zh="三大架構" data-en="Three Pillars">三大架構</div>
+<h2 data-zh="三、CNN、RNN、Transformer：三種看資料的方式" data-en="III. CNN, RNN, Transformer — Three Ways to Look at Data">三、CNN、RNN、Transformer：三種看資料的方式</h2>
+<table class="comp-table">
+<thead><tr><th>Architecture</th><th data-zh="關鍵直覺" data-en="Key intuition">關鍵直覺</th><th data-zh="生資代表作" data-en="Bio examples">生資代表作</th><th data-zh="缺點" data-en="Limitations">缺點</th></tr></thead>
+<tbody>
+<tr><td><strong>CNN</strong><br>(1D/2D conv)</td><td data-zh="局部 motif 檢測，平移不變性" data-en="Local motif detection, translation invariance">局部 motif 檢測，平移不變性</td><td>DeepBind, DeepSEA, Basenji, scBasset</td><td data-zh="長距離互動需多層才能捕捉" data-en="Long-range interactions need many layers">長距離互動需多層才能捕捉</td></tr>
+<tr><td><strong>RNN / LSTM</strong></td><td data-zh="序列順序、隱藏狀態傳遞" data-en="Sequential order, hidden state propagation">序列順序、隱藏狀態傳遞</td><td data-zh="早期 splicing 預測、CRF 標註" data-en="Early splicing predictors, CRF labeling">早期 splicing 預測、CRF 標註</td><td data-zh="逐步運算難並行；長距離訊號衰減" data-en="Sequential, hard to parallelize; long-range decay">逐步運算難並行；長距離訊號衰減</td></tr>
+<tr><td><strong>Transformer</strong></td><td data-zh="全連接 attention，可同時看序列任意兩位置" data-en="Full attention — can relate any two positions in one step">全連接 attention，可同時看序列任意兩位置</td><td>ESM, AlphaFold 2/3, scGPT, Enformer, Evo 2</td><td data-zh="O(L²) 記憶體；&gt;100k token 才需要特殊技巧 (Hyena, Mamba)" data-en="O(L²) memory; >100k tokens needs tricks (Hyena, Mamba)">O(L²) 記憶體；&gt;100k token 才需要特殊技巧</td></tr>
+</tbody>
+</table>
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>記憶口訣：</strong>CNN 看「局部」、RNN 看「順序」、Transformer 看「全局」。生物序列通常需要全局訊息（promoter 與 gene body 距離數十 kb），這就是為什麼 Transformer 在 2022 年後幾乎一統江山。</span>
+<span data-lang="en"><strong>Mnemonic:</strong> CNN sees local, RNN sees sequential, Transformer sees global. Biology often needs global signal (promoters tens of kb from gene bodies) — which is why Transformers dominate post-2022.</span>
+</div></div>
+</section>
+
+<!-- Section 4: Hands-on PyTorch -->
+<section class="section">
+<div class="section-label" data-zh="動手實作" data-en="Hands-on">動手實作</div>
+<h2 data-zh="四、用 PyTorch / R-torch 訓練一個 1D-CNN 分類 DNA motif" data-en="IV. Train a 1D-CNN for DNA Motif Classification">四、用 PyTorch / R-torch 訓練一個 1D-CNN 分類 DNA motif</h2>
+<div data-lang="zh"><p>任務：給定 100bp 的 DNA 序列，分類是否含有特定 TF 結合 motif (簡化版)。</p></div>
+<div data-lang="en"><p>Task: given a 100bp DNA sequence, classify whether it contains a TF-binding motif (toy version).</p></div>
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python (PyTorch)</button><button class="code-tab-btn">R (torch)</button></div>
+<div class="code-tab-content active"><pre><span class="kw">import</span> torch, torch.nn <span class="kw">as</span> nn
+
+<span class="kw">class</span> <span class="cls">DNACNN</span>(nn.Module):
+    <span class="kw">def</span> <span class="func">__init__</span>(self):
+        super().<span class="func">__init__</span>()
+        self.conv = nn.<span class="cls">Conv1d</span>(<span class="num">4</span>, <span class="num">32</span>, kernel_size=<span class="num">8</span>, padding=<span class="num">3</span>)   <span class="comment"># 4 channels = A,C,G,T</span>
+        self.pool = nn.<span class="cls">AdaptiveMaxPool1d</span>(<span class="num">1</span>)
+        self.fc   = nn.<span class="cls">Linear</span>(<span class="num">32</span>, <span class="num">1</span>)
+    <span class="kw">def</span> <span class="func">forward</span>(self, x):           <span class="comment"># x: (B, 4, 100)</span>
+        h = torch.<span class="func">relu</span>(self.<span class="func">conv</span>(x))
+        h = self.<span class="func">pool</span>(h).<span class="func">squeeze</span>(<span class="num">-1</span>)
+        <span class="kw">return</span> torch.<span class="func">sigmoid</span>(self.<span class="func">fc</span>(h)).<span class="func">squeeze</span>(<span class="num">-1</span>)
+
+model = <span class="cls">DNACNN</span>(); opt = torch.optim.<span class="cls">Adam</span>(model.<span class="func">parameters</span>(), lr=<span class="num">1e-3</span>)
+loss_fn = nn.<span class="cls">BCELoss</span>()
+
+<span class="comment"># Toy training loop (assume X_one_hot: (N,4,100), y: (N,))</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="func">range</span>(<span class="num">10</span>):
+    pred = <span class="func">model</span>(X); loss = <span class="func">loss_fn</span>(pred, y)
+    opt.<span class="func">zero_grad</span>(); loss.<span class="func">backward</span>(); opt.<span class="func">step</span>()
+    <span class="func">print</span>(epoch, loss.<span class="func">item</span>())</pre></div>
+<div class="code-tab-content"><pre><span class="kw">library</span>(torch)
+DNACNN <- <span class="func">nn_module</span>(
+  initialize = <span class="kw">function</span>(){
+    self$conv <- <span class="func">nn_conv1d</span>(<span class="num">4</span>, <span class="num">32</span>, kernel_size = <span class="num">8</span>, padding = <span class="num">3</span>)
+    self$pool <- <span class="func">nn_adaptive_max_pool1d</span>(<span class="num">1</span>)
+    self$fc   <- <span class="func">nn_linear</span>(<span class="num">32</span>, <span class="num">1</span>)
+  },
+  forward = <span class="kw">function</span>(x){
+    h <- <span class="func">torch_relu</span>(self$<span class="func">conv</span>(x))
+    h <- self$<span class="func">pool</span>(h)$<span class="func">squeeze</span>(<span class="num">-1</span>)
+    <span class="func">torch_sigmoid</span>(self$<span class="func">fc</span>(h))$<span class="func">squeeze</span>(<span class="num">-1</span>)
+  }
+)
+model <- <span class="func">DNACNN</span>(); opt <- <span class="func">optim_adam</span>(model$<span class="func">parameters</span>(), lr = <span class="num">1e-3</span>)
+loss_fn <- <span class="func">nn_bce_loss</span>()
+<span class="kw">for</span>(e <span class="kw">in</span> <span class="num">1</span>:<span class="num">10</span>){
+  pred <- <span class="func">model</span>(X); loss <- <span class="func">loss_fn</span>(pred, y)
+  opt$<span class="func">zero_grad</span>(); loss$<span class="func">backward</span>(); opt$<span class="func">step</span>()
+}</pre></div>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>One-hot 編碼提醒：</strong> A=[1,0,0,0]、C=[0,1,0,0]、G=[0,0,1,0]、T=[0,0,0,1]、N=[0.25,0.25,0.25,0.25]。請務必對齊「通道優先 (channel-first)」格式 (B, 4, L)，這是 1D-CNN 的標準輸入。</span>
+<span data-lang="en"><strong>One-hot reminder:</strong> A=[1,0,0,0], C=[0,1,0,0], G=[0,0,1,0], T=[0,0,0,1], N=[0.25,0.25,0.25,0.25]. Use channels-first (B, 4, L) for 1D-CNN.</span>
+</div></div>
+</section>
+
+<!-- Section 5: Tips -->
+<section class="section">
+<div class="section-label" data-zh="實戰錦囊" data-en="Pro Tips">實戰錦囊</div>
+<h2 data-zh="五、訓練 DL 的 7 個保命招數" data-en="V. Seven survival tips for training DL">五、訓練 DL 的 7 個保命招數</h2>
+<div class="workflow">
+<div class="wf-step" data-num="1"><h5 data-zh="先 overfit 一個 mini-batch" data-en="Overfit one mini-batch first">先 overfit 一個 mini-batch</h5><p data-lang="zh">10 筆資料 train 100 epoch 應該幾乎 0 loss——做不到代表 model/loss/data 有 bug。</p><p data-lang="en">10 samples × 100 epochs should reach ~0 loss. If not, your model/loss/data has a bug.</p></div>
+<div class="wf-step" data-num="2"><h5 data-zh="LR 是最關鍵超參數" data-en="LR is the most important hyperparameter">LR 是最關鍵超參數</h5><p data-lang="zh">用 LR finder 從 1e-7 掃到 1e-1，找 loss 開始下降的甜蜜點。</p><p data-lang="en">Use an LR finder, sweeping 1e-7 → 1e-1; pick where loss starts dropping.</p></div>
+<div class="wf-step" data-num="3"><h5 data-zh="標準化輸入" data-en="Normalize inputs">標準化輸入</h5><p data-lang="zh">數值特徵 z-score；DNA 用 one-hot；表達量用 log1p + scale。</p><p data-lang="en">z-score numeric; one-hot DNA; log1p + scale expression.</p></div>
+<div class="wf-step" data-num="4"><h5 data-zh="正則化" data-en="Regularize">正則化</h5><p data-lang="zh">Dropout (0.1–0.5)、weight decay (1e-4)、early stopping；避免過擬合。</p><p data-lang="en">Dropout (0.1–0.5), weight decay (1e-4), early stopping — your shield against overfitting.</p></div>
+<div class="wf-step" data-num="5"><h5 data-zh="Reproducibility" data-en="Reproducibility">Reproducibility</h5><p data-lang="zh">固定 random seed (Python、NumPy、PyTorch、CUDA 都要)；記下版本與 commit。</p><p data-lang="en">Seed Python, NumPy, PyTorch, CUDA — all of them. Log versions and commits.</p></div>
+<div class="wf-step" data-num="6"><h5 data-zh="GPU 記憶體耗光？" data-en="OOM on GPU?">GPU 記憶體耗光？</h5><p data-lang="zh">先 mixed-precision (bf16/fp16)，再 gradient accumulation；最後才縮 batch。</p><p data-lang="en">Try mixed precision (bf16/fp16), then gradient accumulation; reduce batch only as last resort.</p></div>
+<div class="wf-step" data-num="7"><h5 data-zh="從 fine-tune 開始" data-en="Start from fine-tuning">從 fine-tune 開始</h5><p data-lang="zh">生物 AI 別從零訓練——HuggingFace 上找 ESM、scGPT、DNABERT 都好。</p><p data-lang="en">Don't train bio models from scratch — fine-tune from HuggingFace (ESM, scGPT, DNABERT).</p></div>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. 為什麼現代 Transformer 在生物序列任務全面取代 RNN？" data-en="Q1. Why have Transformers replaced RNNs in modern bio-sequence tasks?">Q1. 為什麼現代 Transformer 在生物序列任務全面取代 RNN？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) Transformer 參數比較少" data-en="(A) Transformers have fewer parameters">(A) Transformer 參數比較少</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) Attention 可平行運算且能直接捕捉長距離依賴 (e.g. enhancer-promoter)" data-en="(B) Attention parallelizes and directly captures long-range dependencies (e.g., enhancer–promoter)">(B) Attention 可平行運算且能直接捕捉長距離依賴 (e.g. enhancer-promoter)</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) RNN 已被禁用" data-en="(C) RNNs have been deprecated by law">(C) RNN 已被禁用</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) Transformer 不需要 GPU" data-en="(D) Transformers don't need GPUs">(D) Transformer 不需要 GPU</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. 訓練 loss 從第一個 epoch 就 nan，最可能的原因？" data-en="Q2. Loss is NaN from epoch 1. Most likely cause?">Q2. 訓練 loss 從第一個 epoch 就 nan，最可能的原因？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 模型太深" data-en="(A) Model too deep">(A) 模型太深</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) Learning rate 太大、輸入未正規化、log(0) 等數值問題" data-en="(B) LR too high, unnormalized inputs, or log(0) numerical issues">(B) Learning rate 太大、輸入未正規化、log(0) 等數值問題</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) Batch size 太小" data-en="(C) Batch size too small">(C) Batch size 太小</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 一定是資料 bug" data-en="(D) Must be a data bug">(D) 一定是資料 bug</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。先降 LR、檢查輸入分佈、加上 gradient clipping。" data-en="✅ (B). Lower LR, check input distribution, add gradient clipping.">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 你的訓練集 5,000 條 DNA 序列要分類 enhancer。最佳策略？" data-en="Q3. 5,000 DNA sequences, enhancer classification. Best strategy?">Q3. 你的訓練集 5,000 條 DNA 序列要分類 enhancer。最佳策略？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 從零訓練 100M 參數 Transformer" data-en="(A) Train a 100M-param Transformer from scratch">(A) 從零訓練 100M 參數 Transformer</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) Fine-tune 預訓練好的 DNABERT 或 Nucleotide Transformer" data-en="(B) Fine-tune pretrained DNABERT or Nucleotide Transformer">(B) Fine-tune 預訓練好的 DNABERT 或 Nucleotide Transformer</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 一定要用 ResNet50" data-en="(C) Always use ResNet50">(C) 一定要用 ResNet50</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 只用統計方法" data-en="(D) Only classical statistics">(D) 只用統計方法</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。5k 不夠 from-scratch；fine-tune 通常 1 小時跑完且勝過從零訓練。" data-en="✅ (B). 5k is too small for scratch; fine-tuning usually finishes in an hour and beats from-scratch.">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="02-ml-basics.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="02 · ML 基礎" data-en="02 · ML Basics">02 · ML 基礎</span></a>
+<a href="04-sequence-embeddings.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="04 · 生物序列嵌入" data-en="04 · Sequence Embeddings">04 · 生物序列嵌入</span></a>
+</nav>
+
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+<script>
+const xs = Array.from({length:120}, (_,i)=> -6 + 12*i/119);
+const ctx = document.getElementById('sigChart');
+let chart;
+function render(){
+  const w = +document.getElementById('sliderW').value;
+  const b = +document.getElementById('sliderB').value;
+  document.getElementById('valW').textContent = w.toFixed(1);
+  document.getElementById('valB').textContent = b.toFixed(1);
+  const ys = xs.map(x => 1/(1+Math.exp(-(w*x+b))));
+  if(chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'line',
+    data:{ labels: xs.map(x=>x.toFixed(1)),
+      datasets:[{label:'σ(w·x + b)', data: ys, borderColor:'#5b3df5', borderWidth:2.5, pointRadius:0, fill:false}]
+    },
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{x:{title:{display:true,text:'x'}}, y:{min:0,max:1,title:{display:true,text:'sigmoid output'}}},
+      plugins:{legend:{display:false}}
+    }
+  });
+}
+document.getElementById('sliderW').addEventListener('input', render);
+document.getElementById('sliderB').addEventListener('input', render);
+render();
+</script>
+</body></html>

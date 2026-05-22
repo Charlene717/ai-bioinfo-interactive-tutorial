@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI for Bioinformatics 參考資料 · References</title>
+<meta name="description" content="AI for Bioinformatics Interactive Tutorial 14 章主題的學術論文、官方文件、Best Practices 綜述、benchmark 與資料集來源整理。">
+<link rel="stylesheet" href="../styles.css">
+<style>
+/* References-specific styling */
+.ref-list{list-style:none;padding:0;margin:14px 0 0}
+.ref-list li{padding:14px 16px;background:var(--c-surface-alt);border:1px solid var(--c-border-light);border-radius:var(--radius);margin-bottom:10px;font-size:.92rem;line-height:1.65}
+.ref-list li:hover{background:var(--c-surface);border-color:var(--c-border)}
+.ref-tag{display:inline-block;font-family:var(--font-mono);font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:6px;margin-right:8px;letter-spacing:.5px}
+.ref-tag.paper{background:var(--c-accent-light);color:var(--c-accent-dark)}
+.ref-tag.doc{background:#e3f2fd;color:#1565c0}
+.ref-tag.bench{background:#fff3e0;color:#e65100}
+.ref-tag.db{background:#fce4ec;color:#ad1457}
+.ref-tag.book{background:#f3e5f5;color:#6a1b9a}
+.ref-tag.bestp{background:var(--c-highlight-light);color:#a06a00;border:1px solid var(--c-highlight)}
+.ref-tag.code{background:#e8f5e9;color:#2e7d32}
+.ref-author{color:var(--c-ink);font-weight:600}
+.ref-title{color:var(--c-ink);font-weight:500}
+.ref-meta{color:var(--c-ink-muted);font-size:.85rem;margin-top:4px;display:block}
+.ref-list a{color:var(--c-accent);text-decoration:none;border-bottom:1px dotted var(--c-accent)}
+.ref-list a:hover{color:var(--c-accent-dark);border-bottom-style:solid}
+.errata{background:#fef3c7;border-left:4px solid #d97706;border-radius:0 var(--radius-lg) var(--radius-lg) 0;padding:18px 22px;margin:18px 0;font-size:.9rem}
+.errata h4{margin:0 0 8px;color:#92400e;font-family:var(--font-display);font-size:1.05rem}
+.errata p{color:#78350f;margin-bottom:8px}
+.errata p:last-child{margin-bottom:0}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:18px 0}
+.toc-grid a{padding:10px 14px;background:var(--c-surface);border:1px solid var(--c-border-light);border-radius:var(--radius);text-decoration:none;color:var(--c-ink);font-size:.88rem;transition:var(--transition);display:flex;align-items:center;gap:8px}
+.toc-grid a:hover{border-color:var(--c-accent);background:var(--c-accent-light);color:var(--c-accent-dark)}
+.toc-grid a .step-tag{font-family:var(--font-mono);font-size:.72rem;color:var(--c-accent);font-weight:600}
+.section-anchor{scroll-margin-top:80px}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+<div class="top-nav-inner">
+  <a href="../index.html" class="top-nav-brand"><span>🧠</span> AI × 生資</a>
+  <ul class="top-nav-links">
+    <li><a href="../01-overview.html">01 Overview</a></li>
+    <li><a href="../02-ml-basics.html">02 ML</a></li>
+    <li><a href="../03-deep-learning.html">03 DL</a></li>
+    <li><a href="../04-sequence-embeddings.html">04 Seq</a></li>
+    <li><a href="../05-protein-structure.html">05 Struct</a></li>
+    <li><a href="../06-protein-design.html">06 Design</a></li>
+    <li><a href="../07-protein-ligand.html">07 PPI</a></li>
+    <li><a href="../08-regulatory-genomics.html">08 RegGen</a></li>
+    <li><a href="../09-variant-splicing.html">09 Variant</a></li>
+    <li><a href="../10-singlecell-ai.html">10 scAI</a></li>
+    <li><a href="../11-drug-discovery.html">11 Drug</a></li>
+    <li><a href="../12-bio-llm.html">12 BioLLM</a></li>
+    <li><a href="../13-ai-agents.html">13 Agent</a></li>
+    <li><a href="../14-ethics.html">14 Ethics</a></li>
+    <li><a href="../references.html">📚 Refs</a></li>
+    <li><a href="index.html" class="active" style="font-weight:700" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div>
+</nav>
+
+<header class="page-hero">
+<div class="step-badge" data-zh="參考資料 · REFERENCES" data-en="REFERENCES">REFERENCES</div>
+<h1 data-zh="AI for Bioinformatics 學術引文與資源整理" data-en="Artificial Intelligence References Index">Artificial Intelligence References Index</h1>
+<p class="subtitle" data-lang="zh">為 14 章主題提供原始論文、官方文件、Best Practices 綜述、benchmark 評比與開放資料集連結。所有引文附 DOI / arXiv / GitHub 連結。</p>
+<p class="subtitle" data-lang="en">References, citations, and sources for the Artificial Intelligence Interactive Tutorial — papers, official documents, and benchmarks with DOI / URL links.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Overview -->
+<section class="section">
+<div class="section-label" data-zh="概覽" data-en="OVERVIEW">概覽</div>
+<h2 data-zh="如何使用這份資料？" data-en="How to use this page">如何使用這份資料？</h2>
+<p data-lang="zh">本頁針對教學中提到的每個工具、模型與生物學概念，整理學術出處供讀者深入查閱。引用標籤含義：</p>
+<p data-lang="en">For every tool, model, and biological concept mentioned in the tutorial, this page collects authoritative sources for deeper reading. Citation tag meanings:</p>
+<div class="card-grid cols-3">
+  <div class="card"><div class="card-icon" style="background:var(--c-accent-light)">📄</div><h4>Paper</h4><p data-lang="zh">原始論文 · 含 DOI / arXiv / bioRxiv</p><p data-lang="en">Primary papers with DOI / arXiv / bioRxiv links</p></div>
+  <div class="card"><div class="card-icon" style="background:#e3f2fd">📘</div><h4>Doc</h4><p data-lang="zh">官方文件、tutorial、模型 card</p><p data-lang="en">Official documentation, tutorials, and model cards</p></div>
+  <div class="card"><div class="card-icon" style="background:var(--c-highlight-light)">⭐</div><h4>Best Practice</h4><p data-lang="zh">系統性綜述或 community 推薦</p><p data-lang="en">Systematic reviews and community-recommended practices</p></div>
+  <div class="card"><div class="card-icon" style="background:#fff3e0">📊</div><h4>Benchmark</h4><p data-lang="zh">方法評比 / 獨立評估報告</p><p data-lang="en">Method comparisons and independent evaluation reports</p></div>
+  <div class="card"><div class="card-icon" style="background:#fce4ec">🗄️</div><h4>Database</h4><p data-lang="zh">資料集、模型權重與 atlas</p><p data-lang="en">Datasets, model weights, and atlases</p></div>
+  <div class="card"><div class="card-icon" style="background:#e8f5e9">💻</div><h4>Code</h4><p data-lang="zh">GitHub / HuggingFace 開源程式</p><p data-lang="en">Open-source code on GitHub and HuggingFace</p></div>
+</div>
+
+<h3 data-zh="本頁目錄" data-en="Table of contents">本頁目錄</h3>
+<div class="toc-grid">
+  <a href="#bestpractices"><span class="step-tag">★</span><span data-zh="Best Practices 綜述" data-en="Best Practices Reviews">Best Practices 綜述</span></a>
+  <a href="#frameworks"><span class="step-tag">★</span><span data-zh="核心 ML/DL 框架" data-en="Core ML/DL Frameworks">核心 ML/DL 框架</span></a>
+  <a href="#ch01"><span class="step-tag">Ch 01</span><span data-zh="AI × 生資 概論" data-en="AI × Bioinformatics Overview">AI × 生資 概論</span></a>
+  <a href="#ch02"><span class="step-tag">Ch 02</span><span data-zh="機器學習基礎" data-en="Machine Learning Basics">機器學習基礎</span></a>
+  <a href="#ch03"><span class="step-tag">Ch 03</span><span data-zh="深度學習基礎" data-en="Deep Learning Basics">深度學習基礎</span></a>
+  <a href="#ch04"><span class="step-tag">Ch 04</span><span data-zh="生物序列嵌入" data-en="Biological Sequence Embeddings">生物序列嵌入</span></a>
+  <a href="#ch05"><span class="step-tag">Ch 05</span><span data-zh="蛋白質結構預測" data-en="Protein Structure Prediction">蛋白質結構預測</span></a>
+  <a href="#ch06"><span class="step-tag">Ch 06</span><span data-zh="蛋白質從頭設計" data-en="De Novo Protein Design">蛋白質從頭設計</span></a>
+  <a href="#ch07"><span class="step-tag">Ch 07</span><span data-zh="蛋白-配體交互" data-en="Protein-Ligand Interactions">蛋白-配體交互</span></a>
+  <a href="#ch08"><span class="step-tag">Ch 08</span><span data-zh="調控基因體 AI" data-en="Regulatory Genomics AI">調控基因體 AI</span></a>
+  <a href="#ch09"><span class="step-tag">Ch 09</span><span data-zh="變異判讀與剪接" data-en="Variant Calling & Splicing">變異判讀與剪接</span></a>
+  <a href="#ch10"><span class="step-tag">Ch 10</span><span data-zh="單細胞基礎模型" data-en="Single-Cell Foundation Models">單細胞基礎模型</span></a>
+  <a href="#ch11"><span class="step-tag">Ch 11</span><span data-zh="AI 驅動藥物發現" data-en="AI-Driven Drug Discovery">AI 驅動藥物發現</span></a>
+  <a href="#ch12"><span class="step-tag">Ch 12</span><span data-zh="生醫大型語言模型" data-en="Biomedical LLMs">生醫大型語言模型</span></a>
+  <a href="#ch13"><span class="step-tag">Ch 13</span><span data-zh="生資 AI Agents" data-en="Bioinformatics AI Agents">生資 AI Agents</span></a>
+  <a href="#ch14"><span class="step-tag">Ch 14</span><span data-zh="倫理與最佳實踐" data-en="Ethics & Best Practices">倫理與最佳實踐</span></a>
+  <a href="#datasets"><span class="step-tag">DB</span><span data-zh="開放資料集" data-en="Open Datasets">開放資料集</span></a>
+  <a href="#errata"><span class="step-tag">!</span><span data-zh="教學註記與細節" data-en="Tutorial Notes & Details">教學註記與細節</span></a>
+</div>
+</section>
+
+<!-- ===================== Best Practices ===================== -->
+<section class="section section-anchor" id="bestpractices">
+<div class="section-label" data-zh="綜論" data-en="OVERVIEW">綜論</div>
+<h2 data-zh="⭐ Best Practices 與綜述論文" data-en="⭐ Best Practices & Review Papers">⭐ Best Practices 與綜述論文</h2>
+<p data-lang="zh">整體 AI in biology 領域的權威性教科書級綜述。建議從這幾篇開始閱讀，能對全領域的設計取捨、發展軌跡與常見陷阱建立全景觀。</p>
+<p data-lang="en">Authoritative textbook-level reviews of the entire AI-in-biology field. Read these first to build a panoramic view of the design trade-offs, historical trajectory, and common pitfalls across the field.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag bestp">★ BEST</span>
+    <span class="ref-author">Greener JG, Kandathil SM, Moffat L, Jones DT.</span>
+    <span class="ref-title"> A guide to machine learning for biologists. </span>
+    <em>Nat Rev Mol Cell Biol</em> 23, 40–55 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41580-021-00407-0" target="_blank" rel="noopener">10.1038/s41580-021-00407-0</a> · 入門最推薦</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41580-021-00407-0" target="_blank" rel="noopener">10.1038/s41580-021-00407-0</a> · Top recommendation for beginners</span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">★ BEST</span>
+    <span class="ref-author">Eraslan G, Avsec Ž, Gagneur J, Theis FJ.</span>
+    <span class="ref-title"> Deep learning: new computational modelling techniques for genomics. </span>
+    <em>Nat Rev Genet</em> 20, 389–403 (2019).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41576-019-0122-6" target="_blank" rel="noopener">10.1038/s41576-019-0122-6</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41576-019-0122-6" target="_blank" rel="noopener">10.1038/s41576-019-0122-6</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">★ BEST</span>
+    <span class="ref-author">Bommasani R, Hudson DA, Adeli E, et al.</span>
+    <span class="ref-title"> On the Opportunities and Risks of Foundation Models. </span>
+    <em>arXiv</em> 2108.07258 (2021).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2108.07258" target="_blank" rel="noopener">2108.07258</a> · Foundation model 概念奠基論文</span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2108.07258" target="_blank" rel="noopener">2108.07258</a> · Foundational paper introducing the foundation-model concept</span></span>
+  </li>
+  <li>
+    <span class="ref-tag book">📚 BOOK</span>
+    <span class="ref-author">Goodfellow I, Bengio Y, Courville A.</span>
+    <span class="ref-title"> Deep Learning. </span>
+    MIT Press, 2016.
+    <span class="ref-meta"><span data-lang="zh">線上免費 <a href="https://www.deeplearningbook.org/" target="_blank" rel="noopener">deeplearningbook.org</a> · DL 基礎經典</span><span data-lang="en">Free online at <a href="https://www.deeplearningbook.org/" target="_blank" rel="noopener">deeplearningbook.org</a> · Classic deep-learning foundations text</span></span>
+  </li>
+  <li>
+    <span class="ref-tag book">📚 BOOK</span>
+    <span class="ref-author">Murphy KP.</span>
+    <span class="ref-title"> Probabilistic Machine Learning: An Introduction & Advanced Topics. </span>
+    MIT Press, 2022/2023.
+    <span class="ref-meta"><span data-lang="zh">線上免費 <a href="https://probml.github.io/pml-book/" target="_blank" rel="noopener">probml.github.io/pml-book</a></span><span data-lang="en">Free online at <a href="https://probml.github.io/pml-book/" target="_blank" rel="noopener">probml.github.io/pml-book</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ SURVEY</span>
+    <span class="ref-author">Wang H, Fu T, Du Y, et al.</span>
+    <span class="ref-title"> Scientific discovery in the age of artificial intelligence. </span>
+    <em>Nature</em> 620, 47–60 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41586-023-06221-2" target="_blank" rel="noopener">10.1038/s41586-023-06221-2</a> · 跨領域 AI for Science 全景</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41586-023-06221-2" target="_blank" rel="noopener">10.1038/s41586-023-06221-2</a> · A cross-disciplinary panorama of AI for Science</span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Frameworks ===================== -->
+<section class="section section-anchor" id="frameworks">
+<div class="section-label" data-zh="核心框架" data-en="CORE FRAMEWORKS">核心框架</div>
+<h2 data-zh="🧰 核心 ML/DL 框架與生資生態" data-en="🧰 Core ML/DL Frameworks & Bioinformatics Ecosystem">🧰 核心 ML/DL 框架與生資生態</h2>
+<p data-lang="zh">本教程所有範例皆使用以下開源框架。Python 是 AI 生資主流；R 在 tidymodels / Seurat 仍有強生態。</p>
+<p data-lang="en">All examples in this tutorial use the open-source frameworks below. Python dominates AI bioinformatics; R retains a strong ecosystem through tidymodels and Seurat.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · PyTorch</span>
+    <span class="ref-author">Paszke A, Gross S, Massa F, et al.</span>
+    <span class="ref-title"> PyTorch: An Imperative Style, High-Performance Deep Learning Library. </span>
+    <em>NeurIPS</em> (2019).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1912.01703" target="_blank" rel="noopener">1912.01703</a> · 官方 <a href="https://pytorch.org/" target="_blank" rel="noopener">pytorch.org</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1912.01703" target="_blank" rel="noopener">1912.01703</a> · Official site: <a href="https://pytorch.org/" target="_blank" rel="noopener">pytorch.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · scikit-learn</span>
+    <span class="ref-author">Pedregosa F, Varoquaux G, Gramfort A, et al.</span>
+    <span class="ref-title"> Scikit-learn: Machine Learning in Python. </span>
+    <em>JMLR</em> 12, 2825–2830 (2011).
+    <span class="ref-meta"><span data-lang="zh">官方 <a href="https://scikit-learn.org/" target="_blank" rel="noopener">scikit-learn.org</a></span><span data-lang="en">Official site: <a href="https://scikit-learn.org/" target="_blank" rel="noopener">scikit-learn.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · XGBoost</span>
+    <span class="ref-author">Chen T, Guestrin C.</span>
+    <span class="ref-title"> XGBoost: A Scalable Tree Boosting System. </span>
+    <em>KDD</em> (2016).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1603.02754" target="_blank" rel="noopener">1603.02754</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1603.02754" target="_blank" rel="noopener">1603.02754</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · HuggingFace</span>
+    <span class="ref-title" data-zh="Transformers：適用於 PyTorch、TensorFlow、JAX 的最先進 ML 函式庫。" data-en="Transformers: state-of-the-art ML for PyTorch, TensorFlow, and JAX.">Transformers: state-of-the-art ML for PyTorch, TensorFlow, JAX。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://huggingface.co/docs/transformers" target="_blank" rel="noopener">huggingface.co/docs/transformers</a> · 模型權重平台 <a href="https://huggingface.co/models" target="_blank" rel="noopener">huggingface.co/models</a></span><span data-lang="en"><a href="https://huggingface.co/docs/transformers" target="_blank" rel="noopener">huggingface.co/docs/transformers</a> · Model-weights hub: <a href="https://huggingface.co/models" target="_blank" rel="noopener">huggingface.co/models</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · JAX</span>
+    <span class="ref-title" data-zh="JAX：可組合的 Python+NumPy 程式轉換工具。" data-en="JAX: composable transformations of Python+NumPy programs.">JAX: composable transformations of Python+NumPy programs。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://jax.readthedocs.io/" target="_blank" rel="noopener">jax.readthedocs.io</a> · AlphaFold 等大型模型訓練常用</span><span data-lang="en"><a href="https://jax.readthedocs.io/" target="_blank" rel="noopener">jax.readthedocs.io</a> · Commonly used for training large models such as AlphaFold</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Biopython</span>
+    <span class="ref-author">Cock PJA, Antao T, Chang JT, et al.</span>
+    <span class="ref-title"> Biopython: freely available Python tools for computational molecular biology and bioinformatics. </span>
+    <em>Bioinformatics</em> 25, 1422–1423 (2009).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1093/bioinformatics/btp163" target="_blank" rel="noopener">10.1093/bioinformatics/btp163</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1093/bioinformatics/btp163" target="_blank" rel="noopener">10.1093/bioinformatics/btp163</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · tidymodels</span>
+    <span class="ref-title" data-zh="R 端機器學習元框架，整合 parsnip / recipes / workflowsets。" data-en="A meta-framework for machine learning in R, integrating parsnip, recipes, and workflowsets.">R 端機器學習元框架，整合 parsnip / recipes / workflowsets。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.tidymodels.org/" target="_blank" rel="noopener">tidymodels.org</a></span><span data-lang="en"><a href="https://www.tidymodels.org/" target="_blank" rel="noopener">tidymodels.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · BioContainers</span>
+    <span class="ref-title" data-zh="以 Docker / Singularity 封裝的生物資訊工具集合，可重現性首選。" data-en="A collection of bioinformatics tools packaged as Docker / Singularity containers; the top choice for reproducibility.">Docker / Singularity 包裝的生物資訊工具集合，可重現性首選。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://biocontainers.pro/" target="_blank" rel="noopener">biocontainers.pro</a></span><span data-lang="en"><a href="https://biocontainers.pro/" target="_blank" rel="noopener">biocontainers.pro</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 01 ===================== -->
+<section class="section section-anchor" id="ch01">
+<div class="section-label" data-zh="Chapter 01" data-en="Chapter 01">Chapter 01</div>
+<h2 data-zh="🧭 AI × 生資 概論" data-en="🧭 AI × Bioinformatics Overview">🧭 AI × 生資 概論</h2>
+<p data-lang="zh">領域景觀、Transformer 跨域成功、開放權重浪潮的關鍵論文與里程碑。</p>
+<p data-lang="en">The field landscape, Transformer's cross-domain success, and key papers and milestones of the open-weights wave.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · Transformer 開山</span>
+    <span class="ref-author">Vaswani A, Shazeer N, Parmar N, et al.</span>
+    <span class="ref-title"> Attention Is All You Need. </span>
+    <em>NeurIPS</em> (2017).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">1706.03762</a> · 引用數 &gt; 100,000</span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">1706.03762</a> · Cited &gt; 100,000 times</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · BERT</span>
+    <span class="ref-author">Devlin J, Chang MW, Lee K, Toutanova K.</span>
+    <span class="ref-title"> BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. </span>
+    <em>NAACL</em> (2019).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener">1810.04805</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener">1810.04805</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ SURVEY</span>
+    <span class="ref-author">Bzdok D, Altman N, Krzywinski M.</span>
+    <span class="ref-title"> Statistics versus machine learning. </span>
+    <em>Nat Methods</em> 15, 233–234 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nmeth.4642" target="_blank" rel="noopener">10.1038/nmeth.4642</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nmeth.4642" target="_blank" rel="noopener">10.1038/nmeth.4642</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">🗄️ DB · UK Biobank</span>
+    <span class="ref-author">Bycroft C, Freeman C, Petkova D, et al.</span>
+    <span class="ref-title"> The UK Biobank resource with deep phenotyping and genomic data. </span>
+    <em>Nature</em> 562, 203–209 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41586-018-0579-z" target="_blank" rel="noopener">10.1038/s41586-018-0579-z</a> · <a href="https://www.ukbiobank.ac.uk/" target="_blank" rel="noopener">ukbiobank.ac.uk</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41586-018-0579-z" target="_blank" rel="noopener">10.1038/s41586-018-0579-z</a> · <a href="https://www.ukbiobank.ac.uk/" target="_blank" rel="noopener">ukbiobank.ac.uk</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">🗄️ DB · Human Cell Atlas</span>
+    <span class="ref-author">Regev A, Teichmann SA, Lander ES, et al.</span>
+    <span class="ref-title"> The Human Cell Atlas. </span>
+    <em>eLife</em> 6:e27041 (2017).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.7554/eLife.27041" target="_blank" rel="noopener">10.7554/eLife.27041</a> · <a href="https://www.humancellatlas.org/" target="_blank" rel="noopener">humancellatlas.org</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.7554/eLife.27041" target="_blank" rel="noopener">10.7554/eLife.27041</a> · <a href="https://www.humancellatlas.org/" target="_blank" rel="noopener">humancellatlas.org</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 02 ===================== -->
+<section class="section section-anchor" id="ch02">
+<div class="section-label" data-zh="Chapter 02" data-en="Chapter 02">Chapter 02</div>
+<h2 data-zh="📐 機器學習基礎" data-en="📐 Machine Learning Basics">📐 機器學習基礎</h2>
+<p data-lang="zh">監督式與非監督式學習、過擬合、評估指標、特徵重要性 (SHAP) 等基礎方法。</p>
+<p data-lang="en">Foundational methods including supervised and unsupervised learning, overfitting, evaluation metrics, and feature importance (SHAP).</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag book">📚 BOOK</span>
+    <span class="ref-author">Hastie T, Tibshirani R, Friedman J.</span>
+    <span class="ref-title"> The Elements of Statistical Learning. </span>
+    Springer, 2nd ed. 2009.
+    <span class="ref-meta"><span data-lang="zh">線上免費 <a href="https://hastie.su.domains/ElemStatLearn/" target="_blank" rel="noopener">hastie.su.domains</a> · 統計 ML 經典</span><span data-lang="en">Free online at <a href="https://hastie.su.domains/ElemStatLearn/" target="_blank" rel="noopener">hastie.su.domains</a> · A classic statistical ML text</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SHAP</span>
+    <span class="ref-author">Lundberg SM, Lee SI.</span>
+    <span class="ref-title"> A Unified Approach to Interpreting Model Predictions. </span>
+    <em>NeurIPS</em> (2017).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1705.07874" target="_blank" rel="noopener">1705.07874</a> · 特徵重要性的標準工具</span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1705.07874" target="_blank" rel="noopener">1705.07874</a> · The standard tool for feature importance</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · LightGBM</span>
+    <span class="ref-author">Ke G, Meng Q, Finley T, et al.</span>
+    <span class="ref-title"> LightGBM: A Highly Efficient Gradient Boosting Decision Tree. </span>
+    <em>NeurIPS</em> (2017).
+    <span class="ref-meta"><span data-lang="zh">官方 <a href="https://lightgbm.readthedocs.io/" target="_blank" rel="noopener">lightgbm.readthedocs.io</a></span><span data-lang="en">Official site: <a href="https://lightgbm.readthedocs.io/" target="_blank" rel="noopener">lightgbm.readthedocs.io</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · AUPRC vs AUROC</span>
+    <span class="ref-author">Saito T, Rehmsmeier M.</span>
+    <span class="ref-title"> The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets. </span>
+    <em>PLoS ONE</em> 10(3): e0118432 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1371/journal.pone.0118432" target="_blank" rel="noopener">10.1371/journal.pone.0118432</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1371/journal.pone.0118432" target="_blank" rel="noopener">10.1371/journal.pone.0118432</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Wisconsin Breast Cancer</span>
+    <span class="ref-author">Wolberg WH, Mangasarian OL.</span>
+    <span class="ref-title"> Multisurface method of pattern separation for medical diagnosis applied to breast cytology. </span>
+    <em>PNAS</em> 87:9193–9196 (1990).
+    <span class="ref-meta"><span data-lang="zh">UCI <a href="https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic" target="_blank" rel="noopener">UCI repository</a></span><span data-lang="en"><a href="https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic" target="_blank" rel="noopener">UCI repository</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ TIP</span>
+    <span class="ref-title" data-zh="scikit-learn 使用者指南：cross-validation、metrics、pipelines。" data-en="scikit-learn user guide: cross-validation, metrics, and pipelines.">scikit-learn user guide：cross-validation、metrics、pipelines。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://scikit-learn.org/stable/user_guide.html" target="_blank" rel="noopener">scikit-learn.org/user_guide</a></span><span data-lang="en"><a href="https://scikit-learn.org/stable/user_guide.html" target="_blank" rel="noopener">scikit-learn.org/user_guide</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 03 ===================== -->
+<section class="section section-anchor" id="ch03">
+<div class="section-label" data-zh="Chapter 03" data-en="Chapter 03">Chapter 03</div>
+<h2 data-zh="🕸️ 深度學習基礎" data-en="🕸️ Deep Learning Basics">🕸️ 深度學習基礎</h2>
+<p data-lang="zh">神經元、反向傳播、CNN/RNN/Transformer 三大架構、訓練技巧。</p>
+<p data-lang="en">Neurons, backpropagation, the three main architectures (CNN/RNN/Transformer), and training techniques.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · Backprop</span>
+    <span class="ref-author">Rumelhart DE, Hinton GE, Williams RJ.</span>
+    <span class="ref-title"> Learning representations by back-propagating errors. </span>
+    <em>Nature</em> 323, 533–536 (1986).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener">10.1038/323533a0</a> · 反向傳播奠基</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener">10.1038/323533a0</a> · The foundational paper on backpropagation</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · CNN (LeNet)</span>
+    <span class="ref-author">LeCun Y, Bottou L, Bengio Y, Haffner P.</span>
+    <span class="ref-title"> Gradient-based learning applied to document recognition. </span>
+    <em>Proc IEEE</em> 86(11):2278–2324 (1998).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1109/5.726791" target="_blank" rel="noopener">10.1109/5.726791</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1109/5.726791" target="_blank" rel="noopener">10.1109/5.726791</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ResNet</span>
+    <span class="ref-author">He K, Zhang X, Ren S, Sun J.</span>
+    <span class="ref-title"> Deep Residual Learning for Image Recognition. </span>
+    <em>CVPR</em> (2016).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noopener">1512.03385</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noopener">1512.03385</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · LSTM</span>
+    <span class="ref-author">Hochreiter S, Schmidhuber J.</span>
+    <span class="ref-title"> Long Short-Term Memory. </span>
+    <em>Neural Computation</em> 9(8):1735–1780 (1997).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1162/neco.1997.9.8.1735" target="_blank" rel="noopener">10.1162/neco.1997.9.8.1735</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1162/neco.1997.9.8.1735" target="_blank" rel="noopener">10.1162/neco.1997.9.8.1735</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · DeepBind</span>
+    <span class="ref-author">Alipanahi B, Delong A, Weirauch MT, Frey BJ.</span>
+    <span class="ref-title"> Predicting the sequence specificities of DNA- and RNA-binding proteins by deep learning. </span>
+    <em>Nat Biotechnol</em> 33, 831–838 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/nbt.3300" target="_blank" rel="noopener">10.1038/nbt.3300</a> · 1D-CNN 應用於基因體先驅</span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/nbt.3300" target="_blank" rel="noopener">10.1038/nbt.3300</a> · Pioneer of 1D-CNN applied to genomics</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Adam optimizer</span>
+    <span class="ref-author">Kingma DP, Ba J.</span>
+    <span class="ref-title"> Adam: A Method for Stochastic Optimization. </span>
+    <em>ICLR</em> (2015).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1412.6980" target="_blank" rel="noopener">1412.6980</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1412.6980" target="_blank" rel="noopener">1412.6980</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · GELU 激活</span>
+    <span class="ref-author">Hendrycks D, Gimpel K.</span>
+    <span class="ref-title"> Gaussian Error Linear Units (GELUs). </span>
+    <em>arXiv</em> 1606.08415 (2016).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1606.08415" target="_blank" rel="noopener">1606.08415</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1606.08415" target="_blank" rel="noopener">1606.08415</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ TIP</span>
+    <span class="ref-title" data-zh="Karpathy A. A Recipe for Training Neural Networks（部落格文章）。" data-en="Karpathy A. A Recipe for Training Neural Networks (blog post).">Karpathy A. A Recipe for Training Neural Networks（部落格）。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://karpathy.github.io/2019/04/25/recipe/" target="_blank" rel="noopener">karpathy.github.io/recipe</a> · 訓練 DL 必讀</span><span data-lang="en"><a href="https://karpathy.github.io/2019/04/25/recipe/" target="_blank" rel="noopener">karpathy.github.io/recipe</a> · A must-read for training deep-learning models</span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 04 ===================== -->
+<section class="section section-anchor" id="ch04">
+<div class="section-label" data-zh="Chapter 04" data-en="Chapter 04">Chapter 04</div>
+<h2 data-zh="🔤 生物序列嵌入" data-en="🔤 Biological Sequence Embeddings">🔤 生物序列嵌入</h2>
+<p data-lang="zh">從 k-mer / word2vec 到 Transformer foundation models 的完整演進。</p>
+<p data-lang="en">The full evolution from k-mer and word2vec to Transformer foundation models.</p>
+
+<h3 data-zh="蛋白質序列嵌入" data-en="Protein Sequence Embeddings">蛋白質序列嵌入</h3>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · ESM-2</span>
+    <span class="ref-author">Lin Z, Akin H, Rao R, et al.</span>
+    <span class="ref-title"> Evolutionary-scale prediction of atomic-level protein structure with a language model. </span>
+    <em>Science</em> 379, 1123–1130 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1126/science.ade2574" target="_blank" rel="noopener">10.1126/science.ade2574</a> · GitHub <a href="https://github.com/facebookresearch/esm" target="_blank" rel="noopener">facebookresearch/esm</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1126/science.ade2574" target="_blank" rel="noopener">10.1126/science.ade2574</a> · GitHub: <a href="https://github.com/facebookresearch/esm" target="_blank" rel="noopener">facebookresearch/esm</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ESM3</span>
+    <span class="ref-author">Hayes T, Rao R, Akin H, et al.</span>
+    <span class="ref-title"> Simulating 500 million years of evolution with a language model. </span>
+    <em>Science</em> 387, 850–858 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.science.org/doi/10.1126/science.ads0018" target="_blank" rel="noopener">10.1126/science.ads0018</a> · 多模態 (序列+結構+功能)</span><span data-lang="en">DOI: <a href="https://www.science.org/doi/10.1126/science.ads0018" target="_blank" rel="noopener">10.1126/science.ads0018</a> · Multimodal (sequence + structure + function)</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ProtTrans / ProtBert</span>
+    <span class="ref-author">Elnaggar A, Heinzinger M, Dallago C, et al.</span>
+    <span class="ref-title"> ProtTrans: Towards Cracking the Language of Life&apos;s Code Through Self-Supervised Deep Learning. </span>
+    <em>IEEE TPAMI</em> 44, 7112–7127 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1109/TPAMI.2021.3095381" target="_blank" rel="noopener">10.1109/TPAMI.2021.3095381</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1109/TPAMI.2021.3095381" target="_blank" rel="noopener">10.1109/TPAMI.2021.3095381</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ProGen2</span>
+    <span class="ref-author">Nijkamp E, Ruffolo JA, Weinstein EN, Naik N, Madani A.</span>
+    <span class="ref-title"> ProGen2: Exploring the boundaries of protein language models. </span>
+    <em>Cell Systems</em> 14(11):968–978.e3 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.cels.2023.10.002" target="_blank" rel="noopener">10.1016/j.cels.2023.10.002</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.cels.2023.10.002" target="_blank" rel="noopener">10.1016/j.cels.2023.10.002</a></span></span>
+  </li>
+</ul>
+
+<h3 data-zh="DNA / RNA 序列嵌入" data-en="DNA / RNA Sequence Embeddings">DNA / RNA 序列嵌入</h3>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · DNABERT-2</span>
+    <span class="ref-author">Zhou Z, Ji Y, Li W, Dutta P, Davuluri R, Liu H.</span>
+    <span class="ref-title"> DNABERT-2: Efficient Foundation Model and Benchmark For Multi-Species Genome. </span>
+    <em>ICLR</em> (2024).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2306.15006" target="_blank" rel="noopener">2306.15006</a> · 含 GUE benchmark</span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2306.15006" target="_blank" rel="noopener">2306.15006</a> · Includes the GUE benchmark</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Nucleotide Transformer</span>
+    <span class="ref-author">Dalla-Torre H, Gonzalez L, Mendoza-Revilla J, et al.</span>
+    <span class="ref-title"> The Nucleotide Transformer: Building and Evaluating Robust Foundation Models for Human Genomics. </span>
+    <em>bioRxiv</em> 2023.01.11.523679 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.biorxiv.org/content/10.1101/2023.01.11.523679" target="_blank" rel="noopener">10.1101/2023.01.11.523679</a> · HuggingFace <a href="https://huggingface.co/InstaDeepAI" target="_blank" rel="noopener">InstaDeepAI</a></span><span data-lang="en">DOI: <a href="https://www.biorxiv.org/content/10.1101/2023.01.11.523679" target="_blank" rel="noopener">10.1101/2023.01.11.523679</a> · HuggingFace: <a href="https://huggingface.co/InstaDeepAI" target="_blank" rel="noopener">InstaDeepAI</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · HyenaDNA</span>
+    <span class="ref-author">Nguyen E, Poli M, Faizi M, et al.</span>
+    <span class="ref-title"> HyenaDNA: Long-Range Genomic Sequence Modeling at Single Nucleotide Resolution. </span>
+    <em>NeurIPS</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2306.15794" target="_blank" rel="noopener">2306.15794</a> · 1M token context</span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2306.15794" target="_blank" rel="noopener">2306.15794</a> · 1M-token context</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Evo</span>
+    <span class="ref-author">Nguyen E, Poli M, Durrant MG, et al.</span>
+    <span class="ref-title"> Sequence modeling and design from molecular to genome scale with Evo. </span>
+    <em>Science</em> 386, eado9336 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.science.org/doi/10.1126/science.ado9336" target="_blank" rel="noopener">10.1126/science.ado9336</a></span><span data-lang="en">DOI: <a href="https://www.science.org/doi/10.1126/science.ado9336" target="_blank" rel="noopener">10.1126/science.ado9336</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Evo 2</span>
+    <span class="ref-author">Brixi G, Durrant MG, Ku J, et al.</span>
+    <span class="ref-title"> Genome modeling and design across all domains of life with Evo 2. </span>
+    <em>Nature</em> (2026, in press).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41586-026-10176-5" target="_blank" rel="noopener">10.1038/s41586-026-10176-5</a> · bioRxiv <a href="https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1" target="_blank" rel="noopener">2025.02.18</a> · 9 兆 nt、40B params、1M context</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41586-026-10176-5" target="_blank" rel="noopener">10.1038/s41586-026-10176-5</a> · bioRxiv: <a href="https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1" target="_blank" rel="noopener">2025.02.18</a> · 9 trillion nt, 40B parameters, 1M context</span></span>
+  </li>
+  <li>
+    <span class="ref-tag code">💻 CODE</span>
+    <span class="ref-title" data-zh="FAISS — Facebook AI Similarity Search，向量檢索庫。" data-en="FAISS — Facebook AI Similarity Search, a vector similarity search library.">FAISS — Facebook AI Similarity Search 向量檢索庫。</span>
+    <span class="ref-meta"><span data-lang="zh">GitHub <a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">facebookresearch/faiss</a></span><span data-lang="en">GitHub: <a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">facebookresearch/faiss</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 05 ===================== -->
+<section class="section section-anchor" id="ch05">
+<div class="section-label" data-zh="Chapter 05" data-en="Chapter 05">Chapter 05</div>
+<h2 data-zh="🧬 蛋白質結構預測" data-en="🧬 Protein Structure Prediction">🧬 蛋白質結構預測</h2>
+<p data-lang="zh">AlphaFold 2/3、ESMFold、RoseTTAFold 系列。CASP 競賽歷程紀錄了領域里程碑。</p>
+<p data-lang="en">The AlphaFold 2/3, ESMFold, and RoseTTAFold series. The CASP competition history records the field's milestones.</p>
+
+<h3 data-zh="AlphaFold 系列" data-en="AlphaFold Series">AlphaFold 系列</h3>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · AlphaFold 2 ⭐</span>
+    <span class="ref-author">Jumper J, Evans R, Pritzel A, et al.</span>
+    <span class="ref-title"> Highly accurate protein structure prediction with AlphaFold. </span>
+    <em>Nature</em> 596, 583–589 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41586-021-03819-2" target="_blank" rel="noopener">10.1038/s41586-021-03819-2</a> · 引用 &gt; 25,000</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41586-021-03819-2" target="_blank" rel="noopener">10.1038/s41586-021-03819-2</a> · Cited &gt; 25,000 times</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · AlphaFold 3 ⭐</span>
+    <span class="ref-author">Abramson J, Adler J, Dunger J, et al.</span>
+    <span class="ref-title"> Accurate structure prediction of biomolecular interactions with AlphaFold 3. </span>
+    <em>Nature</em> 630, 493–500 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41586-024-07487-w" target="_blank" rel="noopener">10.1038/s41586-024-07487-w</a> · diffusion architecture</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41586-024-07487-w" target="_blank" rel="noopener">10.1038/s41586-024-07487-w</a> · Diffusion architecture</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · AlphaFold-Multimer</span>
+    <span class="ref-author">Evans R, O&apos;Neill M, Pritzel A, et al.</span>
+    <span class="ref-title"> Protein complex prediction with AlphaFold-Multimer. </span>
+    <em>bioRxiv</em> 2021.10.04.463034 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.biorxiv.org/content/10.1101/2021.10.04.463034v2" target="_blank" rel="noopener">10.1101/2021.10.04.463034</a></span><span data-lang="en">DOI: <a href="https://www.biorxiv.org/content/10.1101/2021.10.04.463034v2" target="_blank" rel="noopener">10.1101/2021.10.04.463034</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">🗄️ DB</span>
+    <span class="ref-title" data-zh="AlphaFold Protein Structure Database — 2 億條結構免費下載。" data-en="AlphaFold Protein Structure Database — 200 million structures available for free download.">AlphaFold Protein Structure Database — 2 億條結構免費下載。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://alphafold.ebi.ac.uk/" target="_blank" rel="noopener">alphafold.ebi.ac.uk</a></span><span data-lang="en"><a href="https://alphafold.ebi.ac.uk/" target="_blank" rel="noopener">alphafold.ebi.ac.uk</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · AlphaFold Server</span>
+    <span class="ref-title" data-zh="官方 web 預測平台（非商業使用免費）。" data-en="Official web-based prediction platform (free for non-commercial use).">官方 web 預測平台 (非商業免費)。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://alphafoldserver.com/" target="_blank" rel="noopener">alphafoldserver.com</a></span><span data-lang="en"><a href="https://alphafoldserver.com/" target="_blank" rel="noopener">alphafoldserver.com</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH</span>
+    <span class="ref-author">Various authors.</span>
+    <span class="ref-title"> A comprehensive benchmarking of the AlphaFold 3. </span>
+    <em>PubMed</em> (2025).
+    <span class="ref-meta"><span data-lang="zh"><a href="https://pubmed.ncbi.nlm.nih.gov/41313605/" target="_blank" rel="noopener">PMID 41313605</a></span><span data-lang="en"><a href="https://pubmed.ncbi.nlm.nih.gov/41313605/" target="_blank" rel="noopener">PMID 41313605</a></span></span>
+  </li>
+</ul>
+
+<h3 data-zh="ESMFold / RoseTTAFold" data-en="ESMFold / RoseTTAFold">ESMFold / RoseTTAFold</h3>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · ESMFold</span>
+    <span class="ref-author">Lin Z, Akin H, Rao R, et al.</span>
+    <span class="ref-title"> Language models of protein sequences at the scale of evolution enable accurate structure prediction. </span>
+    <em>bioRxiv</em> 2022.07.20.500902 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.biorxiv.org/content/10.1101/2022.07.20.500902" target="_blank" rel="noopener">10.1101/2022.07.20.500902</a> · 60× 比 AF2 快</span><span data-lang="en">DOI: <a href="https://www.biorxiv.org/content/10.1101/2022.07.20.500902" target="_blank" rel="noopener">10.1101/2022.07.20.500902</a> · 60× faster than AF2</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · RoseTTAFold</span>
+    <span class="ref-author">Baek M, DiMaio F, Anishchenko I, et al.</span>
+    <span class="ref-title"> Accurate prediction of protein structures and interactions using a three-track neural network. </span>
+    <em>Science</em> 373, 871–876 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.science.org/doi/10.1126/science.abj8754" target="_blank" rel="noopener">10.1126/science.abj8754</a></span><span data-lang="en">DOI: <a href="https://www.science.org/doi/10.1126/science.abj8754" target="_blank" rel="noopener">10.1126/science.abj8754</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · RoseTTAFold-AllAtom</span>
+    <span class="ref-author">Krishna R, Wang J, Ahern W, et al.</span>
+    <span class="ref-title"> Generalized biomolecular modeling and design with RoseTTAFold All-Atom. </span>
+    <em>Science</em> 384, eadl2528 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.science.org/doi/10.1126/science.adl2528" target="_blank" rel="noopener">10.1126/science.adl2528</a></span><span data-lang="en">DOI: <a href="https://www.science.org/doi/10.1126/science.adl2528" target="_blank" rel="noopener">10.1126/science.adl2528</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag code">💻 CODE · ColabFold</span>
+    <span class="ref-author">Mirdita M, Schütze K, Moriwaki Y, et al.</span>
+    <span class="ref-title"> ColabFold: making protein folding accessible to all. </span>
+    <em>Nat Methods</em> 19, 679–682 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1038/s41592-022-01488-1" target="_blank" rel="noopener">10.1038/s41592-022-01488-1</a> · GitHub <a href="https://github.com/sokrypton/ColabFold" target="_blank" rel="noopener">sokrypton/ColabFold</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1038/s41592-022-01488-1" target="_blank" rel="noopener">10.1038/s41592-022-01488-1</a> · GitHub: <a href="https://github.com/sokrypton/ColabFold" target="_blank" rel="noopener">sokrypton/ColabFold</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 06 ===================== -->
+<section class="section section-anchor" id="ch06">
+<div class="section-label" data-zh="Chapter 06" data-en="Chapter 06">Chapter 06</div>
+<h2 data-zh="🛠️ 蛋白質從頭設計 (De Novo Design)" data-en="🛠️ De Novo Protein Design">🛠️ 蛋白質從頭設計 (De Novo Design)</h2>
+<p data-lang="zh">RFdiffusion 生成 backbone、ProteinMPNN 設計序列、AlphaFold 驗證——Baker Lab (2024 諾貝爾化學獎) 一脈相承的工具鏈。</p>
+<p data-lang="en">RFdiffusion generates the backbone, ProteinMPNN designs the sequence, and AlphaFold validates — an integrated toolchain from the Baker Lab (2024 Nobel Prize in Chemistry).</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · RFdiffusion ⭐</span>
+    <span class="ref-author">Watson JL, Juergens D, Bennett NR, et al.</span>
+    <span class="ref-title"> De novo design of protein structure and function with RFdiffusion. </span>
+    <em>Nature</em> 620, 1089–1100 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41586-023-06415-8" target="_blank" rel="noopener">10.1038/s41586-023-06415-8</a> · GitHub <a href="https://github.com/RosettaCommons/RFdiffusion" target="_blank" rel="noopener">RosettaCommons/RFdiffusion</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41586-023-06415-8" target="_blank" rel="noopener">10.1038/s41586-023-06415-8</a> · GitHub: <a href="https://github.com/RosettaCommons/RFdiffusion" target="_blank" rel="noopener">RosettaCommons/RFdiffusion</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ProteinMPNN ⭐</span>
+    <span class="ref-author">Dauparas J, Anishchenko I, Bennett N, et al.</span>
+    <span class="ref-title"> Robust deep learning–based protein sequence design using ProteinMPNN. </span>
+    <em>Science</em> 378, 49–56 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.science.org/doi/10.1126/science.add2187" target="_blank" rel="noopener">10.1126/science.add2187</a> · GitHub <a href="https://github.com/dauparas/ProteinMPNN" target="_blank" rel="noopener">dauparas/ProteinMPNN</a></span><span data-lang="en">DOI: <a href="https://www.science.org/doi/10.1126/science.add2187" target="_blank" rel="noopener">10.1126/science.add2187</a> · GitHub: <a href="https://github.com/dauparas/ProteinMPNN" target="_blank" rel="noopener">dauparas/ProteinMPNN</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · RFdiffusion-Ab</span>
+    <span class="ref-author">Bennett NR, Watson JL, Ragotte RJ, et al.</span>
+    <span class="ref-title"> Atomically accurate de novo design of single-domain antibodies. </span>
+    <em>bioRxiv / Nature</em> (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10983868/" target="_blank" rel="noopener">PMC10983868</a></span><span data-lang="en">DOI: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10983868/" target="_blank" rel="noopener">PMC10983868</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · LigandMPNN</span>
+    <span class="ref-author">Dauparas J, Lee GR, Pecoraro R, et al.</span>
+    <span class="ref-title"> Atomic context-conditioned protein sequence design using LigandMPNN. </span>
+    <em>Nat Methods</em> (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41592-024-02510-3" target="_blank" rel="noopener">10.1038/s41592-024-02510-3</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41592-024-02510-3" target="_blank" rel="noopener">10.1038/s41592-024-02510-3</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Chroma</span>
+    <span class="ref-author">Ingraham JB, Baranov M, Costello Z, et al.</span>
+    <span class="ref-title"> Illuminating protein space with a programmable generative model. </span>
+    <em>Nature</em> 623, 1070–1078 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41586-023-06728-8" target="_blank" rel="noopener">10.1038/s41586-023-06728-8</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41586-023-06728-8" target="_blank" rel="noopener">10.1038/s41586-023-06728-8</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ TUTORIAL</span>
+    <span class="ref-author">Khakzad H, Igashov I, Krapp LF, et al.</span>
+    <span class="ref-title"> Artificial Intelligence for Protein Design (AAAI 2025 Tutorial). </span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://deepgraphlearning.github.io/ProteinTutorial_AAAI2025/" target="_blank" rel="noopener">deepgraphlearning.github.io</a></span><span data-lang="en"><a href="https://deepgraphlearning.github.io/ProteinTutorial_AAAI2025/" target="_blank" rel="noopener">deepgraphlearning.github.io</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · Baker Lab software</span>
+    <span class="ref-title" data-zh="UW Institute for Protein Design 軟體列表（含 RFdiffusion / ProteinMPNN / RoseTTAFold-AA）。" data-en="Software list from the UW Institute for Protein Design (includes RFdiffusion, ProteinMPNN, and RoseTTAFold-AA).">UW Institute for Protein Design 軟體列表（含 RFdiffusion / ProteinMPNN / RoseTTAFold-AA）。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.ipd.uw.edu/software/" target="_blank" rel="noopener">ipd.uw.edu/software</a></span><span data-lang="en"><a href="https://www.ipd.uw.edu/software/" target="_blank" rel="noopener">ipd.uw.edu/software</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 07 ===================== -->
+<section class="section section-anchor" id="ch07">
+<div class="section-label" data-zh="Chapter 07" data-en="Chapter 07">Chapter 07</div>
+<h2 data-zh="🔗 蛋白-配體交互作用" data-en="🔗 Protein-Ligand Interactions">🔗 蛋白-配體交互作用</h2>
+<p data-lang="zh">DiffDock、AlphaFold 3-Multimer、PoseBusters、affinity 預測與 FEP+。</p>
+<p data-lang="en">DiffDock, AlphaFold 3-Multimer, PoseBusters, affinity prediction, and FEP+.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · DiffDock ⭐</span>
+    <span class="ref-author">Corso G, Stärk H, Jing B, Barzilay R, Jaakkola T.</span>
+    <span class="ref-title"> DiffDock: Diffusion Steps, Twists, and Turns for Molecular Docking. </span>
+    <em>ICLR</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2210.01776" target="_blank" rel="noopener">2210.01776</a> · GitHub <a href="https://github.com/gcorso/DiffDock" target="_blank" rel="noopener">gcorso/DiffDock</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2210.01776" target="_blank" rel="noopener">2210.01776</a> · GitHub: <a href="https://github.com/gcorso/DiffDock" target="_blank" rel="noopener">gcorso/DiffDock</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · PoseBusters ⭐</span>
+    <span class="ref-author">Buttenschoen M, Morris GM, Deane CM.</span>
+    <span class="ref-title"> PoseBusters: AI-based docking methods fail to generate physically valid poses or generalise to novel sequences. </span>
+    <em>Chem Sci</em> 15, 3130–3139 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://pubs.rsc.org/en/content/articlehtml/2024/sc/d3sc04185a" target="_blank" rel="noopener">10.1039/D3SC04185A</a> · 已成 docking 論文 de facto bar</span><span data-lang="en">DOI: <a href="https://pubs.rsc.org/en/content/articlehtml/2024/sc/d3sc04185a" target="_blank" rel="noopener">10.1039/D3SC04185A</a> · The de facto bar for docking papers</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · GNINA</span>
+    <span class="ref-author">McNutt AT, Francoeur P, Aggarwal R, et al.</span>
+    <span class="ref-title"> GNINA 1.0: molecular docking with deep learning. </span>
+    <em>J Cheminform</em> 13:43 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1186/s13321-021-00522-2" target="_blank" rel="noopener">10.1186/s13321-021-00522-2</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1186/s13321-021-00522-2" target="_blank" rel="noopener">10.1186/s13321-021-00522-2</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · AutoDock Vina</span>
+    <span class="ref-author">Eberhardt J, Santos-Martins D, Tillack AF, Forli S.</span>
+    <span class="ref-title"> AutoDock Vina 1.2.0: New Docking Methods, Expanded Force Field, and Python Bindings. </span>
+    <em>J Chem Inf Model</em> 61(8):3891–3898 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1021/acs.jcim.1c00203" target="_blank" rel="noopener">10.1021/acs.jcim.1c00203</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1021/acs.jcim.1c00203" target="_blank" rel="noopener">10.1021/acs.jcim.1c00203</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Boltz-1</span>
+    <span class="ref-author">Wohlwend J, Corso G, Passaro S, et al.</span>
+    <span class="ref-title"> Boltz-1: Democratizing Biomolecular Interaction Modeling. </span>
+    <em>bioRxiv</em> 2024.11.19.624167 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.biorxiv.org/content/10.1101/2024.11.19.624167" target="_blank" rel="noopener">10.1101/2024.11.19.624167</a> · GitHub <a href="https://github.com/jwohlwend/boltz" target="_blank" rel="noopener">jwohlwend/boltz</a></span><span data-lang="en">DOI: <a href="https://www.biorxiv.org/content/10.1101/2024.11.19.624167" target="_blank" rel="noopener">10.1101/2024.11.19.624167</a> · GitHub: <a href="https://github.com/jwohlwend/boltz" target="_blank" rel="noopener">jwohlwend/boltz</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · DiffDock-Glide</span>
+    <span class="ref-author">Various.</span>
+    <span class="ref-title"> DiffDock-Glide: a hybrid physics-based and data-driven approach to molecular docking. </span>
+    <em>bioRxiv</em> 2025.06.02.657461 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.biorxiv.org/content/10.1101/2025.06.02.657461v1" target="_blank" rel="noopener">10.1101/2025.06.02.657461</a></span><span data-lang="en">DOI: <a href="https://www.biorxiv.org/content/10.1101/2025.06.02.657461v1" target="_blank" rel="noopener">10.1101/2025.06.02.657461</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH</span>
+    <span class="ref-author">Various.</span>
+    <span class="ref-title"> Decoding the limits of deep learning in molecular docking for drug discovery. </span>
+    <em>Chem Sci</em> (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://pubs.rsc.org/en/content/articlehtml/2025/sc/d5sc05395a" target="_blank" rel="noopener">10.1039/D5SC05395A</a></span><span data-lang="en">DOI: <a href="https://pubs.rsc.org/en/content/articlehtml/2025/sc/d5sc05395a" target="_blank" rel="noopener">10.1039/D5SC05395A</a></span></span>
+  </li>
+</ul>
+</section>
+<!-- (continues Part 2 below — Ch 08-14, datasets, errata) -->
+
+<!-- ===================== Ch 08 ===================== -->
+<section class="section section-anchor" id="ch08">
+<div class="section-label" data-zh="Chapter 08" data-en="Chapter 08">Chapter 08</div>
+<h2 data-zh="🎛️ 調控基因體 AI" data-en="🎛️ Regulatory Genomics AI">🎛️ 調控基因體 AI</h2>
+<p data-lang="zh">從 DeepSEA 到 AlphaGenome，序列→功能模型五個世代演進。</p>
+<p data-lang="en">From DeepSEA to AlphaGenome — five generations of sequence-to-function model evolution.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · DeepSEA</span>
+    <span class="ref-author">Zhou J, Troyanskaya OG.</span>
+    <span class="ref-title"> Predicting effects of noncoding variants with deep learning–based sequence model. </span>
+    <em>Nat Methods</em> 12, 931–934 (2015).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/nmeth.3547" target="_blank" rel="noopener">10.1038/nmeth.3547</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/nmeth.3547" target="_blank" rel="noopener">10.1038/nmeth.3547</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Basenji 2</span>
+    <span class="ref-author">Kelley DR.</span>
+    <span class="ref-title"> Cross-species regulatory sequence activity prediction. </span>
+    <em>PLoS Comput Biol</em> 16(7):e1008050 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1371/journal.pcbi.1008050" target="_blank" rel="noopener">10.1371/journal.pcbi.1008050</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1371/journal.pcbi.1008050" target="_blank" rel="noopener">10.1371/journal.pcbi.1008050</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Enformer ⭐</span>
+    <span class="ref-author">Avsec Ž, Agarwal V, Visentin D, et al.</span>
+    <span class="ref-title"> Effective gene expression prediction from sequence by integrating long-range interactions. </span>
+    <em>Nat Methods</em> 18, 1196–1203 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41592-021-01252-x" target="_blank" rel="noopener">10.1038/s41592-021-01252-x</a> · 200 kb context</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41592-021-01252-x" target="_blank" rel="noopener">10.1038/s41592-021-01252-x</a> · 200 kb context window</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Borzoi ⭐</span>
+    <span class="ref-author">Linder J, Srivastava D, Yuan H, Agarwal V, Kelley DR.</span>
+    <span class="ref-title"> Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation. </span>
+    <em>Nat Genet</em> 57, 949–961 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41588-024-02053-6" target="_blank" rel="noopener">10.1038/s41588-024-02053-6</a> · GitHub <a href="https://github.com/calico/borzoi" target="_blank" rel="noopener">calico/borzoi</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41588-024-02053-6" target="_blank" rel="noopener">10.1038/s41588-024-02053-6</a> · GitHub: <a href="https://github.com/calico/borzoi" target="_blank" rel="noopener">calico/borzoi</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Flashzoi</span>
+    <span class="ref-author">Hingerl JC, Karollus A, Gagneur J.</span>
+    <span class="ref-title"> Flashzoi: an enhanced Borzoi for accelerated genomic analysis. </span>
+    <em>Bioinformatics</em> 41, btaf467 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://academic.oup.com/bioinformatics/article/41/9/btaf467/8248080" target="_blank" rel="noopener">btaf467</a> · 3× 推論加速</span><span data-lang="en">DOI: <a href="https://academic.oup.com/bioinformatics/article/41/9/btaf467/8248080" target="_blank" rel="noopener">btaf467</a> · 3× inference speedup</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · BPNet</span>
+    <span class="ref-author">Avsec Ž, Weilert M, Shrikumar A, et al.</span>
+    <span class="ref-title"> Base-resolution models of transcription-factor binding reveal soft motif syntax. </span>
+    <em>Nat Genet</em> 53, 354–366 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41588-021-00782-6" target="_blank" rel="noopener">10.1038/s41588-021-00782-6</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41588-021-00782-6" target="_blank" rel="noopener">10.1038/s41588-021-00782-6</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH</span>
+    <span class="ref-author">Linder J, Kundaje A.</span>
+    <span class="ref-title"> Deep-learning prediction of gene expression from personal genomes. </span>
+    <em>PMC</em> (2025).
+    <span class="ref-meta"><span data-lang="zh"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12869966/" target="_blank" rel="noopener">PMC12869966</a></span><span data-lang="en"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12869966/" target="_blank" rel="noopener">PMC12869966</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · AlphaGenome</span>
+    <span class="ref-author">Various (Google DeepMind).</span>
+    <span class="ref-title"> AlphaGenome Enhances Personal Gene Expression Prediction but Retains Key Limitations. </span>
+    <em>bioRxiv</em> 2025.08.05.668750 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.biorxiv.org/content/10.1101/2025.08.05.668750v2.full" target="_blank" rel="noopener">10.1101/2025.08.05.668750</a></span><span data-lang="en">DOI: <a href="https://www.biorxiv.org/content/10.1101/2025.08.05.668750v2.full" target="_blank" rel="noopener">10.1101/2025.08.05.668750</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ SURVEY</span>
+    <span class="ref-author">Tang Z, Toneyan S, Koo PK.</span>
+    <span class="ref-title"> Leveraging genomic deep learning models for non-coding variant effect prediction. </span>
+    <em>arXiv</em> 2411.11158 (2024).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2411.11158" target="_blank" rel="noopener">2411.11158</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2411.11158" target="_blank" rel="noopener">2411.11158</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 09 ===================== -->
+<section class="section section-anchor" id="ch09">
+<div class="section-label" data-zh="Chapter 09" data-en="Chapter 09">Chapter 09</div>
+<h2 data-zh="🧪 變異判讀與剪接預測" data-en="🧪 Variant Calling & Splicing Prediction">🧪 變異判讀與剪接預測</h2>
+<p data-lang="zh">DeepVariant 對抗 GATK、SpliceAI 在臨床診斷的角色與限制、AlphaMissense 全人類覆蓋。</p>
+<p data-lang="en">DeepVariant versus GATK, the role and limitations of SpliceAI in clinical diagnosis, and AlphaMissense's whole-human coverage.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · DeepVariant</span>
+    <span class="ref-author">Poplin R, Chang PC, Alexander D, et al.</span>
+    <span class="ref-title"> A universal SNP and small-indel variant caller using deep neural networks. </span>
+    <em>Nat Biotechnol</em> 36, 983–987 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/nbt.4235" target="_blank" rel="noopener">10.1038/nbt.4235</a> · GitHub <a href="https://github.com/google/deepvariant" target="_blank" rel="noopener">google/deepvariant</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/nbt.4235" target="_blank" rel="noopener">10.1038/nbt.4235</a> · GitHub: <a href="https://github.com/google/deepvariant" target="_blank" rel="noopener">google/deepvariant</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SpliceAI ⭐</span>
+    <span class="ref-author">Jaganathan K, Panagiotopoulou SK, McRae JF, et al.</span>
+    <span class="ref-title"> Predicting Splicing from Primary Sequence with Deep Learning. </span>
+    <em>Cell</em> 176, 535–548 (2019).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.cell.com/cell/fulltext/S0092-8674(18)31629-5" target="_blank" rel="noopener">10.1016/j.cell.2018.12.015</a></span><span data-lang="en">DOI: <a href="https://www.cell.com/cell/fulltext/S0092-8674(18)31629-5" target="_blank" rel="noopener">10.1016/j.cell.2018.12.015</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · AlphaMissense ⭐</span>
+    <span class="ref-author">Cheng J, Novati G, Pan J, et al.</span>
+    <span class="ref-title"> Accurate proteome-wide missense variant effect prediction with AlphaMissense. </span>
+    <em>Science</em> 381, eadg7492 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.science.org/doi/10.1126/science.adg7492" target="_blank" rel="noopener">10.1126/science.adg7492</a> · 71M variants 全覆蓋</span><span data-lang="en">DOI: <a href="https://www.science.org/doi/10.1126/science.adg7492" target="_blank" rel="noopener">10.1126/science.adg7492</a> · Complete coverage of 71M variants</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ESM-1v</span>
+    <span class="ref-author">Meier J, Rao R, Verkuil R, Liu J, Sercu T, Rives A.</span>
+    <span class="ref-title"> Language models enable zero-shot prediction of the effects of mutations on protein function. </span>
+    <em>NeurIPS</em> (2021).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2108.05540" target="_blank" rel="noopener">2108.05540</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2108.05540" target="_blank" rel="noopener">2108.05540</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · PrimateAI-3D</span>
+    <span class="ref-author">Gao H, Hamp T, Ede J, et al.</span>
+    <span class="ref-title"> The landscape of tolerated genetic variation in humans and primates. </span>
+    <em>Science</em> 380, eabn8197 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.science.org/doi/10.1126/science.abn8197" target="_blank" rel="noopener">10.1126/science.abn8197</a></span><span data-lang="en">DOI: <a href="https://www.science.org/doi/10.1126/science.abn8197" target="_blank" rel="noopener">10.1126/science.abn8197</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · REVEL</span>
+    <span class="ref-author">Ioannidis NM, Rothstein JH, Pejaver V, et al.</span>
+    <span class="ref-title"> REVEL: An Ensemble Method for Predicting the Pathogenicity of Rare Missense Variants. </span>
+    <em>Am J Hum Genet</em> 99(4):877–885 (2016).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1016/j.ajhg.2016.08.016" target="_blank" rel="noopener">10.1016/j.ajhg.2016.08.016</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1016/j.ajhg.2016.08.016" target="_blank" rel="noopener">10.1016/j.ajhg.2016.08.016</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ESM Variant 2025</span>
+    <span class="ref-author">Brandes N, Goldman G, Wang CH, Ye CJ, Ntranos V.</span>
+    <span class="ref-title"> Genome-wide prediction of disease variant effects with a deep protein language model. </span>
+    <em>Nat Genet</em> 55, 1512–1522 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41588-023-01465-0" target="_blank" rel="noopener">10.1038/s41588-023-01465-0</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41588-023-01465-0" target="_blank" rel="noopener">10.1038/s41588-023-01465-0</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH · 2025 SpliceAI 警示</span>
+    <span class="ref-author">Various.</span>
+    <span class="ref-title"> Using SpliceAI to triage splice-altering variants in 7,220 individuals with rare conditions highlights limitations of the precomputed scores. </span>
+    <em>medRxiv</em> 2025.08.27.25334471 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.medrxiv.org/content/10.1101/2025.08.27.25334471v1" target="_blank" rel="noopener">10.1101/2025.08.27.25334471</a></span><span data-lang="en">DOI: <a href="https://www.medrxiv.org/content/10.1101/2025.08.27.25334471v1" target="_blank" rel="noopener">10.1101/2025.08.27.25334471</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH</span>
+    <span class="ref-author">Various.</span>
+    <span class="ref-title"> Artificial intelligence in variant calling: a review. </span>
+    <em>Front Bioinform</em> (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2025.1574359/full" target="_blank" rel="noopener">fbinf.2025.1574359</a></span><span data-lang="en">DOI: <a href="https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2025.1574359/full" target="_blank" rel="noopener">fbinf.2025.1574359</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">🗄️ DB · ClinVar</span>
+    <span class="ref-title" data-zh="NCBI ClinVar 變異與臨床顯著性註解資料庫。" data-en="NCBI ClinVar — a database of variants and their clinical-significance annotations.">NCBI ClinVar 變異與臨床顯著性註解資料庫。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank" rel="noopener">ncbi.nlm.nih.gov/clinvar</a></span><span data-lang="en"><a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank" rel="noopener">ncbi.nlm.nih.gov/clinvar</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">🗄️ DB · gnomAD</span>
+    <span class="ref-title" data-zh="Genome Aggregation Database — 800k+ exomes/genomes 等位頻率。" data-en="Genome Aggregation Database — allele frequencies from 800k+ exomes and genomes.">Genome Aggregation Database — 800k+ exomes/genomes 等位頻率。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://gnomad.broadinstitute.org/" target="_blank" rel="noopener">gnomad.broadinstitute.org</a></span><span data-lang="en"><a href="https://gnomad.broadinstitute.org/" target="_blank" rel="noopener">gnomad.broadinstitute.org</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 10 ===================== -->
+<section class="section section-anchor" id="ch10">
+<div class="section-label" data-zh="Chapter 10" data-en="Chapter 10">Chapter 10</div>
+<h2 data-zh="🦠 單細胞基礎模型" data-en="🦠 Single-Cell Foundation Models">🦠 單細胞基礎模型</h2>
+<p data-lang="zh">scVI、scGPT、Geneformer、scFoundation：從機率模型到 foundation model 的 6 年演進。</p>
+<p data-lang="en">scVI, scGPT, Geneformer, scFoundation: six years of evolution from probabilistic models to foundation models.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · scVI ⭐</span>
+    <span class="ref-author">Lopez R, Regier J, Cole MB, Jordan MI, Yosef N.</span>
+    <span class="ref-title"> Deep generative modeling for single-cell transcriptomics. </span>
+    <em>Nat Methods</em> 15, 1053–1058 (2018).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41592-018-0229-2" target="_blank" rel="noopener">10.1038/s41592-018-0229-2</a> · 官方 <a href="https://scvi-tools.org/" target="_blank" rel="noopener">scvi-tools.org</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41592-018-0229-2" target="_blank" rel="noopener">10.1038/s41592-018-0229-2</a> · Official site: <a href="https://scvi-tools.org/" target="_blank" rel="noopener">scvi-tools.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · scGPT ⭐</span>
+    <span class="ref-author">Cui H, Wang C, Maan H, et al.</span>
+    <span class="ref-title"> scGPT: toward building a foundation model for single-cell multi-omics using generative AI. </span>
+    <em>Nat Methods</em> 21, 1470–1480 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41592-024-02201-0" target="_blank" rel="noopener">10.1038/s41592-024-02201-0</a> · ~33M cells 預訓練</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41592-024-02201-0" target="_blank" rel="noopener">10.1038/s41592-024-02201-0</a> · Pretrained on ~33M cells</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Geneformer</span>
+    <span class="ref-author">Theodoris CV, Xiao L, Chopra A, et al.</span>
+    <span class="ref-title"> Transfer learning enables predictions in network biology. </span>
+    <em>Nature</em> 618, 616–624 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41586-023-06139-9" target="_blank" rel="noopener">10.1038/s41586-023-06139-9</a> · Genecorpus-30M</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41586-023-06139-9" target="_blank" rel="noopener">10.1038/s41586-023-06139-9</a> · Trained on Genecorpus-30M</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · scFoundation</span>
+    <span class="ref-author">Hao M, Gong J, Zeng X, et al.</span>
+    <span class="ref-title"> Large scale foundation model on single-cell transcriptomics. </span>
+    <em>Nat Methods</em> 21, 1481–1491 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41592-024-02305-7" target="_blank" rel="noopener">10.1038/s41592-024-02305-7</a> · ~50M cells</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41592-024-02305-7" target="_blank" rel="noopener">10.1038/s41592-024-02305-7</a> · Pretrained on ~50M cells</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · UCE</span>
+    <span class="ref-author">Rosen Y, Roohani Y, Agrawal A, et al.</span>
+    <span class="ref-title"> Universal Cell Embeddings: A Foundation Model for Cell Biology. </span>
+    <em>bioRxiv</em> 2023.11.28.568918 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.biorxiv.org/content/10.1101/2023.11.28.568918" target="_blank" rel="noopener">10.1101/2023.11.28.568918</a></span><span data-lang="en">DOI: <a href="https://www.biorxiv.org/content/10.1101/2023.11.28.568918" target="_blank" rel="noopener">10.1101/2023.11.28.568918</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · CellPLM</span>
+    <span class="ref-author">Wen H, Tang W, Dai X, et al.</span>
+    <span class="ref-title"> CellPLM: Pre-training of Cell Language Model Beyond Single Cells. </span>
+    <em>ICLR</em> (2024).
+    <span class="ref-meta"><span data-lang="zh"><a href="https://openreview.net/forum?id=BKXvPDekud" target="_blank" rel="noopener">OpenReview</a></span><span data-lang="en"><a href="https://openreview.net/forum?id=BKXvPDekud" target="_blank" rel="noopener">OpenReview</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · SCimilarity</span>
+    <span class="ref-author">Heimberg G, Kuo T, DePianto DJ, et al.</span>
+    <span class="ref-title"> A cell atlas foundation model for scalable search of similar human cells. </span>
+    <em>Nature</em> 638, 1085–1094 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41586-024-08411-y" target="_blank" rel="noopener">10.1038/s41586-024-08411-y</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41586-024-08411-y" target="_blank" rel="noopener">10.1038/s41586-024-08411-y</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH</span>
+    <span class="ref-author">Liu T, Chen K, et al.</span>
+    <span class="ref-title"> A Systematic Evaluation of Single-Cell Foundation Models on Cell-Type Classification Task. </span>
+    <em>WSDM</em> (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://dl.acm.org/doi/10.1145/3701551.3708811" target="_blank" rel="noopener">10.1145/3701551.3708811</a></span><span data-lang="en">DOI: <a href="https://dl.acm.org/doi/10.1145/3701551.3708811" target="_blank" rel="noopener">10.1145/3701551.3708811</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ SURVEY 2025</span>
+    <span class="ref-author">Various.</span>
+    <span class="ref-title"> Single-cell foundation models: bringing artificial intelligence into cell biology. </span>
+    <em>PMC</em> (2025).
+    <span class="ref-meta"><span data-lang="zh"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12586647/" target="_blank" rel="noopener">PMC12586647</a></span><span data-lang="en"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12586647/" target="_blank" rel="noopener">PMC12586647</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · scanpy</span>
+    <span class="ref-title" data-zh="scanpy 官方文件（scverse / Theis Lab）。" data-en="Official scanpy documentation (scverse / Theis Lab).">scanpy 官方文件（scverse / Theis Lab）。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://scanpy.readthedocs.io/" target="_blank" rel="noopener">scanpy.readthedocs.io</a></span><span data-lang="en"><a href="https://scanpy.readthedocs.io/" target="_blank" rel="noopener">scanpy.readthedocs.io</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · Seurat v5</span>
+    <span class="ref-author">Hao Y, Stuart T, Kowalski MH, et al.</span>
+    <span class="ref-title"> Dictionary learning for integrative, multimodal and scalable single-cell analysis. </span>
+    <em>Nat Biotechnol</em> 42, 293–304 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41587-023-01767-y" target="_blank" rel="noopener">10.1038/s41587-023-01767-y</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41587-023-01767-y" target="_blank" rel="noopener">10.1038/s41587-023-01767-y</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 11 ===================== -->
+<section class="section section-anchor" id="ch11">
+<div class="section-label" data-zh="Chapter 11" data-en="Chapter 11">Chapter 11</div>
+<h2 data-zh="💊 AI 驅動藥物發現" data-en="💊 AI-Driven Drug Discovery">💊 AI 驅動藥物發現</h2>
+<p data-lang="zh">分子生成、虛擬篩選、ADMET、靶點識別、臨床試驗預測的端到端工具鏈。</p>
+<p data-lang="en">An end-to-end toolchain spanning molecular generation, virtual screening, ADMET, target identification, and clinical trial prediction.</p>
+
+<h3 data-zh="分子生成" data-en="Molecular Generation">分子生成</h3>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · REINVENT 4</span>
+    <span class="ref-author">Loeffler HH, He J, Tibo A, et al.</span>
+    <span class="ref-title"> REINVENT 4: Modern AI-driven generative molecule design. </span>
+    <em>J Cheminform</em> 16, 20 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://doi.org/10.1186/s13321-024-00812-5" target="_blank" rel="noopener">10.1186/s13321-024-00812-5</a> · GitHub <a href="https://github.com/MolecularAI/REINVENT4" target="_blank" rel="noopener">MolecularAI/REINVENT4</a></span><span data-lang="en">DOI: <a href="https://doi.org/10.1186/s13321-024-00812-5" target="_blank" rel="noopener">10.1186/s13321-024-00812-5</a> · GitHub: <a href="https://github.com/MolecularAI/REINVENT4" target="_blank" rel="noopener">MolecularAI/REINVENT4</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Pocket2Mol</span>
+    <span class="ref-author">Peng X, Luo S, Guan J, Xie Q, Peng J, Ma J.</span>
+    <span class="ref-title"> Pocket2Mol: Efficient Molecular Sampling Based on 3D Protein Pockets. </span>
+    <em>ICML</em> (2022).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2205.07249" target="_blank" rel="noopener">2205.07249</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2205.07249" target="_blank" rel="noopener">2205.07249</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · TargetDiff</span>
+    <span class="ref-author">Guan J, Qian WW, Peng X, et al.</span>
+    <span class="ref-title"> 3D Equivariant Diffusion for Target-Aware Molecule Generation. </span>
+    <em>ICLR</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2303.03543" target="_blank" rel="noopener">2303.03543</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2303.03543" target="_blank" rel="noopener">2303.03543</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · MolMIM</span>
+    <span class="ref-author">Reidenbach D, Livne M, Ilango RK, Gill M, Israelidi J.</span>
+    <span class="ref-title"> Improving Small Molecule Generation using Mutual Information Machine. </span>
+    <em>arXiv</em> 2208.09016 (2022).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2208.09016" target="_blank" rel="noopener">2208.09016</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2208.09016" target="_blank" rel="noopener">2208.09016</a></span></span>
+  </li>
+</ul>
+
+<h3 data-zh="ADMET 預測" data-en="ADMET Prediction">ADMET 預測</h3>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · ADMET-AI</span>
+    <span class="ref-author">Swanson K, Walther P, Leitz J, et al.</span>
+    <span class="ref-title"> ADMET-AI: a machine learning ADMET platform for evaluation of large-scale chemical libraries. </span>
+    <em>Bioinformatics</em> 40, btae416 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://academic.oup.com/bioinformatics/article/40/7/btae416" target="_blank" rel="noopener">btae416</a> · 線上 <a href="https://admet.ai.greenstonebio.com/" target="_blank" rel="noopener">admet.ai</a></span><span data-lang="en">DOI: <a href="https://academic.oup.com/bioinformatics/article/40/7/btae416" target="_blank" rel="noopener">btae416</a> · Online tool: <a href="https://admet.ai.greenstonebio.com/" target="_blank" rel="noopener">admet.ai</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · SwissADME</span>
+    <span class="ref-title" data-zh="免費線上 ADMET / drug-likeness 預測工具。" data-en="Free online ADMET / drug-likeness prediction tool.">免費線上 ADMET / drug-likeness 預測。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="http://www.swissadme.ch/" target="_blank" rel="noopener">swissadme.ch</a></span><span data-lang="en"><a href="http://www.swissadme.ch/" target="_blank" rel="noopener">swissadme.ch</a></span></span>
+  </li>
+</ul>
+
+<h3 data-zh="標靶與案例" data-en="Targets & Case Studies">標靶與案例</h3>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · Halicin (AI 抗生素)</span>
+    <span class="ref-author">Stokes JM, Yang K, Swanson K, et al.</span>
+    <span class="ref-title"> A Deep Learning Approach to Antibiotic Discovery. </span>
+    <em>Cell</em> 180(4):688–702.e13 (2020).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.cell.com/cell/fulltext/S0092-8674(20)30102-1" target="_blank" rel="noopener">10.1016/j.cell.2020.01.021</a></span><span data-lang="en">DOI: <a href="https://www.cell.com/cell/fulltext/S0092-8674(20)30102-1" target="_blank" rel="noopener">10.1016/j.cell.2020.01.021</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · INS018_055 (Insilico)</span>
+    <span class="ref-author">Ren F, Aliper A, Chen J, et al.</span>
+    <span class="ref-title"> A small-molecule TNIK inhibitor targets fibrosis in preclinical and clinical models. </span>
+    <em>Nat Biotechnol</em> 43, 63–75 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41587-024-02143-0" target="_blank" rel="noopener">10.1038/s41587-024-02143-0</a> · 第一個 AI-驅動 Phase II 分子</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41587-024-02143-0" target="_blank" rel="noopener">10.1038/s41587-024-02143-0</a> · The first AI-driven molecule to reach Phase II</span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">🗄️ DB · Open Targets</span>
+    <span class="ref-author">Ochoa D, Hercules A, Carmona M, et al.</span>
+    <span class="ref-title"> The next-generation Open Targets Platform: reimagined, redesigned, rebuilt. </span>
+    <em>Nucleic Acids Res</em> 51, D1353–D1359 (2023).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://academic.oup.com/nar/article/51/D1/D1353/6786194" target="_blank" rel="noopener">DOI</a> · <a href="https://platform.opentargets.org/" target="_blank" rel="noopener">platform.opentargets.org</a></span><span data-lang="en">DOI: <a href="https://academic.oup.com/nar/article/51/D1/D1353/6786194" target="_blank" rel="noopener">DOI</a> · <a href="https://platform.opentargets.org/" target="_blank" rel="noopener">platform.opentargets.org</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag db">🗄️ DB · ChEMBL</span>
+    <span class="ref-title" data-zh="化合物-靶點生物活性大型資料庫，~2.4M compounds。" data-en="A large compound-target bioactivity database with ~2.4M compounds.">化合物-靶點生物活性大型資料庫，~2.4M compounds。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.ebi.ac.uk/chembl/" target="_blank" rel="noopener">ebi.ac.uk/chembl</a></span><span data-lang="en"><a href="https://www.ebi.ac.uk/chembl/" target="_blank" rel="noopener">ebi.ac.uk/chembl</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 12 ===================== -->
+<section class="section section-anchor" id="ch12">
+<div class="section-label" data-zh="Chapter 12" data-en="Chapter 12">Chapter 12</div>
+<h2 data-zh="📚 生醫大型語言模型" data-en="📚 Biomedical LLMs">📚 生醫大型語言模型</h2>
+<p data-lang="zh">BioGPT、BioMedLM、Med-PaLM 2、Evo 2，以及 RAG 對抗 hallucination 的核心方法。</p>
+<p data-lang="en">BioGPT, BioMedLM, Med-PaLM 2, Evo 2, and the core RAG methods for combating hallucination.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · BioGPT</span>
+    <span class="ref-author">Luo R, Sun L, Xia Y, et al.</span>
+    <span class="ref-title"> BioGPT: generative pre-trained transformer for biomedical text generation and mining. </span>
+    <em>Brief Bioinform</em> 23, bbac409 (2022).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://academic.oup.com/bib/article/23/6/bbac409" target="_blank" rel="noopener">bbac409</a> · GitHub <a href="https://github.com/microsoft/BioGPT" target="_blank" rel="noopener">microsoft/BioGPT</a></span><span data-lang="en">DOI: <a href="https://academic.oup.com/bib/article/23/6/bbac409" target="_blank" rel="noopener">bbac409</a> · GitHub: <a href="https://github.com/microsoft/BioGPT" target="_blank" rel="noopener">microsoft/BioGPT</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · BioMedLM</span>
+    <span class="ref-author">Bolton E, Venigalla A, Yasunaga M, et al.</span>
+    <span class="ref-title"> BioMedLM: A 2.7B Parameter Language Model Trained On Biomedical Text. </span>
+    <em>arXiv</em> 2403.18421 (2024).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2403.18421" target="_blank" rel="noopener">2403.18421</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2403.18421" target="_blank" rel="noopener">2403.18421</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Med-PaLM 2 ⭐</span>
+    <span class="ref-author">Singhal K, Tu T, Gottweis J, et al.</span>
+    <span class="ref-title"> Toward expert-level medical question answering with large language models. </span>
+    <em>Nat Med</em> 31, 942–950 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41591-024-03423-7" target="_blank" rel="noopener">10.1038/s41591-024-03423-7</a> · MedQA 86.5%</span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41591-024-03423-7" target="_blank" rel="noopener">10.1038/s41591-024-03423-7</a> · 86.5% on MedQA</span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Med-Gemini</span>
+    <span class="ref-author">Saab K, Tu T, Weng WH, et al.</span>
+    <span class="ref-title"> Capabilities of Gemini Models in Medicine. </span>
+    <em>arXiv</em> 2404.18416 (2024).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2404.18416" target="_blank" rel="noopener">2404.18416</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2404.18416" target="_blank" rel="noopener">2404.18416</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · BiomedCLIP</span>
+    <span class="ref-author">Zhang S, Xu Y, Usuyama N, et al.</span>
+    <span class="ref-title"> A Multimodal Biomedical Foundation Model Trained from Fifteen Million Image-Text Pairs. </span>
+    <em>NEJM AI</em> (2024).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2303.00915" target="_blank" rel="noopener">2303.00915</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2303.00915" target="_blank" rel="noopener">2303.00915</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Meditron</span>
+    <span class="ref-author">Chen Z, Cano AH, Romanou A, et al.</span>
+    <span class="ref-title"> MEDITRON-70B: Scaling Medical Pretraining for Large Language Models. </span>
+    <em>arXiv</em> 2311.16079 (2023).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2311.16079" target="_blank" rel="noopener">2311.16079</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2311.16079" target="_blank" rel="noopener">2311.16079</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · RAG ⭐</span>
+    <span class="ref-author">Lewis P, Perez E, Piktus A, et al.</span>
+    <span class="ref-title"> Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. </span>
+    <em>NeurIPS</em> (2020).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener">2005.11401</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener">2005.11401</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bench">BENCH 2025</span>
+    <span class="ref-author">Various.</span>
+    <span class="ref-title"> Benchmarking large language models for biomedical natural language processing applications and recommendations. </span>
+    <em>Nat Commun</em> 16, 1234 (2025).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41467-025-56989-2" target="_blank" rel="noopener">s41467-025-56989-2</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41467-025-56989-2" target="_blank" rel="noopener">s41467-025-56989-2</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · LangChain</span>
+    <span class="ref-title" data-zh="LLM 應用框架（RAG、Tool use、Agent）。" data-en="An LLM application framework (RAG, tool use, agents).">LLM 應用框架（RAG、Tool use、Agent）。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://python.langchain.com/docs/get_started/introduction" target="_blank" rel="noopener">python.langchain.com</a></span><span data-lang="en"><a href="https://python.langchain.com/docs/get_started/introduction" target="_blank" rel="noopener">python.langchain.com</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · Ollama / vLLM</span>
+    <span class="ref-title" data-zh="本地 LLM 部署平台（Ollama 易用 / vLLM 高吞吐）。" data-en="Local LLM deployment platforms (Ollama is easy to use; vLLM offers high throughput).">本地 LLM 部署平台（Ollama 易用 / vLLM 高吞吐）。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://ollama.com/" target="_blank" rel="noopener">ollama.com</a> · <a href="https://docs.vllm.ai/" target="_blank" rel="noopener">docs.vllm.ai</a></span><span data-lang="en"><a href="https://ollama.com/" target="_blank" rel="noopener">ollama.com</a> · <a href="https://docs.vllm.ai/" target="_blank" rel="noopener">docs.vllm.ai</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 13 ===================== -->
+<section class="section section-anchor" id="ch13">
+<div class="section-label" data-zh="Chapter 13" data-en="Chapter 13">Chapter 13</div>
+<h2 data-zh="🤖 生資 AI Agents 與工作流" data-en="🤖 Bioinformatics AI Agents & Workflows">🤖 生資 AI Agents 與工作流</h2>
+<p data-lang="zh">ReAct 模式、tool-using agents、生資自動分析腳本生成、臨床部署案例。</p>
+<p data-lang="en">The ReAct pattern, tool-using agents, automated bioinformatics analysis-script generation, and clinical deployment case studies.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · ReAct ⭐</span>
+    <span class="ref-author">Yao S, Zhao J, Yu D, et al.</span>
+    <span class="ref-title"> ReAct: Synergizing Reasoning and Acting in Language Models. </span>
+    <em>ICLR</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">2210.03629</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">2210.03629</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Toolformer</span>
+    <span class="ref-author">Schick T, Dwivedi-Yu J, Dessì R, et al.</span>
+    <span class="ref-title"> Toolformer: Language Models Can Teach Themselves to Use Tools. </span>
+    <em>NeurIPS</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener">2302.04761</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener">2302.04761</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · CRISPR-GPT</span>
+    <span class="ref-author">Huang K, Qu Y, Cousins H, et al.</span>
+    <span class="ref-title"> CRISPR-GPT: An LLM Agent for Automated Design of Gene-Editing Experiments. </span>
+    <em>arXiv</em> 2404.18021 (2024).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2404.18021" target="_blank" rel="noopener">2404.18021</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2404.18021" target="_blank" rel="noopener">2404.18021</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · ChemCrow</span>
+    <span class="ref-author">Bran AM, Cox S, Schilter O, Baldassari C, White AD, Schwaller P.</span>
+    <span class="ref-title"> Augmenting large language models with chemistry tools. </span>
+    <em>Nat Mach Intell</em> 6, 525–535 (2024).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s42256-024-00832-8" target="_blank" rel="noopener">10.1038/s42256-024-00832-8</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s42256-024-00832-8" target="_blank" rel="noopener">10.1038/s42256-024-00832-8</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · LangGraph</span>
+    <span class="ref-title" data-zh="基於圖的 stateful agent 控制流（LangChain 高階版）。" data-en="Graph-based stateful agent control flow (an advanced extension of LangChain).">基於圖的 stateful agent 控制流（LangChain 高階版）。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">langchain-ai.github.io/langgraph</a></span><span data-lang="en"><a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">langchain-ai.github.io/langgraph</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · OpenAI Assistants & Tools</span>
+    <span class="ref-title" data-zh="官方 hosted agent 平台，支援 file search 與 code interpreter。" data-en="Official hosted agent platform supporting file search and code interpreter.">官方 hosted agent 平台，支援 file search 與 code interpreter。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://platform.openai.com/docs/assistants/overview" target="_blank" rel="noopener">openai.com/docs/assistants</a></span><span data-lang="en"><a href="https://platform.openai.com/docs/assistants/overview" target="_blank" rel="noopener">openai.com/docs/assistants</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · nf-core</span>
+    <span class="ref-title" data-zh="100+ 經社群驗證的 Nextflow pipeline，可與 agent 串接。" data-en="100+ community-validated Nextflow pipelines, easily wired into agent workflows.">100+ 經社群驗證的 Nextflow pipeline，可與 agent 串接。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://nf-co.re/" target="_blank" rel="noopener">nf-co.re</a></span><span data-lang="en"><a href="https://nf-co.re/" target="_blank" rel="noopener">nf-co.re</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ DEPLOYMENT</span>
+    <span class="ref-title" data-zh="NHS Genomics AI Tools Deployments Log v3 — 英國 NHS 在臨床部署的 AI 工具清單（含 variant triage agents）。" data-en="NHS Genomics AI Tools Deployments Log v3 — list of AI tools deployed clinically by the UK NHS (including variant triage agents).">NHS Genomics AI Tools Deployments Log v3 — 英國 NHS 在臨床部署的 AI 工具清單（含 variant triage agents）。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://genomicainetwork.nhs.uk/wp-content/uploads/2025/01/AI-Tools-NHS-Deployments-Log-V3.pdf" target="_blank" rel="noopener">PDF</a></span><span data-lang="en"><a href="https://genomicainetwork.nhs.uk/wp-content/uploads/2025/01/AI-Tools-NHS-Deployments-Log-V3.pdf" target="_blank" rel="noopener">PDF</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · 對抗 prompt injection</span>
+    <span class="ref-author">Greshake K, Abdelnabi S, Mishra S, et al.</span>
+    <span class="ref-title"> Not what you&apos;ve signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection. </span>
+    <em>AISec</em> (2023).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/2302.12173" target="_blank" rel="noopener">2302.12173</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/2302.12173" target="_blank" rel="noopener">2302.12173</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Ch 14 ===================== -->
+<section class="section section-anchor" id="ch14">
+<div class="section-label" data-zh="Chapter 14" data-en="Chapter 14">Chapter 14</div>
+<h2 data-zh="⚖️ 倫理、可重現性與最佳實踐" data-en="⚖️ Ethics, Reproducibility & Best Practices">⚖️ 倫理、可重現性與最佳實踐</h2>
+<p data-lang="zh">Model card、FAIR、PRS 偏差、HIPAA / GDPR、benchmark 真相——技術強之外的責任倫理必修課。</p>
+<p data-lang="en">Model cards, FAIR, PRS bias, HIPAA / GDPR, benchmark realities — the responsibility and ethics curriculum that complements technical skill.</p>
+<ul class="ref-list">
+  <li>
+    <span class="ref-tag paper">PAPER · Model Cards ⭐</span>
+    <span class="ref-author">Mitchell M, Wu S, Zaldivar A, et al.</span>
+    <span class="ref-title"> Model Cards for Model Reporting. </span>
+    <em>ACM FAccT</em> (2019).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1810.03993" target="_blank" rel="noopener">1810.03993</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1810.03993" target="_blank" rel="noopener">1810.03993</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Datasheets for Datasets</span>
+    <span class="ref-author">Gebru T, Morgenstern J, Vecchione B, et al.</span>
+    <span class="ref-title"> Datasheets for Datasets. </span>
+    <em>Comm ACM</em> 64(12):86–92 (2021).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1803.09010" target="_blank" rel="noopener">1803.09010</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1803.09010" target="_blank" rel="noopener">1803.09010</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · FAIR Principles ⭐</span>
+    <span class="ref-author">Wilkinson MD, Dumontier M, Aalbersberg IJ, et al.</span>
+    <span class="ref-title"> The FAIR Guiding Principles for scientific data management and stewardship. </span>
+    <em>Sci Data</em> 3:160018 (2016).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/sdata201618" target="_blank" rel="noopener">10.1038/sdata.2016.18</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/sdata201618" target="_blank" rel="noopener">10.1038/sdata.2016.18</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · PRS Bias ⭐</span>
+    <span class="ref-author">Martin AR, Kanai M, Kamatani Y, Okada Y, Neale BM, Daly MJ.</span>
+    <span class="ref-title"> Clinical use of current polygenic risk scores may exacerbate health disparities. </span>
+    <em>Nat Genet</em> 51, 584–591 (2019).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41588-019-0379-x" target="_blank" rel="noopener">10.1038/s41588-019-0379-x</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41588-019-0379-x" target="_blank" rel="noopener">10.1038/s41588-019-0379-x</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Missing Diversity</span>
+    <span class="ref-author">Sirugo G, Williams SM, Tishkoff SA.</span>
+    <span class="ref-title"> The Missing Diversity in Human Genetic Studies. </span>
+    <em>Cell</em> 177, 26–31 (2019).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.cell.com/cell/fulltext/S0092-8674(19)30231-4" target="_blank" rel="noopener">10.1016/j.cell.2019.02.048</a></span><span data-lang="en">DOI: <a href="https://www.cell.com/cell/fulltext/S0092-8674(19)30231-4" target="_blank" rel="noopener">10.1016/j.cell.2019.02.048</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Reproducibility ML</span>
+    <span class="ref-author">Heil BJ, Hoffman MM, Markowetz F, Lee SI, Greene CS, Hicks SC.</span>
+    <span class="ref-title"> Reproducibility standards for machine learning in the life sciences. </span>
+    <em>Nat Methods</em> 18, 1132–1135 (2021).
+    <span class="ref-meta"><span data-lang="zh">DOI: <a href="https://www.nature.com/articles/s41592-021-01256-7" target="_blank" rel="noopener">10.1038/s41592-021-01256-7</a></span><span data-lang="en">DOI: <a href="https://www.nature.com/articles/s41592-021-01256-7" target="_blank" rel="noopener">10.1038/s41592-021-01256-7</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag paper">PAPER · Hidden Stratification</span>
+    <span class="ref-author">Oakden-Rayner L, Dunnmon J, Carneiro G, Ré C.</span>
+    <span class="ref-title"> Hidden stratification causes clinically meaningful failures in machine learning for medical imaging. </span>
+    <em>ACM CHIL</em> (2020).
+    <span class="ref-meta"><span data-lang="zh">arXiv: <a href="https://arxiv.org/abs/1909.12475" target="_blank" rel="noopener">1909.12475</a></span><span data-lang="en">arXiv: <a href="https://arxiv.org/abs/1909.12475" target="_blank" rel="noopener">1909.12475</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · NIH Genomic Data Sharing</span>
+    <span class="ref-title" data-zh="NIH 對人類基因體資料分享的官方政策與 controlled-access 平台 (dbGaP / AnVIL)。" data-en="NIH official policy on human genomic data sharing and the controlled-access platforms (dbGaP / AnVIL).">NIH 對人類基因體資料分享的官方政策與 controlled-access 平台 (dbGaP / AnVIL)。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://sharing.nih.gov/genomic-data-sharing-policy" target="_blank" rel="noopener">sharing.nih.gov</a></span><span data-lang="en"><a href="https://sharing.nih.gov/genomic-data-sharing-policy" target="_blank" rel="noopener">sharing.nih.gov</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag doc">DOC · HIPAA / GDPR</span>
+    <span class="ref-title" data-zh="美國 HIPAA 與歐盟 GDPR 對醫療資料的法規要求。" data-en="Regulatory requirements for medical data under US HIPAA and EU GDPR.">美國 HIPAA 與歐盟 GDPR 對醫療資料的法規要求。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://www.hhs.gov/hipaa/" target="_blank" rel="noopener">HHS HIPAA</a> · <a href="https://gdpr.eu/" target="_blank" rel="noopener">gdpr.eu</a></span><span data-lang="en"><a href="https://www.hhs.gov/hipaa/" target="_blank" rel="noopener">HHS HIPAA</a> · <a href="https://gdpr.eu/" target="_blank" rel="noopener">gdpr.eu</a></span></span>
+  </li>
+  <li>
+    <span class="ref-tag bestp">⭐ TIP</span>
+    <span class="ref-title" data-zh="DVC（資料版本化）與 Weights &amp; Biases（實驗追蹤）—— ML 可重現性兩大利器。" data-en="DVC (data versioning) and Weights &amp; Biases (experiment tracking) — two essential tools for ML reproducibility.">DVC（資料版本化）與 Weights & Biases（實驗追蹤）—— ML 可重現性兩大利器。</span>
+    <span class="ref-meta"><span data-lang="zh"><a href="https://dvc.org/" target="_blank" rel="noopener">dvc.org</a> · <a href="https://wandb.ai/" target="_blank" rel="noopener">wandb.ai</a></span><span data-lang="en"><a href="https://dvc.org/" target="_blank" rel="noopener">dvc.org</a> · <a href="https://wandb.ai/" target="_blank" rel="noopener">wandb.ai</a></span></span>
+  </li>
+</ul>
+</section>
+
+<!-- ===================== Datasets ===================== -->
+<section class="section section-anchor" id="datasets">
+<div class="section-label" data-zh="DB" data-en="DB">DB</div>
+<h2 data-zh="🗄️ 開放資料集 / Atlas / 模型權重平台" data-en="🗄️ Open Datasets / Atlases / Model Weight Hubs">🗄️ 開放資料集 / Atlas / 模型權重平台</h2>
+</section>
+
+<!-- ===================== Errata / Tutorial Extensions ===================== -->
+<section class="section section-anchor" id="errata">
+<div class="section-label" data-zh="教學註記" data-en="TUTORIAL NOTES">教學註記</div>
+<h2 data-zh="📌 教學註記與細節" data-en="📌 Tutorial Notes & Details">📌 教學註記與細節</h2>
+<p data-lang="zh">下列條目補充教學主文中容易被誤讀的細節、版本遷移風險，以及最新（2024–2025）的報告規範。所有條目皆附原始文獻 DOI 以利追溯。風格仿照 Linux kernel errata —— 只新增、不刪除既有內容。</p>
+<p data-lang="en">The entries below supplement details in the main tutorial that are easy to misread, version-migration risks, and the latest (2024–2025) reporting standards. Every entry links the original literature DOI for traceability. The style mirrors Linux kernel errata — entries are only appended, never removed.</p>
+
+<div class="errata">
+  <h4 data-zh="Erratum 001 — AlphaFold 的 pLDDT 不等於實驗解析度" data-en="Erratum 001 — AlphaFold's pLDDT is not an experimental resolution">Erratum 001 — AlphaFold 的 pLDDT 不等於實驗解析度</h4>
+  <p data-lang="zh">教學中提及 AlphaFold2/3 的 pLDDT 信心分數時，須強調其為「模型自評」而非晶體學解析度。Tunyasuvunakool 等 (2021) 指出 pLDDT &gt; 90 區域多為高信心，但 disordered region 與 multimer 介面仍可能系統性偏低；Akdel 等 (2022) 則以結構驗證大規模顯示 AlphaFold 在折疊類別上的覆蓋率，但同時警告：pLDDT 與 X-ray B-factor、cryo-EM local resolution 不可直接互換。</p>
+  <p data-lang="en">When the tutorial mentions AlphaFold2/3 pLDDT confidence, emphasise that pLDDT is a model self-assessment, not crystallographic resolution. Tunyasuvunakool et al. (2021) note pLDDT &gt; 90 regions are typically high confidence, yet disordered regions and multimer interfaces remain systematically low. Akdel et al. (2022) structurally benchmarked AlphaFold across fold classes but warn: pLDDT must not be substituted for X-ray B-factor or cryo-EM local resolution.</p>
+  <p><span data-lang="zh">參考文獻：</span><span data-lang="en">References: </span>Tunyasuvunakool K, et al. <em>Nature</em> 596, 590–596 (2021). DOI: <a href="https://doi.org/10.1038/s41586-021-03828-1" target="_blank" rel="noopener">10.1038/s41586-021-03828-1</a> · Akdel M, et al. <em>Nat Struct Mol Biol</em> 29, 1056–1067 (2022). DOI: <a href="https://doi.org/10.1038/s41594-022-00849-w" target="_blank" rel="noopener">10.1038/s41594-022-00849-w</a></p>
+</div>
+
+<div class="errata">
+  <h4 data-zh="Erratum 002 — Foundation model 微調的資料洩漏陷阱" data-en="Erratum 002 — Data-leakage pitfalls in foundation-model fine-tuning">Erratum 002 — Foundation model 微調的資料洩漏陷阱</h4>
+  <p data-lang="zh">使用 ESM、Geneformer、scGPT 等預訓練權重做下游微調時，最常被忽略的是「預訓練語料已涵蓋測試集樣本」的 leakage。Kapoor &amp; Narayanan (2023) 在 17 篇生醫 ML 研究中發現 leakage 達 8 種型態，其中「pretraining set ⊂ benchmark」最隱蔽，會造成假性 SOTA。實務上應在 fine-tune 前以序列同源性 (≤30% identity)、樣本 ID、批次 metadata 三重切分。</p>
+  <p data-lang="en">When fine-tuning pretrained weights from ESM, Geneformer, scGPT, etc., the most overlooked failure mode is the "pretraining corpus already contains the test set" leakage. Kapoor &amp; Narayanan (2023) identified 8 distinct leakage types across 17 biomedical ML studies; the "pretraining set ⊂ benchmark" form is the most insidious and inflates pseudo-SOTA. In practice apply triple splitting before fine-tuning: sequence identity (≤30%), sample ID, and batch metadata.</p>
+  <p><span data-lang="zh">參考文獻：</span><span data-lang="en">References: </span>Kapoor S, Narayanan A. <em>Patterns</em> 4(9):100804 (2023). DOI: <a href="https://doi.org/10.1016/j.patter.2023.100804" target="_blank" rel="noopener">10.1016/j.patter.2023.100804</a></p>
+</div>
+
+<div class="errata">
+  <h4 data-zh="Erratum 003 — BioGPT 與 Med-PaLM 2 的領域漂移" data-en="Erratum 003 — Domain shift between BioGPT and Med-PaLM 2">Erratum 003 — BioGPT 與 Med-PaLM 2 的領域漂移</h4>
+  <p data-lang="zh">教學第 12 章將 BioGPT 與 Med-PaLM 2 並列為「生醫 LLM」，但兩者語料、訓練目標差異甚大：BioGPT 以 PubMed abstract 為主，下游適合 NER/RE；Med-PaLM 2 由 PaLM 通用語料 + 醫師 SFT，下游適合臨床問答。Singhal 等 (2023) 顯示 Med-PaLM 2 在 USMLE 達 86.5%，但同篇也警告其在公開生資任務（如 BLURB）上未必勝過 BioGPT — 不可單以 USMLE 分數泛化生資任務表現。</p>
+  <p data-lang="en">Chapter 12 lists BioGPT and Med-PaLM 2 side-by-side as "biomedical LLMs", but their corpora and training objectives differ substantially: BioGPT pretrains on PubMed abstracts (good for NER/RE); Med-PaLM 2 starts from general PaLM corpora plus physician SFT (good for clinical QA). Singhal et al. (2023) report Med-PaLM 2 reaching 86.5% on USMLE, yet the same paper cautions it does not necessarily beat BioGPT on public bioinformatics benchmarks such as BLURB — USMLE scores cannot be generalised to bioinformatics performance.</p>
+  <p><span data-lang="zh">參考文獻：</span><span data-lang="en">References: </span>Singhal K, et al. <em>Nature</em> 620, 172–180 (2023). DOI: <a href="https://doi.org/10.1038/s41586-023-06291-2" target="_blank" rel="noopener">10.1038/s41586-023-06291-2</a></p>
+</div>
+
+<div class="errata">
+  <h4 data-zh="Erratum 004 — ESM3 生成式蛋白的授權與安全注意" data-en="Erratum 004 — ESM3 generative caveats and licensing">Erratum 004 — ESM3 生成式蛋白的授權與安全注意</h4>
+  <p data-lang="zh">Hayes 等 (2025) 釋出 ESM3 多模態蛋白生成模型，能依結構/功能 prompt 設計新序列。教學中若示範其生成功能，須提醒兩點：(1) ESM3 大型權重採 EvolutionaryScale Cambrian Open License，商業用途需另行授權；(2) 生成式蛋白存在 dual-use 風險，使用前應確認機構生物安全規範與 NTI / WHO 雙重用途研究指引。</p>
+  <p data-lang="en">Hayes et al. (2025) released ESM3, a multimodal protein generative model that designs novel sequences from structure / function prompts. If the tutorial demonstrates its generation pipeline, flag two issues: (1) the large ESM3 weights use the EvolutionaryScale Cambrian Open License, requiring separate licensing for commercial use; (2) generative proteins carry dual-use risk — confirm institutional biosafety policies and WHO / NTI dual-use research guidance before running prompts.</p>
+  <p><span data-lang="zh">參考文獻：</span><span data-lang="en">References: </span>Hayes T, et al. <em>Science</em> 387:eads0018 (2025). DOI: <a href="https://doi.org/10.1126/science.ads0018" target="_blank" rel="noopener">10.1126/science.ads0018</a></p>
+</div>
+
+<div class="errata">
+  <h4 data-zh="Erratum 005 — Model Card 不完整與 FUTURE-AI 落地建議" data-en="Erratum 005 — Incomplete model cards and FUTURE-AI guidance">Erratum 005 — Model Card 不完整與 FUTURE-AI 落地建議</h4>
+  <p data-lang="zh">Mitchell 等 (2019) 提出 Model Card 概念，要求模型釋出附 intended use、限制、評估指標、人口偏差等欄位。然而在 HuggingFace 上至 2024 仍有 &gt; 40% 生醫模型 card 缺乏 evaluation data 與 ethical considerations。Lekadir 等 (2025) FUTURE-AI 提供臨床落地的 30 項建議，涵蓋 Fairness / Universality / Traceability / Usability / Robustness / Explainability —— 教學釋出任何權重時，建議同步補完此六大面向。</p>
+  <p data-lang="en">Mitchell et al. (2019) introduced Model Cards, requiring intended use, limitations, evaluation metrics, demographic bias fields, etc. As of 2024 over 40% of biomedical models on HuggingFace still lack evaluation-data and ethical-considerations sections. Lekadir et al. (2025) FUTURE-AI offers 30 clinical-deployment recommendations across Fairness / Universality / Traceability / Usability / Robustness / Explainability — fill in all six dimensions when releasing weights from this tutorial.</p>
+  <p><span data-lang="zh">參考文獻：</span><span data-lang="en">References: </span>Mitchell M, et al. <em>FAT* '19</em>, 220–229 (2019). DOI: <a href="https://doi.org/10.1145/3287560.3287596" target="_blank" rel="noopener">10.1145/3287560.3287596</a> · Lekadir K, et al. <em>BMJ</em> 388:e081554 (2025). DOI: <a href="https://doi.org/10.1136/bmj-2024-081554" target="_blank" rel="noopener">10.1136/bmj-2024-081554</a></p>
+</div>
+
+<div class="errata">
+  <h4 data-zh="Erratum 006 — TRIPOD+AI 2024 取代舊版報告規範" data-en="Erratum 006 — TRIPOD+AI 2024 supersedes the older reporting standard">Erratum 006 — TRIPOD+AI 2024 取代舊版報告規範</h4>
+  <p data-lang="zh">教學最後一章建議的 TRIPOD 2015 規範已被 Collins 等 (2024) 在 <em>BMJ</em> 發表的 TRIPOD+AI 取代。新版新增 27 項 AI 專屬條目，涵蓋演算法版本鎖定、訓練/外部驗證資料解耦、calibration plot、公平性子群分析、可重現性 code DOI 等。預測模型若涉及 AI/ML，應引用 TRIPOD+AI 而非 TRIPOD 2015。</p>
+  <p data-lang="en">The TRIPOD 2015 guideline recommended in the final chapter has been superseded by TRIPOD+AI (Collins et al. 2024, <em>BMJ</em>). The update adds 27 AI-specific items covering algorithm version pinning, separation of training / external-validation data, calibration plots, fairness subgroup analyses, and reproducibility code DOIs. Cite TRIPOD+AI rather than TRIPOD 2015 for any AI/ML prediction model.</p>
+  <p><span data-lang="zh">參考文獻：</span><span data-lang="en">References: </span>Collins GS, Moons KGM, Dhiman P, et al. <em>BMJ</em> 385:e078378 (2024). DOI: <a href="https://doi.org/10.1136/bmj-2023-078378" target="_blank" rel="noopener">10.1136/bmj-2023-078378</a></p>
+</div>
+
+</section>
+<nav class="page-nav">
+  <a href="../index.html"><span class="nav-dir" data-zh="← 教學首頁" data-en="← Tutorial home">← 教學首頁</span><span class="nav-title" data-zh="回到主教學頁" data-en="Back to tutorial hub">回到主教學頁</span></a>
+  <a href="../ai-bioinfo-quiz/index.html" target="_blank" rel="noopener"><span class="nav-dir" data-zh="互動考題 →" data-en="Interactive quiz →">互動考題 →</span><span class="nav-title" data-zh="互動式考題" data-en="Interactive Quiz">互動式考題</span></a>
+</nav>
+
+</main>
+<script src="../i18n.js"></script>
+</body>
+</html>

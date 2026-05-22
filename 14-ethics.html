@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ch 14: 倫理、可重現性與最佳實踐 — AI for Bioinformatics</title>
+<link rel="stylesheet" href="styles.css">
+</head><body>
+<nav class="top-nav"><div class="top-nav-inner">
+  <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
+  <ul class="top-nav-links">
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html" class="active">14 Ethics</a></li><li><a href="references.html">📚</a></li>
+    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+  </ul>
+</div></nav>
+<div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<header class="page-hero"><div class="step-badge">CHAPTER 14 / 14 · BASIC</div>
+<h1 data-zh="倫理、可重現性與最佳實踐" data-en="Ethics, Reproducibility & Best Practices">倫理、可重現性與最佳實踐</h1>
+<p class="subtitle" data-lang="zh">資料偏差、模型卡、FAIR、HIPAA/GDPR、Hallucination 控制、Benchmark 真相——技術強之外，AI 在生醫的「責任倫理」是必修課。</p>
+<p class="subtitle" data-lang="en">Data bias, model cards, FAIR, HIPAA/GDPR, hallucination control, benchmark realism — beyond raw capability, responsible AI in biomedicine is required reading.</p>
+</header>
+
+<main class="content-wrap">
+
+<!-- Section 1: Bias -->
+<section class="section">
+<div class="section-label" data-zh="資料偏差" data-en="Data Bias">資料偏差</div>
+<h2 data-zh="一、AI 不會比訓練資料更公平" data-en="I. AI is never fairer than its training data">一、AI 不會比訓練資料更公平</h2>
+<div data-lang="zh">
+<p>幾乎所有公開的人類基因組資料偏向歐裔（gnomAD ~75% 歐裔），這對下游 AI 預測有真實後果：</p>
+<ul>
+<li>SpliceAI、AlphaMissense 在非歐裔變異上 false negative 率明顯較高。</li>
+<li>多基因風險分數 (PRS) 移植到不同族群時準確率可掉一半。</li>
+<li>單細胞 atlas 中亞洲、非洲樣本數仍 &lt;15%，影響 scGPT/Geneformer 的 zero-shot 泛化。</li>
+</ul>
+<p><strong>緩解</strong>：報告 disaggregated metrics、多樣本族群 fine-tune、在 model card 明確標示適用人群。</p>
+</div>
+<div data-lang="en">
+<p>Nearly all public human-genome data are European-skewed (gnomAD ~75% European). This has real downstream effects:</p>
+<ul>
+<li>SpliceAI and AlphaMissense have higher false-negative rates on non-European variants.</li>
+<li>Polygenic risk scores can lose half their accuracy when transferred across populations.</li>
+<li>Asian/African samples are &lt;15% of single-cell atlases, hurting scGPT/Geneformer zero-shot generalization.</li>
+</ul>
+<p><strong>Mitigations</strong>: report disaggregated metrics, fine-tune on diverse populations, clearly mark intended population in the model card.</p>
+</div>
+</section>
+
+<!-- Section 2: Model Cards -->
+<section class="section">
+<div class="section-label" data-zh="文檔" data-en="Documentation">文檔</div>
+<h2 data-zh="二、Model card：每個生物 AI 都該有一份" data-en="II. Model cards: every bio-AI should have one">二、Model card：每個生物 AI 都該有一份</h2>
+<div data-lang="zh"><p>Mitchell et al. 2019 提出的 Model Card 是現在的事實標準。生資情境建議至少包含：</p></div>
+<div data-lang="en"><p>Mitchell et al. 2019's Model Card is the de facto standard. For biomedical AI include at minimum:</p></div>
+<div class="card-grid cols-2">
+<div class="card"><h4 data-zh="📝 Intended use" data-en="📝 Intended use">📝 Intended use</h4><div data-lang="zh"><p>「研究探索」 vs 「臨床決策」 vs 「教學」——明確切分，避免誤用。</p></div><div data-lang="en"><p>"Research exploration" vs "clinical decision support" vs "education" — distinguish explicitly.</p></div></div>
+<div class="card"><h4 data-zh="📊 Performance breakdown" data-en="📊 Performance breakdown">📊 Performance breakdown</h4><div data-lang="zh"><p>族群、性別、年齡、組織別都要拆。<strong>單一全域 AUROC 不能算交差</strong>。</p></div><div data-lang="en"><p>Break down by population, sex, age, tissue. <strong>A single global AUROC is not enough</strong>.</p></div></div>
+<div class="card"><h4 data-zh="⚠️ Out-of-scope" data-en="⚠️ Out-of-scope">⚠️ Out-of-scope</h4><div data-lang="zh"><p>明確列出「不該用」的場景：例如 AlphaFold 不適合 IDR 預測、scGPT 不適合 zero-shot 罕見細胞型別。</p></div><div data-lang="en"><p>Explicitly list "do not use for" scenarios — AlphaFold isn't for IDRs, scGPT isn't for unseen rare cell types.</p></div></div>
+<div class="card"><h4 data-zh="🔄 Versioning" data-en="🔄 Versioning">🔄 Versioning</h4><div data-lang="zh"><p>權重 hash、訓練資料快照、reproduce 指令都需登記，讓未來研究者能 backtrack。</p></div><div data-lang="en"><p>Weight hash, training-data snapshot, and repro commands logged so future readers can backtrack.</p></div></div>
+</div>
+</section>
+
+<!-- Section 3: FAIR + HIPAA -->
+<section class="section">
+<div class="section-label" data-zh="法規" data-en="Compliance">法規</div>
+<h2 data-zh="三、資料的 FAIR 原則 + HIPAA/GDPR" data-en="III. FAIR + HIPAA/GDPR for biomedical data">三、FAIR + HIPAA/GDPR</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>FAIR</h4><div data-lang="zh"><p><strong>F</strong>indable、<strong>A</strong>ccessible、<strong>I</strong>nteroperable、<strong>R</strong>eusable。每個 dataset 要有 DOI、metadata、開放格式 (Parquet, AnnData, BAM)。</p></div><div data-lang="en"><p><strong>F</strong>indable, <strong>A</strong>ccessible, <strong>I</strong>nteroperable, <strong>R</strong>eusable. Every dataset gets a DOI, metadata, open format (Parquet, AnnData, BAM).</p></div></div>
+<div class="card"><h4>HIPAA / GDPR</h4><div data-lang="zh"><p>美國 HIPAA、歐盟 GDPR、台灣個資法都嚴格規範 PHI。<strong>單純基因序列也算個資</strong>——de-identification 必須包含基因組去識別 (kinship masking)。</p></div><div data-lang="en"><p>HIPAA (US), GDPR (EU), local laws all strictly regulate PHI. <strong>Genome sequence itself is identifying</strong> — proper de-identification includes kinship masking.</p></div></div>
+</div>
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>2024 HHS 新規：</strong>美國 NIH 資金資助的研究若涉及生物樣本資料分享，必須走 dbGaP/AnVIL 等 controlled-access；不能直接放上 GitHub。</span>
+<span data-lang="en"><strong>HHS 2024 update:</strong> NIH-funded studies sharing biosample data must use controlled-access platforms like dbGaP/AnVIL — public GitHub is not acceptable.</span>
+</div></div>
+</section>
+
+<!-- Section 4: Reproducibility -->
+<section class="section">
+<div class="section-label" data-zh="可重現性" data-en="Reproducibility">可重現性</div>
+<h2 data-zh="四、讓你的 AI 流程能被別人重跑" data-en="IV. Make your AI pipeline reproducible">四、讓你的流程可重現</h2>
+<div class="workflow">
+<div class="wf-step" data-num="1"><h5 data-zh="環境鎖定" data-en="Pin the environment">環境鎖定</h5><p data-lang="zh">使用 <code>conda env export</code> + <code>pip freeze</code>，或 Docker / Singularity。生物資訊推薦 <code>BioContainers</code>。</p><p data-lang="en">Use <code>conda env export</code> + <code>pip freeze</code>, or Docker/Singularity. <code>BioContainers</code> is the bio standard.</p></div>
+<div class="wf-step" data-num="2"><h5 data-zh="工作流框架" data-en="Workflow framework">工作流框架</h5><p data-lang="zh">Snakemake / Nextflow / WDL。<code>nf-core</code> 提供超過 100 個現成 pipeline，含 RNA-seq、scRNA、變異 calling。</p><p data-lang="en">Snakemake / Nextflow / WDL. <code>nf-core</code> ships 100+ ready pipelines for RNA-seq, scRNA, variant calling.</p></div>
+<div class="wf-step" data-num="3"><h5 data-zh="實驗追蹤" data-en="Experiment tracking">實驗追蹤</h5><p data-lang="zh">Weights &amp; Biases、MLflow、Aim：超參數、資料 hash、metric 全部自動 log。</p><p data-lang="en">Weights &amp; Biases, MLflow, Aim — auto-log hyperparams, data hash, metrics.</p></div>
+<div class="wf-step" data-num="4"><h5 data-zh="種子與決定性" data-en="Seeds & determinism">種子與決定性</h5><p data-lang="zh">Python、NumPy、PyTorch、CUDA 都要設 seed；某些 op 要用 <code>torch.use_deterministic_algorithms(True)</code>。</p><p data-lang="en">Seed Python, NumPy, PyTorch, CUDA. For full determinism use <code>torch.use_deterministic_algorithms(True)</code>.</p></div>
+<div class="wf-step" data-num="5"><h5 data-zh="資料版本化" data-en="Data versioning">資料版本化</h5><p data-lang="zh">DVC、LakeFS、Git LFS：把資料指紋連同 code commit 一起追蹤。</p><p data-lang="en">DVC, LakeFS, Git LFS — track data fingerprints alongside code commits.</p></div>
+</div>
+</section>
+
+<!-- Section 5: Benchmark hygiene -->
+<section class="section">
+<div class="section-label" data-zh="Benchmark 真相" data-en="Benchmark Reality">Benchmark 真相</div>
+<h2 data-zh="五、別被 SOTA 數字騙了" data-en="V. Don't get fooled by SOTA numbers">五、別被 SOTA 數字騙了</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4 data-zh="🪞 資料洩漏" data-en="🪞 Data leakage">🪞 資料洩漏</h4><div data-lang="zh"><p>新模型的訓練 corpus 可能已包含 benchmark test set。請以時序切分 (e.g. PDB 2023 之後結構) 重評。</p></div><div data-lang="en"><p>Modern training corpora often include benchmark test sets. Re-evaluate with temporal splits (e.g., PDB structures after 2023).</p></div></div>
+<div class="card"><h4 data-zh="📊 Cherry-picked metric" data-en="📊 Cherry-picked metric">📊 Cherry-picked metric</h4><div data-lang="zh"><p>論文常只報好看的指標。要求看 confusion matrix、PR 曲線、不同 subgroup。</p></div><div data-lang="en"><p>Papers report flattering metrics. Demand confusion matrices, PR curves, and subgroup breakdowns.</p></div></div>
+<div class="card"><h4 data-zh="📉 不同 baseline" data-en="📉 Wrong baseline">📉 不同 baseline</h4><div data-lang="zh"><p>「比 baseline 好 5%」常常是因為 baseline 沒調好。要求看「強 baseline」(調整過的 XGBoost / scVI / AutoDock Vina)。</p></div><div data-lang="en"><p>"5% over baseline" often hides an under-tuned baseline. Demand a strong baseline (tuned XGBoost / scVI / AutoDock Vina).</p></div></div>
+<div class="card"><h4 data-zh="📦 Out-of-distribution test" data-en="📦 OOD test">📦 OOD 測試</h4><div data-lang="zh"><p>同分佈 0.95 vs OOD 0.55，誰才是真實表現？OOD 結果決定模型在你資料上的命運。</p></div><div data-lang="en"><p>0.95 in-distribution vs 0.55 OOD — which is "real"? The OOD number predicts what you'll see on your data.</p></div></div>
+</div>
+</section>
+
+<!-- Section 6: Closing principles -->
+<section class="section">
+<div class="section-label" data-zh="總結" data-en="Closing">總結</div>
+<h2 data-zh="六、AI for Bioinformatics 的 7 條黃金原則" data-en="VI. Seven golden principles">六、7 條黃金原則</h2>
+<div class="card-grid cols-2">
+<div class="card"><h4>1️⃣</h4><div data-lang="zh"><p><strong>先試簡單方法</strong>：經典 ML 是 baseline，不是落後。</p></div><div data-lang="en"><p><strong>Try the simple method first.</strong> Classical ML is your baseline, not a step backward.</p></div></div>
+<div class="card"><h4>2️⃣</h4><div data-lang="zh"><p><strong>切分要乾淨</strong>：sequence-identity / patient / temporal splits。</p></div><div data-lang="en"><p><strong>Split data cleanly:</strong> sequence-identity / patient / temporal.</p></div></div>
+<div class="card"><h4>3️⃣</h4><div data-lang="zh"><p><strong>看不確定性</strong>：pLDDT、置信度、bootstrap 區間。</p></div><div data-lang="en"><p><strong>Always report uncertainty:</strong> pLDDT, confidence, bootstrap intervals.</p></div></div>
+<div class="card"><h4>4️⃣</h4><div data-lang="zh"><p><strong>對族群與條件分別評估</strong>，不要只看全域 AUROC。</p></div><div data-lang="en"><p><strong>Evaluate per subgroup,</strong> not just global AUROC.</p></div></div>
+<div class="card"><h4>5️⃣</h4><div data-lang="zh"><p><strong>Reproducible is non-negotiable</strong>：環境、種子、資料版本一起記錄。</p></div><div data-lang="en"><p><strong>Reproducibility is non-negotiable.</strong> Track env, seed, and data version together.</p></div></div>
+<div class="card"><h4>6️⃣</h4><div data-lang="zh"><p><strong>Human-in-the-loop</strong>：高風險決策永遠不全自動。</p></div><div data-lang="en"><p><strong>Human-in-the-loop:</strong> high-risk decisions are never fully automated.</p></div></div>
+<div class="card"><h4>7️⃣</h4><div data-lang="zh"><p><strong>持續更新心智模型</strong>：AI 工具半年一個世代，留時間追文獻。</p></div><div data-lang="en"><p><strong>Keep updating your mental model.</strong> AI tools change every 6 months — schedule reading time.</p></div></div>
+</div>
+</section>
+
+<!-- Quiz -->
+<section class="quiz-section">
+<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<div class="quiz-q">
+<p data-zh="Q1. 一篇論文宣稱新模型 AUROC=0.96，但只報全局指標。最該追問的是？" data-en="Q1. A paper claims AUROC=0.96 but only reports a global number. What should you ask?">Q1. 一篇論文宣稱新模型 AUROC=0.96，但只報全局指標。最該追問的是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 模型多大" data-en="(A) Model size">(A) 模型多大</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 各族群、各組織、OOD 與時序切分的拆分結果" data-en="(B) Disaggregated results by population, tissue, OOD, and temporal split">(B) 各族群、各組織、OOD、時序切分的拆分結果</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 第一作者 ORCID" data-en="(C) First author's ORCID">(C) 第一作者 ORCID</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 訓練了幾天" data-en="(D) Training days">(D) 訓練了幾天</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q2. PRS 在不同族群表現會掉一半的最常見原因是？" data-en="Q2. Why do PRS often lose half their accuracy across populations?">Q2. PRS 在不同族群表現會掉一半的最常見原因是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 模型程式有 bug" data-en="(A) Code bugs">(A) 模型程式有 bug</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 訓練資料以歐裔為主，效應大小與 LD 結構在其他族群不同" data-en="(B) Training data is European-skewed; effect sizes and LD structure differ in other populations">(B) 訓練資料以歐裔為主，效應大小與 LD 結構不同</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) PRS 過時" data-en="(C) PRS is outdated">(C) PRS 過時</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 統計方法錯誤" data-en="(D) Wrong statistics">(D) 統計方法錯誤</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+<div class="quiz-q">
+<p data-zh="Q3. 你想分享 NIH 資助的人類 WGS 與 AI 訓練腳本。最合規的做法？" data-en="Q3. Sharing NIH-funded human WGS + AI training scripts. Most compliant approach?">Q3. 你想分享 NIH 資助的人類 WGS 與 AI 訓練腳本。最合規的做法？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 全部丟 GitHub public repo" data-en="(A) Push everything to a public GitHub repo">(A) 全部丟 GitHub public repo</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 程式碼放 GitHub；WGS 透過 dbGaP/AnVIL 等 controlled-access 平台" data-en="(B) Code on GitHub; WGS via controlled-access platforms like dbGaP/AnVIL">(B) 程式碼放 GitHub；WGS 透過 dbGaP/AnVIL 等 controlled-access</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 只放 abstract" data-en="(C) Just publish the abstract">(C) 只放 abstract</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 不分享" data-en="(D) Don't share">(D) 不分享</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="13-ai-agents.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="13 · AI Agents" data-en="13 · AI Agents">13 · AI Agents</span></a>
+<a href="references.html"><span class="nav-dir" data-zh="延伸學習 →" data-en="Further reading →">延伸學習 →</span><span class="nav-title" data-zh="📚 參考文獻" data-en="📚 References">📚 參考文獻</span></a>
+</nav>
+</main>
+<footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
+<script src="i18n.js"></script>
+</body></html>
