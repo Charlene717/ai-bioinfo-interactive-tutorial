@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Ch 07: 蛋白-配體交互作用 — AI for Bioinformatics</title>
+<title data-zh="Ch 07: 蛋白-配體交互作用 — AI for Bioinformatics" data-en="Ch 07: Protein–Ligand Interaction — AI for Bioinformatics">Ch 07: Protein–Ligand Interaction — AI for Bioinformatics</title>
 <link rel="stylesheet" href="styles.css">
 </head><body>
 <nav class="top-nav"><div class="top-nav-inner">
@@ -48,9 +48,9 @@
 <table class="comp-table">
 <thead><tr><th data-zh="世代" data-en="Generation">世代</th><th data-zh="代表" data-en="Examples">代表</th><th data-zh="原理" data-en="Principle">原理</th><th data-zh="優劣" data-en="Trade-off">優劣</th></tr></thead>
 <tbody>
-<tr><td>Gen 1: 物理</td><td>AutoDock Vina, Glide, GOLD</td><td data-zh="搜尋演算法 + 經驗能量函數" data-en="Search + empirical scoring">搜尋演算法 + 經驗能量函數</td><td data-zh="可解釋；commercial 工具熟成度高；對未見口袋仍可用" data-en="Interpretable; mature commercial tooling; works on unseen pockets">可解釋；對未見口袋仍可用</td></tr>
-<tr><td>Gen 2: 神經評分</td><td>RTMScore, GNINA</td><td data-zh="物理產生 pose，CNN/GNN 重新評分" data-en="Physics generates poses, CNN/GNN rescores">物理產生 pose，CNN/GNN 重新評分</td><td data-zh="評分提升但 pose 受物理 search 限制" data-en="Better scoring but bounded by physics search">評分提升但受物理 search 限制</td></tr>
-<tr><td>Gen 3: 生成式</td><td>DiffDock, EquiBind, AlphaFold 3</td><td data-zh="把 docking 視為生成問題，模型直接吐 pose" data-en="Cast docking as generation; model directly outputs poses">把 docking 視為生成問題</td><td data-zh="速度快；訓練分佈外表現會降；2025 後 hybrid 是主流" data-en="Fast; degrades out-of-distribution; hybrid pipelines dominate post-2025">速度快；2025 後 hybrid 是主流</td></tr>
+<tr><td data-zh="Gen 1: 物理" data-en="Gen 1: physics">Gen 1: 物理</td><td>AutoDock Vina, Glide, GOLD</td><td data-zh="搜尋演算法 + 經驗能量函數" data-en="Search + empirical scoring">搜尋演算法 + 經驗能量函數</td><td data-zh="可解釋；commercial 工具熟成度高；對未見口袋仍可用" data-en="Interpretable; mature commercial tooling; works on unseen pockets">可解釋；對未見口袋仍可用</td></tr>
+<tr><td data-zh="Gen 2: 神經評分" data-en="Gen 2: neural scoring">Gen 2: 神經評分</td><td>RTMScore, GNINA</td><td data-zh="物理產生 pose，CNN/GNN 重新評分" data-en="Physics generates poses, CNN/GNN rescores">物理產生 pose，CNN/GNN 重新評分</td><td data-zh="評分提升但 pose 受物理 search 限制" data-en="Better scoring but bounded by physics search">評分提升但受物理 search 限制</td></tr>
+<tr><td data-zh="Gen 3: 生成式" data-en="Gen 3: generative">Gen 3: 生成式</td><td>DiffDock, EquiBind, AlphaFold 3</td><td data-zh="把 docking 視為生成問題，模型直接吐 pose" data-en="Cast docking as generation; model directly outputs poses">把 docking 視為生成問題</td><td data-zh="速度快；訓練分佈外表現會降；2025 後 hybrid 是主流" data-en="Fast; degrades out-of-distribution; hybrid pipelines dominate post-2025">速度快；2025 後 hybrid 是主流</td></tr>
 </tbody>
 </table>
 <div class="callout tip"><span class="callout-icon">💡</span><div>

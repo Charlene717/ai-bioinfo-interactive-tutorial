@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Ch 04: 生物序列嵌入 — AI for Bioinformatics</title>
+<title data-zh="Ch 04: 生物序列嵌入 — AI for Bioinformatics" data-en="Ch 04: Biological Sequence Embeddings — AI for Bioinformatics">Ch 04: Biological Sequence Embeddings — AI for Bioinformatics</title>
 <link rel="stylesheet" href="styles.css">
 </head><body>
 <nav class="top-nav"><div class="top-nav-inner">
@@ -49,7 +49,7 @@
 <tr><td>DNABERT-2</td><td>DNA</td><td>BPE (~6mer)</td><td>117M</td><td data-zh="多物種預訓練；GUE benchmark 強" data-en="Multi-species pretraining; strong on GUE benchmark">多物種預訓練；GUE benchmark 強</td></tr>
 <tr><td>Nucleotide Transformer</td><td>DNA</td><td>6-mer</td><td>50M – 2.5B</td><td data-zh="人類 + 850 物種；提供 fine-tune ready checkpoints" data-en="Human + 850 species; ready-to-fine-tune checkpoints">人類 + 850 物種；fine-tune-ready</td></tr>
 <tr><td>HyenaDNA</td><td>DNA</td><td>Single nt</td><td>0.4M – 6.6M</td><td data-zh="長序列效率王 (1M token)；無 attention" data-en="Long-context champion (1M tokens); attention-free">長序列效率王 (1M token)；無 attention</td></tr>
-<tr><td>Evo 2</td><td>DNA + RNA + 蛋白</td><td>Single nt</td><td>1.7B / 7B / 40B</td><td data-zh="9 兆 nt 跨物種；單核苷酸解析、1M 上下文" data-en="9T nt across species; single-nt resolution, 1M context">9 兆 nt 跨物種；1M context window</td></tr>
+<tr><td>Evo 2</td><td data-zh="DNA + RNA + 蛋白" data-en="DNA + RNA + protein">DNA + RNA + 蛋白</td><td>Single nt</td><td>1.7B / 7B / 40B</td><td data-zh="9 兆 nt 跨物種；單核苷酸解析、1M 上下文" data-en="9T nt across species; single-nt resolution, 1M context">9 兆 nt 跨物種；1M context window</td></tr>
 <tr><td>scGPT / Geneformer</td><td>scRNA-seq</td><td>Gene rank</td><td>10M – 100M</td><td data-zh="把細胞當 token 序列；下章 10 詳述" data-en="Treats cells as token sequences (Ch. 10)">把細胞當 token 序列；章 10 深入</td></tr>
 </tbody>
 </table>
@@ -133,9 +133,9 @@ emb_b <- <span class="func">embed</span>(<span class="str">"MVLSPADKTNVKAAWGKVGA
 <div class="decision-tree">
 <h4>🌳 Quick guide</h4>
 <div class="dt-node"><span class="dt-q" data-zh="蛋白質" data-en="Protein">蛋白質</span> <span class="dt-arrow">→</span> <span data-zh="ESM-2 (35M-650M 平衡點) 或 ESM-3 (有結構任務時)" data-en="ESM-2 (35M-650M sweet spot) or ESM-3 (when you need structure tasks)">ESM-2 (35M-650M 平衡點) 或 ESM-3 (有結構任務時)</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="DNA &lt; 1kb" data-en="DNA <1kb">DNA &lt; 1kb</span> <span class="dt-arrow">→</span> <span>DNABERT-2 / Nucleotide Transformer 500M</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="DNA 100kb-1Mb" data-en="DNA 100kb-1Mb">DNA 100kb-1Mb</span> <span class="dt-arrow">→</span> <span>HyenaDNA / Evo 2 7B</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="跨域 (DNA+RNA+蛋白)" data-en="Multi-modal">跨域</span> <span class="dt-arrow">→</span> <span>Evo 2 (40B 模型可生成基因組片段)</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="DNA &lt; 1kb" data-en="DNA <1kb">DNA &lt; 1kb</span> <span class="dt-arrow">→</span> <span data-zh="DNABERT-2 / Nucleotide Transformer 500M" data-en="DNABERT-2 / Nucleotide Transformer 500M">DNABERT-2 / Nucleotide Transformer 500M</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="DNA 100kb-1Mb" data-en="DNA 100kb-1Mb">DNA 100kb-1Mb</span> <span class="dt-arrow">→</span> <span data-zh="HyenaDNA / Evo 2 7B" data-en="HyenaDNA / Evo 2 7B">HyenaDNA / Evo 2 7B</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="跨域 (DNA+RNA+蛋白)" data-en="Multi-modal">跨域</span> <span class="dt-arrow">→</span> <span data-zh="Evo 2 (40B 模型可生成基因組片段)" data-en="Evo 2 (the 40B model can generate genome fragments)">Evo 2 (40B 模型可生成基因組片段)</span></div>
 <div class="dt-node"><span class="dt-q" data-zh="算力非常吃緊" data-en="Compute-poor">算力吃緊</span> <span class="dt-arrow">→</span> <span data-zh="先 k-mer + Logistic 跑 baseline，再決定要不要上 DL" data-en="Try k-mer + Logistic baseline first, decide DL after">先 k-mer + Logistic 跑 baseline，再決定要不要上 DL</span></div>
 </div>
 </section>

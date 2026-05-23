@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Ch 06: 蛋白質從頭設計 — AI for Bioinformatics</title>
+<title data-zh="Ch 06: 蛋白質從頭設計 — AI for Bioinformatics" data-en="Ch 06: De Novo Protein Design — AI for Bioinformatics">Ch 06: De Novo Protein Design — AI for Bioinformatics</title>
 <link rel="stylesheet" href="styles.css">
 </head><body>
 <nav class="top-nav"><div class="top-nav-inner">
@@ -102,11 +102,11 @@ seqs = mpnn.<span class="func">sample</span>(
 <h2 data-zh="四、設計流程怎麼挑？" data-en="IV. How to choose a design pipeline?">四、設計流程怎麼挑？</h2>
 <div class="decision-tree">
 <h4>🌳 Quick guide</h4>
-<div class="dt-node"><span class="dt-q" data-zh="目標：迷你 binder" data-en="Goal: mini-binder">目標：迷你 binder</span> <span class="dt-arrow">→</span> <span>RFdiffusion + ProteinMPNN + AF2-Multimer + ESMFold</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="目標：對稱奈米粒子" data-en="Goal: symmetric nanoparticle">目標：對稱奈米粒子</span> <span class="dt-arrow">→</span> <span>RFdiffusion (symmetry mode) + ProteinMPNN</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="目標：抗體" data-en="Goal: antibody">目標：抗體</span> <span class="dt-arrow">→</span> <span>RFdiffusion-Ab → IgFold/AF-Multimer 驗證</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="目標：Enzyme" data-en="Goal: enzyme">目標：Enzyme</span> <span class="dt-arrow">→</span> <span>RFdiffusion-AllAtom (含金屬輔因子) + LigandMPNN</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="算力極少" data-en="Compute very limited">算力極少</span> <span class="dt-arrow">→</span> <span>ESM-Design / Chroma 等 generative LM 替代品</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：迷你 binder" data-en="Goal: mini-binder">目標：迷你 binder</span> <span class="dt-arrow">→</span> <span data-zh="RFdiffusion + ProteinMPNN + AF2-Multimer + ESMFold" data-en="RFdiffusion + ProteinMPNN + AF2-Multimer + ESMFold">RFdiffusion + ProteinMPNN + AF2-Multimer + ESMFold</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：對稱奈米粒子" data-en="Goal: symmetric nanoparticle">目標：對稱奈米粒子</span> <span class="dt-arrow">→</span> <span data-zh="RFdiffusion (symmetry mode) + ProteinMPNN" data-en="RFdiffusion (symmetry mode) + ProteinMPNN">RFdiffusion (symmetry mode) + ProteinMPNN</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：抗體" data-en="Goal: antibody">目標：抗體</span> <span class="dt-arrow">→</span> <span data-zh="RFdiffusion-Ab → IgFold/AF-Multimer 驗證" data-en="RFdiffusion-Ab → validate with IgFold / AF-Multimer">RFdiffusion-Ab → IgFold/AF-Multimer 驗證</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：Enzyme" data-en="Goal: enzyme">目標：Enzyme</span> <span class="dt-arrow">→</span> <span data-zh="RFdiffusion-AllAtom (含金屬輔因子) + LigandMPNN" data-en="RFdiffusion-AllAtom (with metal cofactors) + LigandMPNN">RFdiffusion-AllAtom (含金屬輔因子) + LigandMPNN</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="算力極少" data-en="Compute very limited">算力極少</span> <span class="dt-arrow">→</span> <span data-zh="ESM-Design / Chroma 等 generative LM 替代品" data-en="Generative-LM alternatives like ESM-Design / Chroma">ESM-Design / Chroma 等 generative LM 替代品</span></div>
 </div>
 </section>
 

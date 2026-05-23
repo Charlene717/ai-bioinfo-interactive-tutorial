@@ -1,73 +1,255 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Ch 01: AI × Bioinformatics 概論 — Tutorial</title>
+<title data-zh="Ch 01: AI × 生資 概論 — 互動教程" data-en="Ch 01: AI × Bioinformatics Overview — Tutorial">Ch 01: AI × Bioinformatics Overview — Tutorial</title>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head><body>
 <nav class="top-nav"><div class="top-nav-inner">
   <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
   <ul class="top-nav-links">
-    <li><a href="01-overview.html" class="active">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
-    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+    <li><a href="01-overview.html" class="active">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references/index.html">📚</a></li>
   </ul>
 </div></nav>
 <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
 
 <header class="page-hero"><div class="step-badge">CHAPTER 01 / 14 · BASIC</div>
-<h1 data-zh="AI × 生物資訊 概論" data-en="AI × Bioinformatics — Overview">AI × 生物資訊 概論</h1>
-<p class="subtitle" data-lang="zh">從序列、結構到細胞圖譜——AI 正在如何改寫整個生物資訊版圖？這一章是後續 13 個主題的地圖與心智模型。</p>
-<p class="subtitle" data-lang="en">From sequences and structures to cell atlases — how AI is rewriting bioinformatics. A roadmap and mental model for the 13 chapters that follow.</p>
+<h1 data-zh="AI × 生物資訊 概論" data-en="AI × Bioinformatics — A Big-Picture Overview">AI × 生物資訊 概論</h1>
+<p class="subtitle" data-zh="從 1972 年的 Anfinsen dogma 到 2024 年的諾貝爾化學獎——AI 用了 50 年才真正改寫生物資訊。這一章是後續 13 個主題的地圖、心智模型與「為什麼是現在」的全景視角。" data-en="From Anfinsen's 1972 dogma to the 2024 Nobel Prize in Chemistry — it took AI five decades to rewrite biology. This chapter is the map, mental model, and 'why now' for the 13 chapters that follow.">從 1972 年的 Anfinsen dogma 到 2024 年的諾貝爾化學獎——AI 用了 50 年才真正改寫生物資訊。這一章是後續 13 個主題的地圖、心智模型與「為什麼是現在」的全景視角。</p>
 </header>
 
 <main class="content-wrap">
 
 <!-- ===== Section 1: Why now ===== -->
 <section class="section">
-<div class="section-label" data-zh="開場" data-en="Setting the Stage">開場</div>
-<h2 data-zh="為什麼現在是 AI × 生資的黃金交叉點？" data-en="Why is now the inflection point for AI × bioinformatics?">為什麼現在是 AI × 生資的黃金交叉點？</h2>
+<div class="section-label" data-zh="開場故事" data-en="The Opening Story">開場故事</div>
+<h2 data-zh="一、為什麼 2020-2026 是 AI × 生資的「黃金交叉點」？" data-en="I. Why 2020–2026 is the inflection point for AI × bioinformatics">一、為什麼 2020-2026 是 AI × 生資的「黃金交叉點」？</h2>
+
+<div class="big-stats">
+  <div class="big-stat"><div class="big-stat-num">2億</div><div class="big-stat-label" data-zh="AlphaFold DB 結構數量" data-en="Structures in AlphaFold DB">AlphaFold DB 結構數量</div><div class="big-stat-sub">2022→</div></div>
+  <div class="big-stat"><div class="big-stat-num">9 兆</div><div class="big-stat-label" data-zh="Evo 2 訓練 DNA 鹼基數" data-en="Evo 2 training DNA bases">Evo 2 訓練 DNA 鹼基數</div><div class="big-stat-sub">2025</div></div>
+  <div class="big-stat"><div class="big-stat-num">5,000萬+</div><div class="big-stat-label" data-zh="HCA 累計細胞數" data-en="HCA cumulative cells">HCA 累計細胞數</div><div class="big-stat-sub">2024</div></div>
+  <div class="big-stat"><div class="big-stat-num">50萬</div><div class="big-stat-label" data-zh="UK Biobank WGS 人數" data-en="UK Biobank WGS participants">UK Biobank WGS 人數</div><div class="big-stat-sub">2023</div></div>
+</div>
+
 <div data-lang="zh">
-<p>三件事在 2020-2026 之間同時發生：<strong>(1) 資料指數級成長</strong>—UK Biobank 五十萬人全基因組、Human Cell Atlas 累計超過 5 千萬細胞、AlphaFold DB 提供 2 億條結構；<strong>(2) Transformer 跨領域成功</strong>—語言模型的「<span class="term">attention<span class="term-tip">注意力機制：讓模型能同時關注序列上任意位置的關係，是現代生物 AI 的共同語言</span></span>」在 DNA、蛋白質、單細胞 RNA-seq 上同樣有效；<strong>(3) 算力與開源權重</strong>—H100/B200、AlphaFold3 / ESM3 / Evo2 / scGPT 等大模型公開權重，讓中小實驗室也能在 fine-tune 階段參與創新。</p>
-<p>這三股力量讓「<strong>能不能用 AI 做？</strong>」這個問題，從少數巨頭的特權，變成每個生資人需要面對的日常選擇。</p>
+<p>三件事在過去六年同時發生，把「AI 用在生物學」從新奇實驗變成日常基礎設施：</p>
+<p><strong>(1) 資料量指數級爆炸。</strong>單細胞 RNA-seq 從 2009 年第一篇論文時的 1 個細胞，到 2024 年 Human Cell Atlas 突破 5 千萬細胞；蛋白質結構從 PDB 的 20 萬條經 50 年累積，到 AlphaFold DB 一次性公開 2 億條；DNA 序列從 NCBI 主流 GenBank 的數百萬條，到 Evo 2 訓練於 9 兆個鹼基跨越所有生命域。<strong>資料規模超過了任何一個人能讀完的速度，AI 變成必要而非選配。</strong></p>
+<p><strong>(2) Transformer 跨領域成功。</strong>2017 年 Google 發表 <span class="glossary-pill" title="原文 Attention Is All You Need；提出 self-attention 取代 RNN 的循環結構，允許平行訓練與長距離關聯">Attention Is All You Need</span>，本意是改進機器翻譯。沒人料到同一套架構：</p>
+<ul>
+<li>2019 年 BERT → 進入語言理解</li>
+<li>2020 年 GPT-3 → 開啟生成式 AI</li>
+<li>2021 年 AlphaFold 2 → 解開 50 年的蛋白折疊問題</li>
+<li>2023 年 ESM-2 → 從 6.5 億條蛋白序列學「演化」</li>
+<li>2024 年 AlphaFold 3 → 任意分子複合物</li>
+<li>2025 年 Evo 2 → 跨 DNA/RNA/蛋白的「生命語言模型」</li>
+</ul>
+<p>Transformer 的核心是 <span class="glossary-pill" title="Attention 機制：對序列上每個位置，計算它與其他所有位置的「相關性權重」，然後加權求和。可同時關注遠距離訊號">attention</span>——讓模型能同時關注序列上任意兩個位置的關係。對生物學意義特別深刻：<strong>蛋白質的活性位點、enhancer-promoter 對、剪接位點、單細胞基因互動，本質上都是長距離關係問題。</strong></p>
+<p><strong>(3) 算力與開源權重民主化。</strong>NVIDIA H100/B200、Google TPU v5、HuggingFace Hub 讓中小實驗室不需要再從零訓練大模型；只要 fine-tune 既有 ESM-2、scGPT、DNABERT-2 等開源權重即可。臨界點是：「能不能用 AI 做？」從少數巨頭的特權，變成每個生資人需要面對的日常選擇。</p>
 </div>
 <div data-lang="en">
-<p>Three things converged between 2020–2026: <strong>(1) data exploded</strong> — UK Biobank's 500K WGS, Human Cell Atlas's 50M+ cells, AlphaFold DB's 200M structures; <strong>(2) Transformers generalized</strong> — the same <span class="term">attention<span class="term-tip">Attention lets the model relate any two positions in a sequence — the lingua franca of modern bio-AI</span></span> mechanism that powers language models works on DNA, protein, and scRNA-seq; <strong>(3) compute and open weights</strong> — H100/B200 GPUs, plus AlphaFold 3, ESM3, Evo 2, scGPT with public weights, lets small labs fine-tune frontier models.</p>
-<p>Together, the question "<strong>can we use AI here?</strong>" has shifted from a Big-Tech privilege to a daily decision for every bioinformatician.</p>
+<p>Three forces converged in the past six years to turn "AI in biology" from a curiosity into baseline infrastructure:</p>
+<p><strong>(1) Explosive data growth.</strong> Single-cell RNA-seq went from one cell in the 2009 inaugural paper to over 50 million cells in the Human Cell Atlas by 2024. Protein structures: PDB accumulated 200,000 over five decades; AlphaFold DB published 200 million in one shot. DNA: GenBank's millions of sequences pale next to Evo 2's 9 trillion bases spanning every domain of life. <strong>Data has outpaced any human's ability to read it — AI became necessary, not optional.</strong></p>
+<p><strong>(2) Transformers generalized.</strong> Google's 2017 <span class="glossary-pill" title="Original: Attention Is All You Need. Replaced recurrent structures with self-attention, enabling parallel training and long-range modeling.">Attention Is All You Need</span> was meant to improve machine translation. No one expected the same architecture to power:</p>
+<ul>
+<li>2019: BERT → language understanding</li>
+<li>2020: GPT-3 → generative AI</li>
+<li>2021: AlphaFold 2 → cracking the 50-year protein folding problem</li>
+<li>2023: ESM-2 → learning "evolution" from 650 million protein sequences</li>
+<li>2024: AlphaFold 3 → arbitrary molecular complexes</li>
+<li>2025: Evo 2 → a "language model of life" across DNA/RNA/protein</li>
+</ul>
+<p>The core of a Transformer is <span class="glossary-pill" title="Attention: for each position in a sequence, compute a 'relevance weight' to every other position, then weighted-sum. Captures long-range signals.">attention</span> — the ability to relate any two positions in a sequence simultaneously. The biological significance is profound: <strong>protein active sites, enhancer–promoter pairs, splice sites, and single-cell gene interactions are all long-range relationship problems.</strong></p>
+<p><strong>(3) Compute and open weights democratized.</strong> NVIDIA H100/B200, Google TPU v5, and the HuggingFace Hub mean small labs no longer need to train frontier models from scratch — fine-tuning pretrained ESM-2, scGPT, or DNABERT-2 weights suffices. The tipping point: "Can we use AI here?" went from a Big-Tech privilege to a daily decision for every bioinformatician.</p>
 </div>
+
 <div class="callout tip"><span class="callout-icon">💡</span><div>
-<span data-lang="zh"><strong>學習這套教程的方式：</strong>先快速讀完每章「概覽」與「決策樹」，遇到自己工作會用到的章節再深入程式碼與 quiz。AI 工具迭代很快，重點是抓「不變的判讀框架」，而不是死背 API。</span>
-<span data-lang="en"><strong>How to use this tutorial:</strong> skim each chapter's overview and decision tree first, then dive into the code/quizzes for the ones relevant to your work. Tools change fast — focus on the durable framework for picking and validating models, not the API surface.</span>
+<span data-lang="zh"><strong>學習這套教程的建議走法：</strong>先快速讀完每章「概覽」與「決策樹」，再選擇與你工作相關的章節深入「程式碼 + 小測 + 深入討論」。AI 工具半年一個世代，重點是抓住「不變的判讀框架」與「如何質疑 benchmark」，而不是死背 API。</span>
+<span data-lang="en"><strong>How to use this tutorial:</strong> skim each chapter's overview and decision tree first, then dive into the code/quizzes/discussion for the ones relevant to your work. Tools change every 6 months — focus on the durable framework for picking models and questioning benchmarks, not the API surface.</span>
 </div></div>
 </section>
 
-<!-- ===== Section 2: 4 Levels ===== -->
+<!-- ===== Section 2: Timeline ===== -->
 <section class="section">
-<div class="section-label" data-zh="心智模型" data-en="Mental Model">心智模型</div>
-<h2 data-zh="生物資訊中 AI 的四層應用" data-en="Four layers of AI in bioinformatics">生物資訊中 AI 的四層應用</h2>
-<div data-lang="zh"><p>不論你研究什麼物種或疾病，AI 在生資的應用大致可以歸入四個層級。每章都會回扣這個架構：</p></div>
-<div data-lang="en"><p>Regardless of organism or disease, AI in bioinformatics generally falls into four layers — every chapter ties back to this structure:</p></div>
-<div class="card-grid cols-2">
-  <div class="card"><div class="card-icon">🧬</div><h4 data-zh="L1：序列 → 表徵" data-en="L1: Sequence → Representation">L1：序列 → 表徵</h4>
-    <div data-lang="zh"><p>把 DNA / RNA / 蛋白質序列壓縮成資訊豐富的 embedding。代表：DNABERT、ESM、Nucleotide Transformer、Evo 2。下游任務 (function prediction、variant effect) 都建立在這層之上。</p></div>
-    <div data-lang="en"><p>Compress DNA/RNA/protein sequences into rich embeddings. Examples: DNABERT, ESM, Nucleotide Transformer, Evo 2. Downstream tasks (function, variant effect) build on this layer.</p></div>
+<div class="section-label" data-zh="歷史脈絡" data-en="Historical Timeline">歷史脈絡</div>
+<h2 data-zh="二、50 年的時間軸：從 Anfinsen 假說到 Evo 2" data-en="II. A 50-year timeline: from Anfinsen's dogma to Evo 2">二、50 年的時間軸：從 Anfinsen 假說到 Evo 2</h2>
+<p data-zh="許多人把 AlphaFold 看作「突然」的突破。事實上，這條路鋪了五十年——每一塊磚都很重要：" data-en="Many treat AlphaFold as a 'sudden' breakthrough. In fact, the road was paved over fifty years — every brick matters:">許多人把 AlphaFold 看作「突然」的突破。事實上，這條路鋪了五十年——每一塊磚都很重要：</p>
+
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="timeline-year">1972</div>
+    <div class="timeline-event" data-zh="Anfinsen 假說：序列決定結構" data-en="Anfinsen's dogma: sequence determines structure">Anfinsen 假說：序列決定結構</div>
+    <div class="timeline-desc" data-zh="Christian Anfinsen 以核糖核酸酶 A 證明蛋白質胺基酸序列含有足夠資訊決定其最終 3D 折疊。這奠定了「從序列預測結構」的理論基礎，但沒給出計算方法——這個問題開放了 50 年。" data-en="Christian Anfinsen showed with ribonuclease A that a protein's amino acid sequence contains enough information to determine its final 3D fold. This grounded the 'sequence → structure' premise but gave no algorithm — the problem stayed open for 50 years.">Christian Anfinsen 以核糖核酸酶 A 證明蛋白質胺基酸序列含有足夠資訊決定其最終 3D 折疊。這奠定了「從序列預測結構」的理論基礎，但沒給出計算方法——這個問題開放了 50 年。</div>
   </div>
-  <div class="card"><div class="card-icon">🏗️</div><h4 data-zh="L2：序列 → 結構/功能" data-en="L2: Sequence → Structure/Function">L2：序列 → 結構/功能</h4>
-    <div data-lang="zh"><p>從序列直接推斷立體結構或功能：AlphaFold 3 (結構)、Enformer/Borzoi (表達量)、SpliceAI (剪接)、DeepVariant (變異品質)。</p></div>
-    <div data-lang="en"><p>Predict 3D structure or function directly from sequence: AlphaFold 3 (structure), Enformer/Borzoi (expression), SpliceAI (splicing), DeepVariant (variant quality).</p></div>
+  <div class="timeline-item">
+    <div class="timeline-year">1986</div>
+    <div class="timeline-event" data-zh="反向傳播演算法 (Backpropagation)" data-en="Backpropagation">反向傳播 (Backpropagation)</div>
+    <div class="timeline-desc" data-zh="Rumelhart、Hinton、Williams 在 Nature 提出反向傳播——讓多層神經網路能被訓練。這成為所有現代深度學習的「引擎」。" data-en="Rumelhart, Hinton, and Williams proposed backpropagation in Nature — the engine that powers every modern deep network.">Rumelhart、Hinton、Williams 在 Nature 提出反向傳播——讓多層神經網路能被訓練。這成為所有現代深度學習的「引擎」。</div>
   </div>
-  <div class="card"><div class="card-icon">🧫</div><h4 data-zh="L3：細胞/組織 系統建模" data-en="L3: Cell/Tissue System Modeling">L3：細胞/組織 系統建模</h4>
-    <div data-lang="zh"><p>整合大規模單細胞或空間轉錄組資料，學習通用的「細胞語法」：scVI、scGPT、Geneformer、scFoundation。可以做擾動預測、跨樣本對齊。</p></div>
-    <div data-lang="en"><p>Integrate large-scale single-cell or spatial data to learn a universal "cellular grammar": scVI, scGPT, Geneformer, scFoundation. Enables perturbation prediction and cross-sample alignment.</p></div>
+  <div class="timeline-item">
+    <div class="timeline-year">1994</div>
+    <div class="timeline-event" data-zh="CASP 競賽創立" data-en="CASP competition founded">CASP 競賽創立</div>
+    <div class="timeline-desc" data-zh="Critical Assessment of Structure Prediction 每兩年一次，盲測各團隊預測結果。長達 24 年內，平均 GDT-TS 從未突破 60 分（最高分 100，實驗等級需 ≥90）。" data-en="Critical Assessment of Structure Prediction — biennial blind test of structure prediction. For 24 years, average GDT-TS never broke 60 (out of 100; experimental quality needs ≥90).">Critical Assessment of Structure Prediction 每兩年一次，盲測各團隊預測結果。長達 24 年內，平均 GDT-TS 從未突破 60 分（最高分 100，實驗等級需 ≥90）。</div>
   </div>
-  <div class="card"><div class="card-icon">📚</div><h4 data-zh="L4：知識合成 / Agent" data-en="L4: Knowledge Synthesis / Agents">L4：知識合成 / Agent</h4>
-    <div data-lang="zh"><p>用 LLM 整合文獻、資料庫、工具呼叫，產生分析腳本或診斷建議：BioGPT、Med-PaLM 2、CRISPR-Agent、AutoML pipelines。</p></div>
-    <div data-lang="en"><p>Use LLMs to integrate literature, databases, and tool calls to draft scripts or clinical suggestions: BioGPT, Med-PaLM 2, CRISPR-Agent, AutoML pipelines.</p></div>
+  <div class="timeline-item">
+    <div class="timeline-year">2009</div>
+    <div class="timeline-event" data-zh="第一篇單細胞 RNA-seq 論文 (n=1)" data-en="First scRNA-seq paper (n=1 cell)">第一篇單細胞 RNA-seq 論文 (n=1)</div>
+    <div class="timeline-desc" data-zh="Tang 等對「一個」小鼠卵裂球做 RNA-seq；這是單細胞時代的起點。15 年後 Human Cell Atlas 累積 5 千萬細胞。" data-en="Tang et al. sequenced 'one' mouse blastomere — the start of the single-cell era. Fifteen years later HCA holds 50 million cells.">Tang 等對「一個」小鼠卵裂球做 RNA-seq；這是單細胞時代的起點。15 年後 Human Cell Atlas 累積 5 千萬細胞。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2012</div>
+    <div class="timeline-event" data-zh="AlexNet × ImageNet — 深度學習革命起點" data-en="AlexNet × ImageNet — the deep-learning revolution">AlexNet × ImageNet — 深度學習革命起點</div>
+    <div class="timeline-desc" data-zh="Krizhevsky 等用 CNN 在 ImageNet 上將 top-5 錯誤率從 26% 降到 16%。從這刻起，GPU 訓練深度模型成為主流——也直接催生了之後所有的生物 DL 工具。" data-en="Krizhevsky et al. dropped ImageNet top-5 error from 26% to 16% with a CNN. From here, GPU-trained deep models became mainstream — paving the way for every biological DL tool that followed.">Krizhevsky 等用 CNN 在 ImageNet 上將 top-5 錯誤率從 26% 降到 16%。從這刻起，GPU 訓練深度模型成為主流——也直接催生了之後所有的生物 DL 工具。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2015</div>
+    <div class="timeline-event" data-zh="DeepSEA / DeepBind：DL 進入基因體" data-en="DeepSEA / DeepBind: DL enters genomics">DeepSEA / DeepBind：DL 進入基因體</div>
+    <div class="timeline-desc" data-zh="Zhou & Troyanskaya 與 Alipanahi 等同年發表，把 CNN 用在 DNA 序列預測 TF 結合與染色質開放性。生資 DL 紀元開始。" data-en="Zhou & Troyanskaya and Alipanahi et al. used CNNs on DNA to predict TF binding and chromatin accessibility. The bio-DL era began.">Zhou & Troyanskaya 與 Alipanahi 等同年發表，把 CNN 用在 DNA 序列預測 TF 結合與染色質開放性。生資 DL 紀元開始。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2017</div>
+    <div class="timeline-event" data-zh="Attention Is All You Need" data-en="Attention Is All You Need">Attention Is All You Need</div>
+    <div class="timeline-desc" data-zh="Vaswani 等發表 Transformer 架構。本意是翻譯模型，但被證明可遷移到序列、影像、結構、化學、單細胞所有領域。引用數至 2026 已破 15 萬。" data-en="Vaswani et al. published the Transformer. Intended for translation, it transferred to sequence, image, structure, chemistry, and single-cell domains. By 2026 it has been cited 150,000+ times.">Vaswani 等發表 Transformer 架構。本意是翻譯模型，但被證明可遷移到序列、影像、結構、化學、單細胞所有領域。引用數至 2026 已破 15 萬。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2018</div>
+    <div class="timeline-event" data-zh="AlphaFold 1 在 CASP 13 首秀" data-en="AlphaFold 1 debuts at CASP 13">AlphaFold 1 在 CASP 13 首秀</div>
+    <div class="timeline-desc" data-zh="DeepMind 第一代得分 ~58 GDT，已大幅領先其他團隊但尚未達實驗等級。社群開始警覺：AI 可能正在改寫遊戲規則。" data-en="DeepMind's first version scored ~58 GDT — well ahead of competitors but not yet experimental quality. The community began to wonder: is AI rewriting the rules?">DeepMind 第一代得分 ~58 GDT，已大幅領先其他團隊但尚未達實驗等級。社群開始警覺：AI 可能正在改寫遊戲規則。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2020</div>
+    <div class="timeline-event" data-zh="AlphaFold 2：CASP 14 平均 92 分 ⭐" data-en="AlphaFold 2: average 92 at CASP 14 ⭐">AlphaFold 2：CASP 14 平均 92 分 ⭐</div>
+    <div class="timeline-desc" data-zh="進入「實驗等級」精度。CASP 主席 John Moult 在記者會上說：「這實質上解決了一個 50 年的科學問題。」這是 AI 在自然科學第一次明確的「奇異點時刻」。" data-en="Reached experimental accuracy. CASP chair John Moult told reporters: 'This essentially solves a 50-year-old scientific problem.' It was AI's first clear singularity moment in natural science.">進入「實驗等級」精度。CASP 主席 John Moult 在記者會上說：「這實質上解決了一個 50 年的科學問題。」這是 AI 在自然科學第一次明確的「奇異點時刻」。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2021</div>
+    <div class="timeline-event" data-zh="Enformer × RoseTTAFold × AlphaFold DB 公開" data-en="Enformer × RoseTTAFold × AlphaFold DB released">Enformer × RoseTTAFold × AlphaFold DB</div>
+    <div class="timeline-desc" data-zh="同年三件大事：DeepMind 的 Enformer 把 200kb DNA 上下文整入單一模型；Baker Lab 公開 RoseTTAFold；AlphaFold 結構資料庫公開 35 萬人類蛋白。" data-en="Three big releases in one year: DeepMind's Enformer integrated 200 kb of DNA context; Baker Lab released RoseTTAFold; AlphaFold DB published 350,000 human proteins.">同年三件大事：DeepMind 的 Enformer 把 200kb DNA 上下文整入單一模型；Baker Lab 公開 RoseTTAFold；AlphaFold 結構資料庫公開 35 萬人類蛋白。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2022</div>
+    <div class="timeline-event" data-zh="ChatGPT 與 ESMFold 同年發表" data-en="ChatGPT and ESMFold launched same year">ChatGPT 與 ESMFold 同年發表</div>
+    <div class="timeline-desc" data-zh="ChatGPT 讓 LLM 進入主流意識；同時 Meta 釋出 ESMFold——無需 MSA、速度比 AF2 快 60 倍。蛋白質與語言的 foundation model 時代正式開啟。" data-en="ChatGPT brought LLMs to public consciousness; meanwhile Meta released ESMFold — 60× faster than AF2, no MSA needed. The foundation-model era for both proteins and language officially began.">ChatGPT 讓 LLM 進入主流意識；同時 Meta 釋出 ESMFold——無需 MSA、速度比 AF2 快 60 倍。蛋白質與語言的 foundation model 時代正式開啟。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2023</div>
+    <div class="timeline-event" data-zh="RFdiffusion / scGPT / AlphaMissense" data-en="RFdiffusion / scGPT / AlphaMissense">RFdiffusion / scGPT / AlphaMissense</div>
+    <div class="timeline-desc" data-zh="生成式蛋白設計 (Baker Lab)、單細胞 GPT 模型 (Cui et al.)、71M 人類錯義變異致病性 (DeepMind) 在同一年陸續公開——「foundation model for X」變成標準範式。" data-en="De novo protein design (Baker Lab), single-cell GPT (Cui et al.), and proteome-wide missense pathogenicity (DeepMind) all dropped the same year. 'Foundation model for X' became the standard paradigm.">生成式蛋白設計 (Baker Lab)、單細胞 GPT 模型 (Cui et al.)、71M 人類錯義變異致病性 (DeepMind) 在同一年陸續公開——「foundation model for X」變成標準範式。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2024</div>
+    <div class="timeline-event" data-zh="AlphaFold 3 × Baker 諾貝爾獎 ⭐" data-en="AlphaFold 3 × Baker's Nobel ⭐">AlphaFold 3 × Baker 諾貝爾獎 ⭐</div>
+    <div class="timeline-desc" data-zh="AF3 用 diffusion 一次處理任意分子複合物。同年 David Baker（蛋白質設計）與 Demis Hassabis、John Jumper（AlphaFold）共獲諾貝爾化學獎——AI 第一次被諾貝爾承認為基礎科學貢獻。" data-en="AF3's diffusion module handles arbitrary molecular complexes in one shot. The same year David Baker (protein design), Demis Hassabis, and John Jumper (AlphaFold) shared the Nobel Prize in Chemistry — AI's first Nobel for fundamental science.">AF3 用 diffusion 一次處理任意分子複合物。同年 David Baker（蛋白質設計）與 Demis Hassabis、John Jumper（AlphaFold）共獲諾貝爾化學獎——AI 第一次被諾貝爾承認為基礎科學貢獻。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2025</div>
+    <div class="timeline-event" data-zh="Evo 2 × ESM3 × Med-PaLM 2 臨床版" data-en="Evo 2 × ESM3 × clinical Med-PaLM 2">Evo 2 × ESM3 × Med-PaLM 2</div>
+    <div class="timeline-desc" data-zh="Arc Institute 與 NVIDIA 釋出 Evo 2（40B 參數、跨界基因組生成）；Meta 釋出 ESM3 多模態蛋白模型；Med-PaLM 2 在 USMLE 達 86.5% 進入臨床驗證。" data-en="Arc Institute and NVIDIA released Evo 2 (40B params, cross-domain genome generation); Meta released multimodal ESM3; Med-PaLM 2 hit 86.5% on USMLE and entered clinical validation.">Arc Institute 與 NVIDIA 釋出 Evo 2（40B 參數、跨界基因組生成）；Meta 釋出 ESM3 多模態蛋白模型；Med-PaLM 2 在 USMLE 達 86.5% 進入臨床驗證。</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-year">2026</div>
+    <div class="timeline-event" data-zh="Agent 工作流 × 第一批 AI 設計藥物進 Phase III" data-en="Agent workflows × first AI-designed drugs reach Phase III">Agent 工作流 × AI 設計藥物 Phase III</div>
+    <div class="timeline-desc" data-zh="2024 進入 Phase II 的 Insilico INS018_055 預計年中讀出 Phase III 數據；同時 NHS 部署 LLM agent 做臨床變異 triage。AI 不再「在實驗室」——它在「臨床」。" data-en="Insilico's INS018_055 (Phase II since 2024) is expected to read out Phase III mid-year; meanwhile the UK NHS deploys LLM agents for clinical variant triage. AI is no longer 'in the lab' — it's 'in the clinic.'">2024 進入 Phase II 的 Insilico INS018_055 預計年中讀出 Phase III 數據；同時 NHS 部署 LLM agent 做臨床變異 triage。AI 不再「在實驗室」——它在「臨床」。</div>
   </div>
 </div>
 </section>
 
-<!-- ===== Section 3: Decision Tree ===== -->
+<!-- ===== Section 3: 4 Levels deep dive ===== -->
+<section class="section">
+<div class="section-label" data-zh="心智模型" data-en="Mental Model">心智模型</div>
+<h2 data-zh="三、生物資訊中 AI 的四層應用框架" data-en="III. The four-layer framework for AI in bioinformatics">三、生物資訊中 AI 的四層應用框架</h2>
+<p data-zh="不論你研究什麼物種或疾病，AI 在生資的應用大致可以歸入四個層級。後續 13 章每章都會回扣到這個框架——學會它，你就能在三秒內判斷一個新工具屬於哪個層級、解決什麼問題：" data-en="Regardless of organism or disease, AI in bioinformatics falls into four layers. The 13 remaining chapters each map back to this framework — once you internalize it, you can instantly classify any new tool by which layer it operates on and what problem it solves:">不論你研究什麼物種或疾病，AI 在生資的應用大致可以歸入四個層級。後續 13 章每章都會回扣到這個框架——學會它，你就能在三秒內判斷一個新工具屬於哪個層級、解決什麼問題：</p>
+
+<div class="concept-card">
+  <span class="concept-tag">L1</span>
+  <h4 data-zh="序列 → 表徵 (Representation)" data-en="L1 · Sequence → Representation">序列 → 表徵 (Representation)</h4>
+  <p data-zh="<strong>本質：</strong>把 DNA / RNA / 蛋白質序列壓縮成資訊豐富的 <span class='glossary-pill' title='Embedding：把離散符號（如胺基酸字母）映射成連續實數向量；功能相似的序列在向量空間距離也相近'>embedding 向量</span>。<br><strong>代表模型：</strong>DNABERT、ESM-2/3、Nucleotide Transformer、Evo 2。<br><strong>典型輸出：</strong>一條長度 L 的蛋白序列 → (L, 1280) 的向量矩陣，每個位置 1280 維。<br><strong>誰會用：</strong>任何下游任務（功能預測、相似性檢索、變異效應）的「特徵抽取」階段。" data-en="<strong>Essence:</strong> compress DNA/RNA/protein sequences into information-rich <span class='glossary-pill' title='Embedding: map discrete tokens (e.g., amino acid letters) to continuous vectors; functionally similar sequences are close in the vector space.'>embedding vectors</span>.<br><strong>Representative models:</strong> DNABERT, ESM-2/3, Nucleotide Transformer, Evo 2.<br><strong>Typical output:</strong> a length-L protein → an (L, 1280) matrix.<br><strong>Used by:</strong> downstream tasks (function prediction, similarity search, variant effect) — the 'feature extraction' stage.">本質：把序列壓縮成資訊豐富的 embedding 向量。代表：ESM、DNABERT、Evo 2。下游所有任務的基礎。</p>
+  <div class="concept-analogy" data-zh="把 Google 翻譯背後的「字義嵌入」搬到生物學——cosine 距離近的兩條蛋白，往往功能相關，即使序列同源性低。" data-en="It's like the word-embedding behind Google Translate — two proteins close in cosine space tend to share function even when their sequence identity is low.">把 Google 翻譯背後的「字義嵌入」搬到生物學——cosine 距離近的兩條蛋白，往往功能相關。</div>
+</div>
+
+<div class="concept-card">
+  <span class="concept-tag">L2</span>
+  <h4 data-zh="序列 → 結構 / 功能 (Structure / Function)" data-en="L2 · Sequence → Structure / Function">序列 → 結構 / 功能</h4>
+  <p data-zh="<strong>本質：</strong>從序列直接推斷出生物學上有意義的「量化指標」——3D 座標、表達量、剪接機率、變異致病性。<br><strong>代表模型：</strong>AlphaFold 2/3（結構）、Enformer/Borzoi（表達量）、SpliceAI（剪接）、AlphaMissense（致病性）、DeepVariant（變異品質）。<br><strong>關鍵特徵：</strong>輸出本身就是答案，不需要再接分類器。<br><strong>誰會用：</strong>臨床研究員、藥物開發、結構生物學家。" data-en="<strong>Essence:</strong> infer biologically meaningful quantities directly from sequence — 3D coordinates, expression levels, splicing probabilities, variant pathogenicity.<br><strong>Models:</strong> AlphaFold 2/3 (structure), Enformer/Borzoi (expression), SpliceAI (splicing), AlphaMissense (pathogenicity), DeepVariant (variant quality).<br><strong>Key trait:</strong> the output itself is the answer — no downstream classifier needed.<br><strong>Used by:</strong> clinical researchers, drug developers, structural biologists.">本質：從序列直接推斷立體結構或功能。AlphaFold、Enformer、SpliceAI、DeepVariant。</p>
+  <div class="concept-analogy" data-zh="像看圖識物——把序列輸入模型，它直接告訴你「結構是這樣、致病機率是 0.87」，不是給你一串向量讓你自己分析。" data-en="Like image recognition — feed in the sequence and the model directly tells you 'the structure is this; pathogenic probability is 0.87,' not a vector for you to interpret.">像看圖識物——模型直接告訴你「答案」，不是給你一串向量讓你自己分析。</div>
+</div>
+
+<div class="concept-card">
+  <span class="concept-tag">L3</span>
+  <h4 data-zh="細胞 / 組織 系統建模 (System Modeling)" data-en="L3 · Cellular / Tissue System Modeling">細胞 / 組織 系統建模</h4>
+  <p data-zh="<strong>本質：</strong>整合大規模單細胞或空間轉錄組資料，學習通用的「細胞語法」。<br><strong>代表模型：</strong>scVI（深度生成模型）、scGPT、Geneformer、scFoundation、SCimilarity、UCE。<br><strong>典型任務：</strong>細胞型別零樣本註釋、in silico 基因敲除預測、跨樣本對齊、罕見細胞型別發現。<br><strong>誰會用：</strong>單細胞與空間轉錄組研究員。" data-en="<strong>Essence:</strong> integrate large-scale single-cell / spatial data to learn a universal 'cellular grammar.'<br><strong>Models:</strong> scVI (deep generative), scGPT, Geneformer, scFoundation, SCimilarity, UCE.<br><strong>Typical tasks:</strong> zero-shot cell-type annotation, in silico gene KO prediction, cross-sample alignment, rare cell-type discovery.<br><strong>Used by:</strong> single-cell and spatial-omics researchers.">本質：用大規模單細胞資料學「細胞的語法」。scVI、scGPT、Geneformer、SCimilarity。</p>
+  <div class="concept-analogy" data-zh="像 GPT 對句子的理解——預訓練 30-50M 細胞之後，模型「直覺地知道」某個細胞是 T cell、B cell 還是 macrophage，即使你沒給標籤。" data-en="Like GPT for sentences — after pretraining on 30–50M cells, the model 'just knows' whether a cell is a T cell, B cell, or macrophage even without labels.">像 GPT 看句子——預訓練之後模型「直覺知道」這個細胞是什麼類型，即使沒給標籤。</div>
+</div>
+
+<div class="concept-card">
+  <span class="concept-tag">L4</span>
+  <h4 data-zh="知識合成 / Agent (Knowledge Synthesis / Agents)" data-en="L4 · Knowledge Synthesis / Agents">知識合成 / Agent</h4>
+  <p data-zh="<strong>本質：</strong>用 LLM 整合文獻、資料庫、工具呼叫，產生分析腳本、診斷建議或實驗 protocol。<br><strong>代表模型：</strong>BioGPT、Med-PaLM 2、Med-Gemini、CRISPR-GPT、ChemCrow、LangChain agent。<br><strong>關鍵能力：</strong>不只回答問題，還能「執行工具」——查 ClinVar、跑 SpliceAI、生成 Snakemake 流程。<br><strong>誰會用：</strong>臨床決策支援、文獻 meta-analysis、自動化工作流。" data-en="<strong>Essence:</strong> use LLMs to integrate literature, databases, and tool calls — producing analysis scripts, clinical suggestions, or experimental protocols.<br><strong>Models:</strong> BioGPT, Med-PaLM 2, Med-Gemini, CRISPR-GPT, ChemCrow, LangChain agents.<br><strong>Key capability:</strong> not just answering — actually *executing tools* (query ClinVar, run SpliceAI, write a Snakemake pipeline).<br><strong>Used by:</strong> clinical decision support, literature meta-analysis, workflow automation.">本質：LLM + 工具呼叫 + 文獻檢索。BioGPT、Med-PaLM 2、CRISPR-GPT。</p>
+  <div class="concept-analogy" data-zh="像給你一位「會 Google + 會跑程式 + 讀完整 PubMed」的研究助理——它不只給意見，還會直接幫你跑分析、開草稿。" data-en="Like a research assistant who can Google, run code, and has read every PubMed paper — it doesn't just opine, it actually runs analyses and drafts manuscripts for you.">像會 Google + 會跑程式 + 讀完整 PubMed 的研究助理——直接幫你跑分析。</div>
+</div>
+</section>
+
+<!-- ===== Section 4: What-if interactive ===== -->
+<section class="section">
+<div class="section-label" data-zh="互動情境" data-en="Interactive Scenarios">互動情境</div>
+<h2 data-zh="四、What-if 演練：我這個任務該用哪一層 AI？" data-en="IV. What-if drill: which AI layer fits my task?">四、What-if 演練：我這個任務該用哪一層 AI？</h2>
+<p data-zh="點擊下方任一場景，看 AI 該如何配置——多練幾次你的「層級直覺」就會建立起來。" data-en="Click any scenario below to see how AI should be configured. A few rounds of this and your 'layer instinct' will kick in.">點擊下方任一場景，看 AI 該如何配置——多練幾次你的「層級直覺」就會建立起來。</p>
+
+<div class="whatif">
+<div class="whatif-scenarios" id="wifGrid">
+  <div class="whatif-scenario" data-key="rare" data-zh="🏥 罕見疾病：手上 1 個未診斷家庭的全外顯子組" data-en="🏥 Rare disease: an undiagnosed family's WES on hand">🏥 罕見疾病：1 個未診斷家庭的全外顯子組</div>
+  <div class="whatif-scenario" data-key="enzyme" data-zh="🧪 想設計一個能降解 PET 塑膠的新酵素" data-en="🧪 Design an enzyme that degrades PET plastic">🧪 想設計一個能降解 PET 塑膠的新酵素</div>
+  <div class="whatif-scenario" data-key="atlas" data-zh="🦠 5 個實驗室、不同平台的 PBMC scRNA-seq 整合" data-en="🦠 Integrate 5 labs' PBMC scRNA-seq across platforms">🦠 5 個實驗室的 PBMC scRNA-seq 整合</div>
+  <div class="whatif-scenario" data-key="gwas" data-zh="🧬 GWAS hit 是非編碼 SNP，想知道它影響哪個基因" data-en="🧬 GWAS hit in a non-coding SNP — which gene is affected?">🧬 非編碼 GWAS SNP，想知道影響哪個基因</div>
+  <div class="whatif-scenario" data-key="cancer" data-zh="🎯 想為 KRAS G12C 設計一個小分子抑制劑" data-en="🎯 Design a small-molecule inhibitor for KRAS G12C">🎯 為 KRAS G12C 設計小分子抑制劑</div>
+  <div class="whatif-scenario" data-key="lit" data-zh="📚 想知道「mitochondrial fission 與 ALS」最新研究進展" data-en="📚 What's the latest on mitochondrial fission and ALS?">📚 mitochondrial fission 與 ALS 文獻進展</div>
+</div>
+<div class="whatif-result" id="wifResult" data-zh="點擊一個情境..." data-en="Click a scenario...">點擊一個情境...</div>
+</div>
+</section>
+
+<!-- ===== Section 5: Discussion ===== -->
+<section class="section">
+<div class="section-label" data-zh="深入討論" data-en="Deep Dive Discussion">深入討論</div>
+<h2 data-zh="五、引人入勝的辯論：AI 真的「理解」生物學嗎？" data-en="V. The thought-provoking debate: does AI 'understand' biology?">五、引人入勝的辯論：AI 真的「理解」生物學嗎？</h2>
+<p data-zh="這是過去三年領域內最激烈的爭論之一。點開下方各觀點看看不同立場——這不只是哲學問題，會直接影響你怎麼解讀模型結果：" data-en="One of the field's most heated debates of the last three years. Expand each viewpoint below — this isn't just philosophical; it directly shapes how you interpret model outputs:">這是過去三年領域內最激烈的爭論之一。點開下方各觀點看看不同立場——這不只是哲學問題，會直接影響你怎麼解讀模型結果：</p>
+
+<div class="discuss-block">
+  <button class="discuss-toggle" data-target="d1">▶ <span data-zh="觀點 A：AlphaFold「真的學會了物理」" data-en="View A: AlphaFold has 'really learned the physics'">觀點 A：AlphaFold「真的學會了物理」</span></button>
+  <div class="discuss-body" id="d1">
+    <p data-lang="zh">支持者認為 AlphaFold 2/3 內部 representation 對應到二級結構、靜電交互作用、疏水堆疊等真實物理量。Karras 等 (2024) 用「探針 (probing)」方法證明可以從中層 attention 抽出殘基間距離、氫鍵供體等資訊。如果模型沒「學會物理」，怎麼可能對 OOD 序列也正確？</p>
+    <p data-lang="en">Proponents argue AlphaFold 2/3's internal representations correspond to real physical quantities — secondary structure, electrostatics, hydrophobic packing. Karras et al. (2024) used probing methods to extract residue distances and H-bond donors from mid-layer attention. If the model hadn't 'learned the physics,' how could it work on OOD sequences?</p>
+    <h5 data-zh="🧪 思辨練習" data-en="🧪 Think for yourself">🧪 思辨練習</h5>
+    <p data-lang="zh">你怎麼定義「理解物理」？是「能正確預測」、「能解釋為什麼預測這樣」、還是「能類比到全新場景」？三者的標準不同——這個問題本身就值得寫一篇論文。</p>
+    <p data-lang="en">How do you define 'understanding physics'? Correctly predicting? Explaining the prediction? Generalizing to entirely new scenarios? The three bars differ — this question alone is paper-worthy.</p>
+  </div>
+</div>
+
+<div class="discuss-block">
+  <button class="discuss-toggle" data-target="d2">▶ <span data-zh="觀點 B：它只是非常會「演化記憶」" data-en="View B: it's just very good at 'evolutionary memorization'">觀點 B：它只是非常會「演化記憶」</span></button>
+  <div class="discuss-body" id="d2">
+    <p data-lang="zh">反對者指出，AlphaFold 嚴重依賴多序列比對 (MSA)。Roney & Ovchinnikov (2022) 證明：對沒有 MSA 的「孤兒蛋白」AlphaFold 表現大幅下降。換句話說它在「查表」——以演化親緣資料找最近鄰。Anfinsen 假說承諾的是「<em>序列</em>決定結構」，AlphaFold 用的卻是「<em>序列家族</em>決定結構」。</p>
+    <p data-lang="en">Skeptics point out AlphaFold's heavy MSA dependency. Roney & Ovchinnikov (2022) showed performance collapses on 'orphan proteins' without evolutionary neighbors. In other words it's 'looking up' — finding the nearest neighbors via evolution. Anfinsen's dogma promised '<em>sequence</em> determines structure'; AlphaFold uses '<em>sequence family</em> determines structure.'</p>
+    <h5 data-zh="🧪 思辨練習" data-en="🧪 Think for yourself">🧪 思辨練習</h5>
+    <p data-lang="zh">ESMFold 不需要 MSA 也能得到 ~85 GDT。這算「真理解物理」還是「把 MSA 知識內化到參數裡」？開放問題。</p>
+    <p data-lang="en">ESMFold reaches ~85 GDT without MSAs. Does that count as 'real physics' or just 'internalizing MSA knowledge into parameters'? Open question.</p>
+  </div>
+</div>
+
+<div class="discuss-block">
+  <button class="discuss-toggle" data-target="d3">▶ <span data-zh="觀點 C：「理解」這個問題本身可能不重要" data-en="View C: 'understanding' may not be the right question">觀點 C：「理解」這個問題本身可能不重要</span></button>
+  <div class="discuss-body" id="d3">
+    <p data-lang="zh">工程觀點：能否正確預測 + 能否被可靠驗證 = 對科學是有用的工具。我們不會問計算機是否「理解」乘法；同樣的標準應該套用到 AI 模型。重點是：清楚知道它<em>什麼時候會失敗</em>（OOD、IDR、多狀態構象、突變敏感性），以及永遠用實驗去 reality check。</p>
+    <p data-lang="en">Engineering view: if it predicts accurately and can be verified, it's a useful scientific tool. We don't ask whether a calculator 'understands' multiplication — apply the same standard to AI models. What matters is knowing <em>when it fails</em> (OOD, IDRs, multi-state conformations, mutation sensitivity) and always reality-checking with experiment.</p>
+    <h5 data-zh="🧪 對你的啟示" data-en="🧪 What this means for you">🧪 對你的啟示</h5>
+    <p data-lang="zh">本教程後續章節會反覆強調「模型失敗模式」與「benchmark 污染」——這比辯論「是否真理解」實用得多。</p>
+    <p data-lang="en">Subsequent chapters keep emphasizing 'failure modes' and 'benchmark contamination' — far more practical than the 'real understanding' debate.</p>
+  </div>
+</div>
+</section>
+
+<!-- ===== Section 6: Decision tree ===== -->
 <section class="section">
 <div class="section-label" data-zh="決策樹" data-en="Decision Tree">決策樹</div>
-<h2 data-zh="我這個任務該用 AI 嗎？" data-en="Should I reach for AI on this task?">我這個任務該用 AI 嗎？</h2>
+<h2 data-zh="六、我這個任務該用 AI 嗎？" data-en="VI. Should I reach for AI on this task?">六、我這個任務該用 AI 嗎？</h2>
 <div class="decision-tree">
 <h4 data-zh="🌳 決策路徑" data-en="🌳 Decision flow">🌳 決策路徑</h4>
 <div class="dt-node"><span class="dt-q">Q1.</span> <span data-zh="任務有標籤資料嗎？(>1000 筆)" data-en="Is there labeled data? (>1000 rows)">任務有標籤資料嗎？(>1000 筆)</span></div>
@@ -75,30 +257,29 @@
 <div class="dt-node"><span class="dt-q">Q2.</span> <span data-zh="輸入是序列嗎？" data-en="Is the input a sequence?">輸入是序列嗎？</span></div>
 <div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>看是 DNA / 蛋白 / RNA，分別查章 04、05、08、09。優先 fine-tune 現成 foundation model 而非從零訓練。" data-en="<strong>Yes:</strong> branch by DNA/protein/RNA — see Ch. 04, 05, 08, 09. Prefer fine-tuning a foundation model over training from scratch."><strong>是：</strong>看是 DNA / 蛋白 / RNA，分別查章 04、05、08、09。優先 fine-tune 現成 foundation model 而非從零訓練。</span></div>
 <div class="dt-node"><span class="dt-q">Q3.</span> <span data-zh="是否需要可解釋與臨床合規？" data-en="Does it need to be interpretable / clinically compliant?">是否需要可解釋與臨床合規？</span></div>
-<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>選擇有「<span class='term'>attribution / saliency<span class='term-tip'>歸因方法：把模型的預測映射回輸入哪些位置造成的影響</span></span>」工具的模型，並準備 model card（章 14）。" data-en="<strong>Yes:</strong> choose models with attribution/saliency tooling and prepare a model card (Ch. 14)."><strong>是：</strong>選擇有 attribution/saliency 工具的模型，並準備 model card（章 14）。</span></div>
+<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>選擇有 attribution / saliency 工具的模型，並準備 model card（章 14）。" data-en="<strong>Yes:</strong> choose models with attribution/saliency tooling and prepare a model card (Ch. 14)."><strong>是：</strong>選擇有 attribution / saliency 工具的模型，並準備 model card（章 14）。</span></div>
 <div class="dt-node"><span class="dt-q">Q4.</span> <span data-zh="任務是「總結 + 工具呼叫」型？" data-en="Is the task summarize-and-call-tools?">任務是「總結 + 工具呼叫」型？</span></div>
-<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>考慮 RAG/Agent（章 12、13），但要做 hallucination 控制。" data-en="<strong>Yes:</strong> consider RAG/Agents (Ch. 12, 13) — with strict hallucination controls."><strong>是：</strong>考慮 RAG/Agent（章 12、13），但要做 hallucination 控制。</span></div>
+<div class="dt-node"><span class="dt-arrow">→</span> <span data-zh="<strong>是：</strong>考慮 RAG / Agent（章 12、13），但要做 hallucination 控制。" data-en="<strong>Yes:</strong> consider RAG/Agents (Ch. 12, 13) — with strict hallucination controls."><strong>是：</strong>考慮 RAG / Agent（章 12、13），但要做 hallucination 控制。</span></div>
 </div>
 </section>
 
-<!-- ===== Section 4: Stats Snapshot Interactive ===== -->
+<!-- ===== Section 7: 14-chapter map ===== -->
 <section class="section">
 <div class="section-label" data-zh="互動圖表" data-en="Interactive Chart">互動圖表</div>
-<h2 data-zh="14 章主題地圖" data-en="A map of the 14 chapters">14 章主題地圖</h2>
-<div data-lang="zh"><p>下圖以「資料量需求」對「方法成熟度」散佈各章主題。<strong>右下</strong>是大眾化、低門檻的；<strong>右上</strong>是已成熟但需要大量資料；<strong>左上</strong>則是還在快速演化的前沿。</p></div>
-<div data-lang="en"><p>Below: each chapter's topic plotted by data-hunger × method maturity. <strong>Lower-right</strong> is accessible; <strong>upper-right</strong> is mature but data-heavy; <strong>upper-left</strong> is the rapidly-evolving frontier.</p></div>
+<h2 data-zh="七、14 章主題地圖" data-en="VII. The 14-chapter topic map">七、14 章主題地圖</h2>
+<div data-lang="zh"><p>下圖以「方法成熟度」對「資料量需求」散佈各章主題。<strong>右下</strong>是大眾化、低門檻的；<strong>右上</strong>是已成熟但需要大量資料；<strong>左上</strong>則是還在快速演化的前沿。滑鼠移上去看章節名稱：</p></div>
+<div data-lang="en"><p>Each chapter's topic plotted by data-hunger × method maturity. <strong>Lower-right</strong> is accessible; <strong>upper-right</strong> is mature but data-heavy; <strong>upper-left</strong> is the rapidly-evolving frontier. Hover to see chapter names:</p></div>
 <div class="interactive-panel">
 <div class="chart-container"><canvas id="mapChart"></canvas></div>
 <p style="font-size:.82rem;color:var(--c-ink-muted);text-align:center;" data-zh="X：方法成熟度（年） · Y：資料量需求（log）" data-en="X: method maturity (years) · Y: data hunger (log)">X：方法成熟度（年） · Y：資料量需求（log）</p>
 </div>
 </section>
 
-<!-- ===== Section 5: Toolchain ===== -->
+<!-- ===== Section 8: Toolchain ===== -->
 <section class="section">
 <div class="section-label" data-zh="工具鏈" data-en="Toolchain">工具鏈</div>
-<h2 data-zh="2026 年的標準工具鏈" data-en="The standard toolchain in 2026">2026 年的標準工具鏈</h2>
-<div data-lang="zh"><p>本教程的所有範例會圍繞以下這套常見工具，第二章開始將用 Python（主）+ R（對照）雙語呈現：</p></div>
-<div data-lang="en"><p>All examples are built on this common stack. From Ch. 2 onward, code is shown side-by-side in Python (primary) and R (companion):</p></div>
+<h2 data-zh="八、2026 年的標準工具鏈" data-en="VIII. The standard toolchain in 2026">八、2026 年的標準工具鏈</h2>
+<p data-zh="本教程的所有範例會圍繞以下這套常見工具，第二章開始將用 Python（主）+ R（對照）雙語呈現：" data-en="All examples are built on this common stack. From Ch. 2 onward, code is shown side-by-side in Python (primary) and R (companion):">本教程的所有範例會圍繞以下這套常見工具，第二章開始將用 Python（主）+ R（對照）雙語呈現：</p>
 <table class="comp-table">
 <thead><tr><th data-zh="任務" data-en="Task">任務</th><th>Python</th><th>R</th></tr></thead>
 <tbody>
@@ -107,18 +288,17 @@
 <tr><td data-zh="深度學習" data-en="Deep learning">深度學習</td><td>PyTorch, JAX, Lightning</td><td>torch, keras3</td></tr>
 <tr><td data-zh="基因體 / 序列" data-en="Genomics / Sequences">基因體 / 序列</td><td>Biopython, pyfaidx, genomepy</td><td>Biostrings, GenomicRanges</td></tr>
 <tr><td data-zh="單細胞" data-en="Single-cell">單細胞</td><td>scanpy, scvi-tools, anndata</td><td>Seurat v5, SingleCellExperiment</td></tr>
-<tr><td data-zh="蛋白質" data-en="Protein">蛋白質</td><td>fair-esm, openfold, biotite</td><td>—（多以 reticulate 呼叫 Python）</td></tr>
+<tr><td data-zh="蛋白質" data-en="Protein">蛋白質</td><td>fair-esm, openfold, biotite</td><td><span data-zh="—（多以 reticulate 呼叫 Python）" data-en="— (mostly via reticulate calling Python)">—（多以 reticulate 呼叫 Python）</span></td></tr>
 <tr><td data-zh="LLM / 文獻" data-en="LLM / Literature">LLM / 文獻</td><td>transformers, langchain, llama-index</td><td>chattr, ellmer (R 4.4+)</td></tr>
 </tbody>
 </table>
 </section>
 
-<!-- ===== Section 6: Code peek ===== -->
+<!-- ===== Section 9: Code peek ===== -->
 <section class="section">
 <div class="section-label" data-zh="先睹為快" data-en="Sneak Peek">先睹為快</div>
-<h2 data-zh="一段程式碼，五行解決一個生資任務" data-en="Five lines, one bioinformatics task">一段程式碼，五行解決一個生資任務</h2>
-<div data-lang="zh"><p>下面用 ESM-2 把蛋白質序列轉成嵌入向量（你會在第 4–5 章重新遇到它）。試著感受兩種語言寫法的等價性：</p></div>
-<div data-lang="en"><p>Below: ESM-2 turning a protein sequence into an embedding (you'll meet it again in Ch. 4–5). Notice how the two languages mirror each other:</p></div>
+<h2 data-zh="九、一段程式碼，五行解決一個生資任務" data-en="IX. Five lines, one bioinformatics task">九、一段程式碼，五行解決一個生資任務</h2>
+<p data-zh="下面用 ESM-2 把蛋白質序列轉成嵌入向量（你會在第 4–5 章重新遇到它）。試著感受兩種語言寫法的等價性：" data-en="Below: ESM-2 turning a protein sequence into an embedding (you'll meet it again in Ch. 4–5). Notice how the two languages mirror each other:">下面用 ESM-2 把蛋白質序列轉成嵌入向量（你會在第 4–5 章重新遇到它）。試著感受兩種語言寫法的等價性：</p>
 
 <div class="code-tabs">
 <div class="code-tab-btns"><button class="code-tab-btn active">Python</button><button class="code-tab-btn">R</button></div>
@@ -138,14 +318,14 @@ emb <- res$representations[[<span class="str">"6"</span>]]$<span class="func">me
 </div>
 
 <div class="callout warn"><span class="callout-icon">⚠️</span><div>
-<span data-lang="zh"><strong>R 使用者注意：</strong>蛋白質深度學習生態幾乎全在 Python，最佳做法是 <code>reticulate</code> 包裝呼叫，或使用 R-side 套件 <code>torch</code> 和 <code>biostrings</code> 處理序列前處理 + 向量分析。</span>
+<span data-lang="zh"><strong>R 使用者注意：</strong>蛋白質深度學習生態幾乎全在 Python，最佳做法是 <code>reticulate</code> 包裝呼叫，或使用 R-side 套件 <code>torch</code> 和 <code>Biostrings</code> 處理序列前處理 + 向量分析。</span>
 <span data-lang="en"><strong>R users:</strong> the protein deep-learning ecosystem is Python-first. Best practice is to call it via <code>reticulate</code>, while using R-native packages (<code>torch</code>, <code>Biostrings</code>) for preprocessing and downstream analysis.</span>
 </div></div>
 </section>
 
 <!-- ===== Quiz ===== -->
 <section class="quiz-section">
-<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<h3 data-zh="📝 概念小測 (5 題)" data-en="📝 Quick Check (5 questions)">📝 概念小測 (5 題)</h3>
 
 <div class="quiz-q">
 <p data-zh="Q1. 下列哪一項<strong>不是</strong> 2020-2026 推動 AI×生資的主要驅動力？" data-en="Q1. Which of the following is <strong>NOT</strong> a key driver behind the 2020–2026 AI × bioinformatics surge?">Q1. 下列哪一項<strong>不是</strong> 2020-2026 推動 AI×生資的主要驅動力？</p>
@@ -153,7 +333,7 @@ emb <- res$representations[[<span class="str">"6"</span>]]$<span class="func">me
 <div class="quiz-opt" data-correct="false"><span data-zh="(A) UK Biobank 等大規模資料釋出" data-en="(A) Large-scale data releases like UK Biobank">(A) UK Biobank 等大規模資料釋出</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(B) Transformer 架構跨領域有效" data-en="(B) Transformer architectures generalizing across domains">(B) Transformer 架構跨領域有效</span></div>
 <div class="quiz-opt" data-correct="true"><span data-zh="(C) Sanger 定序技術突然變便宜 1000 倍" data-en="(C) A sudden 1000× drop in Sanger sequencing cost">(C) Sanger 定序技術突然變便宜 1000 倍</span></div>
-<div class="quiz-opt" data-correct="false"><span data-zh="(D) AlphaFold3、ESM3 等大模型開放權重" data-en="(D) Public weights for AlphaFold 3, ESM3, etc.">(D) AlphaFold3、ESM3 等大模型開放權重</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) AlphaFold 3、ESM3 等大模型開放權重" data-en="(D) Public weights for AlphaFold 3, ESM3, etc.">(D) AlphaFold3、ESM3 等大模型開放權重</span></div>
 </div>
 <div class="quiz-feedback"><span data-zh="✅ 正確答案 (C)。Sanger 並沒有突然降價；驅動力是 NGS 已經夠便宜 + 模型開源 + 算力充足。" data-en="✅ Correct: (C). Sanger sequencing didn't drop another 1000× — the driver was NGS being cheap enough plus open weights and ample compute.">✅ 正確答案 (C)。Sanger 並沒有突然降價；驅動力是 NGS 已經夠便宜 + 模型開源 + 算力充足。</span></div>
 </div>
@@ -178,6 +358,28 @@ emb <- res$representations[[<span class="str">"6"</span>]]$<span class="func">me
 <div class="quiz-opt" data-correct="false"><span data-zh="(D) 用一個大型 LLM 直接讀 VCF 給診斷" data-en="(D) Feed the whole VCF to an LLM and let it diagnose">(D) 用一個大型 LLM 直接讀 VCF 給診斷</span></div>
 </div>
 <div class="quiz-feedback"><span data-zh="✅ 正確答案 (B)。資料量不大時，最佳實踐是把已訓練好的大模型作為特徵抽取器，再加上輕量分類器；章 9 會深入談這套流程。" data-en="✅ Correct: (B). With small N, use pretrained models as feature extractors and stack a light classifier on top — covered in detail in Ch. 9.">✅ 正確答案 (B)。資料量不大時，最佳實踐是把已訓練好的大模型作為特徵抽取器，再加上輕量分類器；章 9 會深入談這套流程。</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q4. 在 AlphaFold「真的學會物理」的辯論中，反方最常引用的證據是？" data-en="Q4. In the 'did AlphaFold really learn physics' debate, the skeptics most commonly cite which evidence?">Q4. 在 AlphaFold「真的學會物理」的辯論中，反方最常引用的證據是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) AlphaFold 對所有序列都表現完美" data-en="(A) AlphaFold performs perfectly on all sequences">(A) AlphaFold 對所有序列都表現完美</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 對沒有 MSA 的孤兒蛋白表現大幅下降，暗示它在「演化查表」" data-en="(B) Performance collapses on orphan proteins without MSAs — suggests 'evolutionary lookup'">(B) 對沒有 MSA 的孤兒蛋白表現大幅下降，暗示它在「演化查表」</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) AlphaFold 使用 GPU" data-en="(C) AlphaFold uses GPUs">(C) AlphaFold 使用 GPU</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) ESMFold 比 AlphaFold 慢" data-en="(D) ESMFold is slower than AlphaFold">(D) ESMFold 比 AlphaFold 慢</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。Roney & Ovchinnikov (2022) 是經典的反方證據。" data-en="✅ (B). Roney & Ovchinnikov (2022) is the canonical skeptic citation.">✅ 正解 (B)。</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q5. 把「臨床變異 triage」做成 LLM agent 流程，最不可或缺的護欄是？" data-en="Q5. For a clinical variant-triage LLM agent, the most indispensable guardrail is?">Q5. 把「臨床變異 triage」做成 LLM agent 流程，最不可或缺的護欄是？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 速度最快" data-en="(A) Maximize speed">(A) 速度最快</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(B) 用最大的 LLM" data-en="(B) Use the largest LLM">(B) 用最大的 LLM</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(C) human-in-the-loop：高風險判讀必須人類核準" data-en="(C) human-in-the-loop — humans must approve high-risk calls">(C) human-in-the-loop：高風險判讀必須人類核準</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 完全自動化" data-en="(D) Full automation">(D) 完全自動化</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (C)。章 13 深入。" data-en="✅ (C). Covered in depth in Ch. 13.">✅ 正解 (C)。</span></div>
 </div>
 </section>
 
@@ -230,5 +432,40 @@ if(ctx){
     }
   });
 }
+
+// ----- What-if scenarios -----
+const wifAnswers = {
+  rare:   { zh:'<strong>策略：</strong> L2 + L1 混合。先跑 <strong>DeepVariant</strong> 取代 GATK 提升 SNV/indel calling 精度（章 09），然後 <strong>AlphaMissense + SpliceAI</strong> 對每個變異打致病性分數，最後 <strong>ESM-1v</strong> 對非人類同源序列補強。注意 ACMG/AMP 標準仍要求 human-in-the-loop。',
+           en:'<strong>Strategy:</strong> L2 + L1 hybrid. Run <strong>DeepVariant</strong> (better than GATK for SNV/indel calling, Ch. 09), then score each variant with <strong>AlphaMissense + SpliceAI</strong>, supplement with <strong>ESM-1v</strong> for cross-species residues. ACMG/AMP still mandates human-in-the-loop.' },
+  enzyme: { zh:'<strong>策略：</strong> L2 (結構) → 設計 → L2 (驗證)。1) <strong>RFdiffusion-AllAtom</strong> 在含金屬輔因子下生成可能 scaffold；2) <strong>LigandMPNN</strong> 設計序列；3) <strong>AlphaFold 3</strong> 重新折疊驗證 self-consistency。實驗預期成功率 5-15%，須平行設計 1000+ 並做 ADMET 篩選。',
+           en:'<strong>Strategy:</strong> L2 (structure) → design → L2 (verify). 1) <strong>RFdiffusion-AllAtom</strong> generates scaffolds with metal cofactors; 2) <strong>LigandMPNN</strong> designs sequences; 3) <strong>AlphaFold 3</strong> validates self-consistency. Wet-lab hit rate 5–15% — generate 1000+ in parallel and filter for solubility/expressibility.' },
+  atlas:  { zh:'<strong>策略：</strong> L3 為主。首選 <strong>scVI</strong> 整合 (輕量、穩定)；若需要 zero-shot 細胞型別註釋再加 <strong>scGPT</strong> 或 <strong>SCimilarity</strong>。注意 batch effect 與 platform-specific bias，務必做 cross-lab held-out 驗證。',
+           en:'<strong>Strategy:</strong> L3-centric. First-line: <strong>scVI</strong> for integration (lightweight, stable). For zero-shot cell-type annotation, add <strong>scGPT</strong> or <strong>SCimilarity</strong>. Watch out for batch effects and platform-specific bias — always cross-lab held-out validate.' },
+  gwas:   { zh:'<strong>策略：</strong> L2 為主。對非編碼 SNP，把含 ref/alt 兩條長序列分別丟給 <strong>Enformer</strong> 或 <strong>Borzoi</strong>（章 08），比較 ΔRNA-seq coverage 看哪個基因被影響。注意它們對個人化表達還弱，要搭配 eQTL 資料驗證。',
+           en:'<strong>Strategy:</strong> L2-centric. For non-coding SNPs, feed both ref and alt long sequences to <strong>Enformer</strong> or <strong>Borzoi</strong> (Ch. 08) and compare ΔRNA-seq coverage. They are still weak on personal expression — cross-check with eQTL data.' },
+  cancer: { zh:'<strong>策略：</strong> L2 + L4 混合。1) <strong>AlphaFold 3</strong> 預測 KRAS G12C 共價結合口袋；2) <strong>DiffDock + PoseBusters</strong> 虛擬篩選 ChEMBL；3) <strong>REINVENT 4</strong> 生成新分子；4) <strong>ADMET-AI</strong> 過 hERG / BBB；5) FEP+ 重新打分前 100 名。整個 pipeline 約需 1 個月電腦時間。',
+           en:'<strong>Strategy:</strong> L2 + L4 hybrid. 1) <strong>AlphaFold 3</strong> for the KRAS G12C covalent pocket; 2) <strong>DiffDock + PoseBusters</strong> on ChEMBL; 3) <strong>REINVENT 4</strong> generates novel molecules; 4) <strong>ADMET-AI</strong> filters for hERG/BBB; 5) FEP+ rescores top 100. ~1 month of compute end-to-end.' },
+  lit:    { zh:'<strong>策略：</strong> L4 純粹的 RAG。<strong>PubMed E-utilities → 切 chunk → BGE embedding → FAISS</strong> 索引；然後用 <strong>Claude / GPT-4o</strong> 透過 LangChain 做檢索式問答，每個聲明附引用。避免直接問 LLM，因為它會編引文（章 12 詳述）。',
+           en:'<strong>Strategy:</strong> Pure L4 RAG. <strong>PubMed E-utilities → chunk → BGE embedding → FAISS</strong> index, then ask <strong>Claude / GPT-4o</strong> via LangChain with citation. Never ask an LLM bare — it hallucinates citations (Ch. 12).' }
+};
+document.querySelectorAll('.whatif-scenario').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    document.querySelectorAll('.whatif-scenario').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    const r = document.getElementById('wifResult');
+    const lang = (window.BioAI && window.BioAI.lang()) || 'zh';
+    r.classList.add('show');
+    r.innerHTML = wifAnswers[el.dataset.key][lang];
+    r.dataset.zh = wifAnswers[el.dataset.key].zh;
+    r.dataset.en = wifAnswers[el.dataset.key].en;
+  });
+});
+// re-render result on language change
+document.addEventListener('langchange', e=>{
+  const r = document.getElementById('wifResult');
+  if(r.classList.contains('show') && r.dataset[e.detail.lang]){
+    r.innerHTML = r.dataset[e.detail.lang];
+  }
+});
 </script>
 </body></html>

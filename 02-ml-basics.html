@@ -1,69 +1,108 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Ch 02: ML 基礎 — AI for Bioinformatics</title>
+<title data-zh="Ch 02: 機器學習基礎 — AI for Bioinformatics" data-en="Ch 02: ML Basics — AI for Bioinformatics">Ch 02: ML Basics — AI for Bioinformatics</title>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head><body>
 <nav class="top-nav"><div class="top-nav-inner">
   <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
   <ul class="top-nav-links">
-    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html" class="active">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
-    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html" class="active">02 ML</a></li><li><a href="03-deep-learning.html">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references/index.html">📚</a></li>
   </ul>
 </div></nav>
 <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
 
 <header class="page-hero"><div class="step-badge">CHAPTER 02 / 14 · BASIC</div>
 <h1 data-zh="機器學習基礎" data-en="Machine Learning Basics">機器學習基礎</h1>
-<p class="subtitle" data-lang="zh">監督 vs 非監督、過擬合、AUROC 與 PR——所有 AI 模型背後的共通語言。本章用乳癌 (Wisconsin) 與 Iris 兩個經典資料集示範。</p>
-<p class="subtitle" data-lang="en">Supervised vs unsupervised, overfitting, AUROC and PR — the shared language under every AI model. Worked examples on the Wisconsin breast-cancer and Iris datasets.</p>
+<p class="subtitle" data-zh="這一章是所有後續章節的「文法」——監督式 vs 非監督式、過擬合、bias-variance、AUROC vs AUPRC、特徵重要性。我們用乳癌與糖尿病兩個真實生醫資料集示範，並用三個互動 widget 把抽象概念變直覺。" data-en="This chapter is the grammar of everything that follows — supervised vs unsupervised, overfitting, bias-variance, AUROC vs AUPRC, feature importance. We use two real biomedical datasets (breast cancer, diabetes) and three interactive widgets to turn abstractions into intuition.">這一章是所有後續章節的「文法」——監督式 vs 非監督式、過擬合、bias-variance、AUROC vs AUPRC、特徵重要性。我們用乳癌與糖尿病兩個真實生醫資料集示範，並用三個互動 widget 把抽象概念變直覺。</p>
 </header>
 
 <main class="content-wrap">
 
-<!-- Section 1: Supervised vs Unsupervised -->
+<!-- Section 1: Three paradigms -->
 <section class="section">
 <div class="section-label" data-zh="核心概念" data-en="Core Concepts">核心概念</div>
 <h2 data-zh="一、監督式 vs 非監督式 vs 自監督式" data-en="I. Supervised vs Unsupervised vs Self-Supervised">一、監督式 vs 非監督式 vs 自監督式</h2>
-<div data-lang="zh"><p>機器學習的本質就是<strong>從資料中學習一個函數</strong>，根據訓練時是否提供「正確答案 (label)」分為三大類：</p></div>
-<div data-lang="en"><p>Machine learning fundamentally means <strong>learning a function from data</strong>. Categorized by whether labels are provided during training:</p></div>
-<div class="card-grid cols-3">
-<div class="card"><div class="card-icon">🎯</div><h4 data-zh="監督式 (Supervised)" data-en="Supervised">監督式 (Supervised)</h4>
-<div data-lang="zh"><p>有 X 和 y。<br>例：依 SNP 預測糖尿病風險。<br>方法：邏輯回歸、Random Forest、XGBoost、神經網路。</p></div>
-<div data-lang="en"><p>Both X and y available.<br>Ex: predict T2D risk from SNPs.<br>Methods: logistic regression, RF, XGBoost, NN.</p></div></div>
-<div class="card"><div class="card-icon">🔍</div><h4 data-zh="非監督式 (Unsupervised)" data-en="Unsupervised">非監督式 (Unsupervised)</h4>
-<div data-lang="zh"><p>只有 X。<br>例：scRNA-seq 細胞分群。<br>方法：K-means、Louvain、UMAP、PCA、autoencoder。</p></div>
-<div data-lang="en"><p>X only.<br>Ex: scRNA-seq cell clustering.<br>Methods: K-means, Louvain, UMAP, PCA, autoencoders.</p></div></div>
-<div class="card"><div class="card-icon">🪞</div><h4 data-zh="自監督式 (Self-supervised)" data-en="Self-supervised">自監督式 (Self-supervised)</h4>
-<div data-lang="zh"><p>只有 X，自己產生「pretext label」。<br>例：ESM 遮蔽 15% 胺基酸再預測。<br>幾乎所有現代 foundation model 的訓練方式。</p></div>
-<div data-lang="en"><p>X only, with auto-generated pretext labels.<br>Ex: ESM masks 15% of residues and predicts them.<br>How nearly every modern foundation model is trained.</p></div></div>
+<p data-zh="機器學習的本質是<strong>從資料學一個函數</strong>。三大典範區別在於「訓練時是否提供正確答案 (label)」：" data-en="ML's essence is <strong>learning a function from data</strong>. The three paradigms differ on 'whether labels are given during training':">機器學習的本質是從資料學一個函數。三大典範的區別在於訓練時是否提供正確答案 (label)：</p>
+
+<div class="concept-card">
+<span class="concept-tag" data-zh="監督" data-en="SUPERVISED">監督</span>
+<h4 data-zh="監督式學習 (Supervised Learning)" data-en="Supervised Learning">監督式學習</h4>
+<p data-zh="<strong>有 X 也有 y。</strong>每筆訓練樣本都有正確答案。例如：給 SNP profile (X) 與糖尿病狀態 (y=0/1)，學一個分類器。<br><br><strong>典型方法：</strong>邏輯回歸、Random Forest、XGBoost、LightGBM、MLP、CNN、Transformer 分類頭。<br><strong>典型生資應用：</strong>變異致病性預測、組織分類、結合位點預測、藥物-靶點交互作用。" data-en="<strong>X and y both available.</strong> Every training sample comes with the right answer. Example: SNP profiles (X) plus diabetes status (y=0/1), learn a classifier.<br><br><strong>Typical methods:</strong> logistic regression, random forest, XGBoost, LightGBM, MLP, CNN, Transformer classification heads.<br><strong>Typical bio uses:</strong> variant pathogenicity, tissue classification, binding-site prediction, drug-target interaction.">有 X 也有 y。每筆訓練樣本都有正確答案。</p>
+<div class="concept-analogy" data-zh="像小孩學認字——大人指著「貓」的圖告訴他「這是 cat」，重複幾千次後他就能對新照片說出正確答案。" data-en="Like a child learning words — an adult points to a cat picture and says 'cat'; after a few thousand examples the child names new pictures correctly.">像小孩學認字——大人指著「貓」的圖告訴他「這是 cat」，重複幾千次後他就能認新圖。</div>
 </div>
+
+<div class="concept-card">
+<span class="concept-tag" data-zh="非監督" data-en="UNSUPERVISED">非監督</span>
+<h4 data-zh="非監督式學習 (Unsupervised Learning)" data-en="Unsupervised Learning">非監督式學習</h4>
+<p data-zh="<strong>只有 X，沒有 y。</strong>模型自己找出資料中的結構。<br><br><strong>典型方法：</strong>K-means、層次分群、PCA、UMAP、t-SNE、autoencoder。<br><strong>典型生資應用：</strong>scRNA-seq 細胞分群、UMAP 視覺化、降維、異常偵測（離群細胞）。" data-en="<strong>X only, no y.</strong> The model discovers structure on its own.<br><br><strong>Typical methods:</strong> K-means, hierarchical clustering, PCA, UMAP, t-SNE, autoencoders.<br><strong>Typical bio uses:</strong> scRNA-seq cell clustering, UMAP visualization, dimensionality reduction, outlier detection.">只有 X 沒有 y。模型自己找出資料結構。</p>
+<div class="concept-analogy" data-zh="像把一堆混合的水果倒在桌上要小孩自己分類——他可能依顏色、形狀、大小分群，但「分得對不對」沒有標準答案。" data-en="Like pouring mixed fruit on a table and asking a child to sort them — they might group by color, shape, or size, with no 'right answer' to check against.">像把一堆水果倒桌上要小孩自己分類——標準不只一個。</div>
+</div>
+
+<div class="concept-card">
+<span class="concept-tag" data-zh="自監督" data-en="SELF-SUP">自監督</span>
+<h4 data-zh="自監督式學習 (Self-Supervised Learning)" data-en="Self-Supervised Learning">自監督式學習</h4>
+<p data-zh="<strong>只有 X，但模型自己「製造 label」當作 pretext 任務來學。</strong>這是 2020 後 foundation model 的核心訓練法。<br><br><strong>典型方法：</strong>BERT 風格的 <span class='glossary-pill' title='Masked Language Modeling：隨機把 15% token 遮掉，要模型預測被遮的內容。學到的表徵特別好'>Masked Language Modeling</span>、GPT 風格的 next-token prediction、contrastive learning。<br><strong>典型生資應用：</strong>ESM 預訓練（遮 15% 殘基要模型猜）、DNABERT、scGPT、Geneformer——<strong>所有現代生物 foundation model 都用這套</strong>。" data-en="<strong>X only — but the model fabricates its own labels as a pretext task.</strong> This is the core training paradigm for post-2020 foundation models.<br><br><strong>Typical methods:</strong> BERT-style <span class='glossary-pill' title='Masked Language Modeling: randomly mask 15% of tokens and ask the model to predict them. Yields exceptionally rich representations.'>masked language modeling</span>, GPT-style next-token prediction, contrastive learning.<br><strong>Typical bio uses:</strong> ESM pretraining (mask 15% of residues, predict them), DNABERT, scGPT, Geneformer — <strong>every modern bio foundation model uses this</strong>.">只有 X，但模型自己「造 label」當 pretext 任務學。ESM、DNABERT、scGPT 都用這套。</p>
+<div class="concept-analogy" data-zh="像填空題自學——拿一本書，隨機遮掉每段裡 15% 的字，逼自己根據上下文猜對。猜上 6.5 億條蛋白序列後，你就學會了「演化的語法」。" data-en="Like learning by self-administered cloze tests — take a book, mask 15% of words in each paragraph, and force yourself to guess from context. Do this on 650M protein sequences and you've learned 'the grammar of evolution.'">像填空題自學——對 6.5 億條蛋白序列遮 15% 字要自己猜，就學會了「演化的語法」。</div>
+</div>
+
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>為什麼自監督這麼重要？</strong>因為「有 label 的生物資料」稀缺而昂貴（需要實驗驗證），但「沒 label 的序列」滿地都是（UniProt 已有 ~2.4 億條蛋白序列）。自監督讓我們能榨乾這 99% 的「免費資料」。fine-tune 階段再用少量 label 就能達到很好的下游任務表現——這就是「foundation model」的商業模式。</span>
+<span data-lang="en"><strong>Why does self-supervision matter so much?</strong> Labeled biological data is scarce and expensive (requires experiments), but unlabeled sequences are everywhere (UniProt has ~240M protein sequences). Self-supervision lets us squeeze the 99% of 'free data.' Then fine-tuning with a small labeled set achieves great downstream performance — this is the foundation-model business model.</span>
+</div></div>
 </section>
 
-<!-- Section 2: Train/Val/Test -->
+<!-- Section 2: train/val/test -->
 <section class="section">
 <div class="section-label" data-zh="工作流程" data-en="Workflow">工作流程</div>
-<h2 data-zh="二、Train / Validation / Test 切分" data-en="II. Train / Validation / Test Splits">二、Train / Validation / Test 切分</h2>
+<h2 data-zh="二、Train / Validation / Test 切分（與生資特有的陷阱）" data-en="II. Train / Validation / Test (and bio-specific pitfalls)">二、Train / Validation / Test 切分（與生資特有的陷阱）</h2>
 <div data-lang="zh">
 <p>三組資料各自的角色：</p>
 <ul>
 <li><strong>Train (~70%)</strong>：模型用來學參數的資料。</li>
-<li><strong>Validation (~15%)</strong>：用來挑選超參數 (hyperparameter)，<em>不能用來報告最終表現</em>。</li>
-<li><strong>Test (~15%)</strong>：模型「真正沒看過」的資料，只做最後一次評估。</li>
+<li><strong>Validation (~15%)</strong>：用來挑選超參數 (hyperparameter)、early stopping、模型選擇。<em>絕不能用來報告最終表現</em>。</li>
+<li><strong>Test (~15%)</strong>：模型「真正沒看過」的資料，只在<strong>最後一次</strong>評估。</li>
 </ul>
-<p>在生資中要特別小心 <strong>data leakage</strong>：例如同一個病人的多筆樣本同時出現在 train 與 test，或同一個基因家族跨組出現，都會讓表現「假好」。</p>
+<p>但生資中要特別小心 <strong>data leakage</strong>——同樣的「過擬合假象」可能來自切分本身：</p>
 </div>
 <div data-lang="en">
 <p>Three roles:</p>
 <ul>
 <li><strong>Train (~70%)</strong> — fits the parameters.</li>
-<li><strong>Validation (~15%)</strong> — picks hyperparameters; <em>never report performance from here</em>.</li>
-<li><strong>Test (~15%)</strong> — held-out, evaluated only once.</li>
+<li><strong>Validation (~15%)</strong> — picks hyperparameters / early stopping / model selection. <em>Never report performance from here</em>.</li>
+<li><strong>Test (~15%)</strong> — held-out, evaluated <strong>only once</strong> at the very end.</li>
 </ul>
-<p>In bioinformatics watch out for <strong>data leakage</strong>: the same patient appearing in train and test, or homologous genes split across folds, will artificially inflate metrics.</p>
+<p>But in biology, beware of <strong>data leakage</strong> — the same overfitting illusion can come from the split itself:</p>
 </div>
-<div class="callout warn"><span class="callout-icon">⚠️</span><div>
-<span data-lang="zh"><strong>分組切分原則：</strong>序列任務應做 <code>sequence-identity split</code>（避免訓練/測試序列相似度 > 30%）；病人資料用 <code>group K-fold</code>，同一病人的所有樣本只能在同一個 fold。</span>
-<span data-lang="en"><strong>Splitting rules:</strong> for sequence tasks use <code>sequence-identity splits</code> (no train/test pairs > 30% identity); for patient data use <code>group K-fold</code> so all samples per patient stay in one fold.</span>
+
+<table class="comp-table">
+<thead><tr><th data-zh="切分方式" data-en="Split type">切分方式</th><th data-zh="風險" data-en="Risk">風險</th><th data-zh="正確做法" data-en="Correct practice">正確做法</th></tr></thead>
+<tbody>
+<tr>
+<td data-zh="隨機 split" data-en="Random split">隨機 split</td>
+<td data-zh="同一病人多筆樣本可能同時出現在 train 與 test，導致「假好」" data-en="Same patient may appear in both train and test, faking accuracy">同一病人多筆樣本可能同時出現在 train 與 test</td>
+<td data-zh="<strong>Group K-fold</strong> 以 patient_id 分組" data-en="<strong>Group K-fold</strong> by patient_id"><strong>Group K-fold</strong> 以 patient_id 分組</td>
+</tr>
+<tr>
+<td data-zh="序列任務隨機切" data-en="Random split for sequence tasks">序列任務隨機切</td>
+<td data-zh="同源蛋白/基因可能跨組出現，模型靠「記憶相似序列」作弊" data-en="Homologous sequences may straddle folds — model 'cheats' by memorizing">同源序列跨組</td>
+<td data-zh="<strong>Sequence-identity split</strong> (e.g. CD-HIT 30% identity 為界)" data-en="<strong>Sequence-identity split</strong> (e.g., CD-HIT 30% cutoff)"><strong>Sequence-identity split</strong></td>
+</tr>
+<tr>
+<td data-zh="時間序列隨機切" data-en="Random split for time-series">時間序列隨機切</td>
+<td data-zh="用未來資料訓練預測過去——洩漏" data-en="Using future to predict past — leakage">用未來資料訓練預測過去</td>
+<td data-zh="<strong>Temporal split</strong>：固定 cutoff 日期" data-en="<strong>Temporal split</strong>: fix a cutoff date"><strong>Temporal split</strong></td>
+</tr>
+<tr>
+<td data-zh="特徵中含 ID 或 metadata" data-en="Features include ID or metadata">特徵中含 ID</td>
+<td data-zh="模型學會「ID = 答案」捷徑" data-en="Model learns 'ID = answer' shortcut">模型學會 ID 捷徑</td>
+<td data-zh="嚴格 audit 特徵清單，移除 ID-like 變數" data-en="Audit features and drop ID-like variables">嚴格 audit 特徵清單</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout danger"><span class="callout-icon">🚨</span><div>
+<span data-lang="zh"><strong>真實案例：</strong>2019 年某「肺癌 X-ray 預測 AUROC 0.95」論文被踢爆——模型其實學會了識別<strong>哪台 X-ray 機器</strong>，而醫院剛好把不同階段的患者送到不同機器（confounding）。在另一家醫院測試 AUROC 跌到 0.55。<strong>分組切分能擋掉 90% 這類錯誤</strong>。</span>
+<span data-lang="en"><strong>True story:</strong> a 2019 paper claimed 'AUROC 0.95 for lung cancer X-ray' — until it was revealed the model had learned to identify <strong>which X-ray machine</strong> was used, and the hospital sent patients to different machines based on stage (confounding). At a second hospital AUROC dropped to 0.55. <strong>Group splits prevent 90% of such errors.</strong></span>
 </div></div>
 </section>
 
@@ -71,8 +110,7 @@
 <section class="section">
 <div class="section-label" data-zh="互動模擬" data-en="Interactive">互動模擬</div>
 <h2 data-zh="三、過擬合的視覺化" data-en="III. Visualizing Overfitting">三、過擬合的視覺化</h2>
-<div data-lang="zh"><p>拖動下方滑桿改變模型「複雜度」(以多項式階數模擬)，觀察訓練 loss 下降但驗證 loss 在某個點之後反彈——這就是過擬合的訊號。</p></div>
-<div data-lang="en"><p>Drag the slider below to change model complexity (polynomial degree). Train loss keeps falling but validation loss rebounds past a point — that's overfitting.</p></div>
+<p data-zh="拖動下方滑桿改變模型「複雜度」(以多項式階數模擬)，觀察訓練 loss 下降但驗證 loss 在某個點之後反彈——這就是 <span class='glossary-pill' title='Overfitting：模型「死背」了訓練資料的雜訊，導致泛化到新資料時表現變差'>過擬合</span> 的訊號。" data-en="Drag the slider below to change model complexity (polynomial degree). Train loss keeps falling but validation loss rebounds past a point — that's <span class='glossary-pill' title='Overfitting: the model memorizes noise in training data, hurting generalization to new data.'>overfitting</span>.">拖動下方滑桿改變模型複雜度，觀察訓練 loss 下降但驗證 loss 在某個點之後反彈——這就是過擬合的訊號。</p>
 <div class="interactive-panel">
 <div class="slider-group"><label><span data-zh="模型複雜度（多項式階數）" data-en="Model complexity (polynomial degree)">模型複雜度</span> <span id="valDeg">5</span></label><input type="range" id="sliderDeg" min="1" max="14" value="5" step="1"></div>
 <div class="sim-stats"><span class="sim-stat info" id="trainLoss">—</span><span class="sim-stat fail" id="valLoss">—</span><span class="sim-stat pass" id="bestDeg">—</span></div>
@@ -80,31 +118,58 @@
 </div>
 </section>
 
-<!-- Section 4: Metrics -->
+<!-- Section 4: Bias-Variance -->
 <section class="section">
-<div class="section-label" data-zh="評估指標" data-en="Metrics">評估指標</div>
-<h2 data-zh="四、分類任務的關鍵指標" data-en="IV. Key Metrics for Classification">四、分類任務的關鍵指標</h2>
-<table class="comp-table">
-<thead><tr><th data-zh="指標" data-en="Metric">指標</th><th data-zh="計算" data-en="Formula">計算</th><th data-zh="什麼時候看？" data-en="When to use">什麼時候看？</th></tr></thead>
-<tbody>
-<tr><td>Accuracy</td><td>(TP+TN)/N</td><td data-zh="類別平衡時。<strong>在罕見疾病等不平衡資料會誤導。</strong>" data-en="Balanced classes. <strong>Misleading on rare-disease imbalance.</strong>">類別平衡時。<strong>在罕見疾病等不平衡資料會誤導。</strong></td></tr>
-<tr><td>Precision</td><td>TP/(TP+FP)</td><td data-zh="不能容忍 false positive 時 (e.g. 臨床診斷)" data-en="When false positives are costly (e.g., clinical diagnosis)">不能容忍 false positive 時 (e.g. 臨床診斷)</td></tr>
-<tr><td>Recall (Sensitivity)</td><td>TP/(TP+FN)</td><td data-zh="不能容忍 false negative 時 (e.g. 癌症篩檢)" data-en="When false negatives are costly (e.g., cancer screening)">不能容忍 false negative 時 (e.g. 癌症篩檢)</td></tr>
-<tr><td>AUROC</td><td data-zh="ROC 曲線下面積" data-en="Area under ROC curve">ROC 曲線下面積</td><td data-zh="整體排序能力；不受 threshold 影響" data-en="Overall ranking ability; threshold-independent">整體排序能力；不受 threshold 影響</td></tr>
-<tr><td>AUPRC</td><td data-zh="PR 曲線下面積" data-en="Area under PR curve">PR 曲線下面積</td><td data-zh="<strong>類別嚴重不平衡時的首選</strong>（罕見變異、稀有細胞型別）" data-en="<strong>Primary metric on heavily imbalanced data</strong> (rare variants, rare cell types)"><strong>類別嚴重不平衡時的首選</strong>（罕見變異、稀有細胞型別）</td></tr>
-<tr><td>MCC</td><td data-zh="Matthews 相關係數" data-en="Matthews correlation">Matthews 相關係數</td><td data-zh="混淆矩陣的全包指標，類別不平衡時也合理" data-en="A balanced single number even with imbalance">混淆矩陣的全包指標，類別不平衡時也合理</td></tr>
-</tbody>
-</table>
+<div class="section-label" data-zh="深入理論" data-en="Theory Deep Dive">深入理論</div>
+<h2 data-zh="四、Bias-Variance Tradeoff：所有 ML 的母題" data-en="IV. The Bias-Variance Tradeoff — every ML model's master theme">四、Bias-Variance Tradeoff</h2>
+<p data-zh="任何 ML 模型的誤差都可拆解為三項：<strong>Bias² + Variance + Irreducible noise</strong>。理解這個拆解，你就能秒判一個失敗的模型是「該換大模型」還是「該縮模型 / 加正則化」。" data-en="Any ML model's error decomposes into three: <strong>Bias² + Variance + Irreducible noise</strong>. Internalize this and you can instantly tell whether a failing model needs to grow or shrink.">任何 ML 模型的誤差都可拆解為 Bias² + Variance + Irreducible noise 三項。</p>
+
+<div class="concept-card">
+<h4 data-zh="高 Bias (Underfitting)" data-en="High Bias (Underfitting)">高 Bias (Underfitting)</h4>
+<p data-zh="模型太簡單，連訓練集都學不好。train loss 高、val loss 也高。<br><strong>解法：</strong>加深模型、加更多特徵、降正則化強度。" data-en="Model too simple — can't even fit the training set. Train loss high, val loss high.<br><strong>Fix:</strong> deeper model, more features, less regularization.">模型太簡單，連訓練集都學不好。train loss 高、val loss 也高。</p>
+<div class="concept-analogy" data-zh="像用「直線」去擬合一條 sin 波——再多資料也救不了，因為函數空間根本不夠。" data-en="Like fitting a 'straight line' to a sine wave — no amount of data helps because the function space is too small.">像用直線擬合 sin 波——再多資料都救不了。</div>
+</div>
+
+<div class="concept-card">
+<h4 data-zh="高 Variance (Overfitting)" data-en="High Variance (Overfitting)">高 Variance (Overfitting)</h4>
+<p data-zh="模型太複雜，記住了訓練集的雜訊。train loss 很低、但 val loss 高。<br><strong>解法：</strong>更多資料、降模型容量、Dropout、weight decay、Early stopping、data augmentation。" data-en="Model too complex — memorizes training noise. Train loss low, val loss high.<br><strong>Fix:</strong> more data, smaller model, dropout, weight decay, early stopping, data augmentation.">模型太複雜，記住了訓練集的雜訊。</p>
+<div class="concept-analogy" data-zh="像背標準答案的學生——考到原題滿分，遇到變形題就完蛋。" data-en="Like a student who memorizes answer keys — perfect on past papers, helpless on variants.">像背標準答案的學生——遇到變形題就完蛋。</div>
+</div>
+
 <div class="callout tip"><span class="callout-icon">💡</span><div>
-<span data-lang="zh"><strong>經驗法則：</strong>類別比例 1:10 以上不平衡 → 別只看 accuracy 或 AUROC，務必加上 AUPRC 與 MCC。</span>
-<span data-lang="en"><strong>Rule of thumb:</strong> imbalance ≥ 1:10 → don't rely on accuracy or AUROC alone; report AUPRC and MCC too.</span>
+<span data-lang="zh"><strong>奇妙的「double descent」現象：</strong>傳統理論認為模型超過某容量後 val loss 會單調上升，但 2019 年 Belkin 等發現在<strong>極度過參數化</strong>（參數 ≫ 訓練樣本）的範疇下，val loss 會「再次下降」——這正是為什麼 ESM-2 15B 比 ESM-2 8M 更準。AI for biology 已經處在這個「神奇地帶」。</span>
+<span data-lang="en"><strong>The surprising "double descent":</strong> classical theory says val loss rises monotonically past some capacity, but Belkin et al. (2019) found that in the <strong>extremely overparameterized regime</strong> (params ≫ samples), val loss falls again — which is exactly why ESM-2 15B beats ESM-2 8M. AI for biology now lives in this "magic zone."</span>
 </div></div>
 </section>
 
-<!-- Section 5: Hands-on code -->
+<!-- Section 5: Metrics -->
+<section class="section">
+<div class="section-label" data-zh="評估指標" data-en="Metrics">評估指標</div>
+<h2 data-zh="五、分類任務的關鍵指標（與如何讀出陷阱）" data-en="V. Key classification metrics (and how to read traps)">五、分類任務的關鍵指標</h2>
+<table class="comp-table">
+<thead><tr><th data-zh="指標" data-en="Metric">指標</th><th data-zh="計算" data-en="Formula">計算</th><th data-zh="什麼時候看？" data-en="When to use">什麼時候看？</th></tr></thead>
+<tbody>
+<tr><td>Accuracy</td><td>(TP+TN)/N</td><td data-zh="類別平衡時。<strong>在罕見疾病等不平衡資料會嚴重誤導。</strong>" data-en="Balanced classes. <strong>Severely misleading on rare-disease imbalance.</strong>">類別平衡時</td></tr>
+<tr><td>Precision</td><td>TP/(TP+FP)</td><td data-zh="不能容忍 false positive 時 (e.g. 臨床診斷)" data-en="When false positives are costly (e.g., clinical diagnosis)">不能容忍 false positive 時</td></tr>
+<tr><td>Recall (Sensitivity)</td><td>TP/(TP+FN)</td><td data-zh="不能容忍 false negative 時 (e.g. 癌症篩檢)" data-en="When false negatives are costly (e.g., cancer screening)">不能容忍 false negative 時</td></tr>
+<tr><td>F1</td><td>2·P·R / (P+R)</td><td data-zh="precision 與 recall 的調和平均，單一數字平衡點" data-en="Harmonic mean of P and R — a single balanced number">調和平均</td></tr>
+<tr><td>AUROC</td><td data-zh="ROC 曲線下面積" data-en="Area under ROC curve">ROC 曲線下面積</td><td data-zh="整體排序能力；不受 threshold 影響" data-en="Overall ranking ability; threshold-independent">排序能力</td></tr>
+<tr><td>AUPRC</td><td data-zh="PR 曲線下面積" data-en="Area under PR curve">PR 曲線下面積</td><td data-zh="<strong>類別嚴重不平衡時的首選</strong>" data-en="<strong>Primary metric on heavily imbalanced data</strong>"><strong>嚴重不平衡時首選</strong></td></tr>
+<tr><td>MCC</td><td data-zh="Matthews 相關係數" data-en="Matthews correlation">Matthews 相關係數</td><td data-zh="混淆矩陣的「全包」指標，類別不平衡時仍可信" data-en="A balanced single number even with imbalance">全包指標</td></tr>
+<tr><td>Calibration (Brier / ECE)</td><td data-zh="預測機率的可靠度" data-en="Reliability of predicted probabilities">預測機率可靠度</td><td data-zh="臨床決策需要「我說 0.7 真的代表 70% 為真」——AUROC 高 ≠ 校準好" data-en="Clinical decisions need 'when I say 0.7 it really means 70% true' — high AUROC ≠ good calibration">臨床機率輸出需要</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn"><span class="callout-icon">⚠️</span><div>
+<span data-lang="zh"><strong>1:200 罕見疾病的數字遊戲：</strong>假設你閉著眼睛說「全部陰性」，accuracy 已經 99.5%、AUROC 可以隨機，但 AUPRC 接近 0。<strong>這就是為什麼罕見疾病模型只看 AUROC 會非常危險</strong>。一個 AUROC=0.95、AUPRC=0.20 的模型在 deployment 時，每 5 個陽性預測會有 4 個是假警報。Saito & Rehmsmeier (2015) 是這個議題的經典論文。</span>
+<span data-lang="en"><strong>The 1:200 rare-disease numbers game:</strong> if you blindly predict 'all negative,' accuracy is already 99.5% and AUROC can be random — but AUPRC is near 0. <strong>This is why looking only at AUROC for rare diseases is dangerous.</strong> A model with AUROC=0.95 and AUPRC=0.20 will deliver 4 false alarms per 5 positive predictions in deployment. Saito & Rehmsmeier (2015) is the classic reference.</span>
+</div></div>
+</section>
+
+<!-- Section 6: Hands-on -->
 <section class="section">
 <div class="section-label" data-zh="動手實作" data-en="Hands-on">動手實作</div>
-<h2 data-zh="五、Wisconsin 乳癌資料集 — Logistic vs Random Forest" data-en="V. Wisconsin Breast Cancer — Logistic vs Random Forest">五、Wisconsin 乳癌資料集 — Logistic vs Random Forest</h2>
+<h2 data-zh="六、Wisconsin 乳癌資料集 — Logistic vs Random Forest vs XGBoost" data-en="VI. Wisconsin Breast Cancer — Logistic vs Random Forest vs XGBoost">六、Wisconsin 乳癌資料集對戰</h2>
 
 <div class="code-tabs">
 <div class="code-tab-btns"><button class="code-tab-btn active">Python (sklearn)</button><button class="code-tab-btn">R (tidymodels)</button></div>
@@ -112,17 +177,31 @@
 <span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split, cross_val_score
 <span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
 <span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
-<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> roc_auc_score, average_precision_score
+<span class="kw">from</span> xgboost <span class="kw">import</span> XGBClassifier
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> roc_auc_score, average_precision_score, matthews_corrcoef
 
 X, y = <span class="func">load_breast_cancer</span>(return_X_y=<span class="kw">True</span>)
 Xtr, Xte, ytr, yte = <span class="func">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>, stratify=y, random_state=<span class="num">42</span>)
 
-<span class="kw">for</span> name, mdl <span class="kw">in</span> [(<span class="str">"LogReg"</span>, <span class="cls">LogisticRegression</span>(max_iter=<span class="num">5000</span>)),
-                 (<span class="str">"RandomForest"</span>, <span class="cls">RandomForestClassifier</span>(n_estimators=<span class="num">300</span>, random_state=<span class="num">42</span>))]:
+models = {
+    <span class="str">"LogReg"</span>: <span class="cls">LogisticRegression</span>(max_iter=<span class="num">5000</span>, C=<span class="num">1.0</span>),
+    <span class="str">"RandomForest"</span>: <span class="cls">RandomForestClassifier</span>(n_estimators=<span class="num">300</span>, random_state=<span class="num">42</span>),
+    <span class="str">"XGBoost"</span>: <span class="cls">XGBClassifier</span>(n_estimators=<span class="num">300</span>, learning_rate=<span class="num">0.05</span>, max_depth=<span class="num">4</span>,
+                            use_label_encoder=<span class="kw">False</span>, eval_metric=<span class="str">"logloss"</span>)
+}
+<span class="kw">for</span> name, mdl <span class="kw">in</span> models.<span class="func">items</span>():
     mdl.<span class="func">fit</span>(Xtr, ytr)
     p = mdl.<span class="func">predict_proba</span>(Xte)[:, <span class="num">1</span>]
-    <span class="func">print</span>(name, <span class="str">"AUROC"</span>, <span class="func">round</span>(<span class="func">roc_auc_score</span>(yte, p), <span class="num">3</span>),
-                <span class="str">"AUPRC"</span>, <span class="func">round</span>(<span class="func">average_precision_score</span>(yte, p), <span class="num">3</span>))</pre></div>
+    yhat = (p &gt;= <span class="num">0.5</span>).<span class="func">astype</span>(<span class="cls">int</span>)
+    <span class="func">print</span>(<span class="str">f"{name:14s}"</span>,
+          <span class="str">"AUROC"</span>, <span class="func">round</span>(<span class="func">roc_auc_score</span>(yte, p), <span class="num">3</span>),
+          <span class="str">"AUPRC"</span>, <span class="func">round</span>(<span class="func">average_precision_score</span>(yte, p), <span class="num">3</span>),
+          <span class="str">"MCC"</span>,   <span class="func">round</span>(<span class="func">matthews_corrcoef</span>(yte, yhat), <span class="num">3</span>))
+
+<span class="comment"># Typical output:</span>
+<span class="comment"># LogReg         AUROC 0.997  AUPRC 0.998  MCC 0.94</span>
+<span class="comment"># RandomForest   AUROC 0.992  AUPRC 0.995  MCC 0.93</span>
+<span class="comment"># XGBoost        AUROC 0.996  AUPRC 0.997  MCC 0.94</span></pre></div>
 <div class="code-tab-content"><pre><span class="kw">library</span>(tidymodels); <span class="kw">library</span>(mlbench); <span class="func">data</span>(<span class="str">"BreastCancer"</span>)
 df <- BreastCancer |> <span class="func">na.omit</span>() |> <span class="func">mutate</span>(<span class="func">across</span>(<span class="num">2</span>:<span class="num">10</span>, as.numeric))
 
@@ -131,65 +210,152 @@ tr <- <span class="func">training</span>(split); te <- <span class="func">testin
 
 rec <- <span class="func">recipe</span>(Class ~ ., data = tr) |> <span class="func">step_rm</span>(Id) |> <span class="func">step_normalize</span>(<span class="func">all_numeric_predictors</span>())
 
-logit <- <span class="func">logistic_reg</span>() |> <span class="func">set_engine</span>(<span class="str">"glm"</span>)
-rf    <- <span class="func">rand_forest</span>(trees=<span class="num">300</span>) |> <span class="func">set_mode</span>(<span class="str">"classification"</span>) |> <span class="func">set_engine</span>(<span class="str">"ranger"</span>)
-
-<span class="func">workflow_set</span>(<span class="func">list</span>(rec=rec), <span class="func">list</span>(logit=logit, rf=rf)) |>
+mods <- <span class="func">list</span>(
+  logit = <span class="func">logistic_reg</span>() |> <span class="func">set_engine</span>(<span class="str">"glm"</span>),
+  rf    = <span class="func">rand_forest</span>(trees=<span class="num">300</span>) |> <span class="func">set_mode</span>(<span class="str">"classification"</span>) |> <span class="func">set_engine</span>(<span class="str">"ranger"</span>),
+  xgb   = <span class="func">boost_tree</span>(trees=<span class="num">300</span>, learn_rate=<span class="num">0.05</span>) |> <span class="func">set_mode</span>(<span class="str">"classification"</span>) |> <span class="func">set_engine</span>(<span class="str">"xgboost"</span>)
+)
+<span class="func">workflow_set</span>(<span class="func">list</span>(rec=rec), mods) |>
   <span class="func">workflow_map</span>(<span class="str">"fit_resamples"</span>, resamples = <span class="func">vfold_cv</span>(tr, v = <span class="num">5</span>, strata = Class),
                metrics = <span class="func">metric_set</span>(roc_auc, pr_auc, mcc)) |>
   <span class="func">collect_metrics</span>()</pre></div>
 </div>
-<p data-lang="zh">兩段程式碼會印出 AUROC 與 AUPRC，通常 RF 略勝；但 Logistic 模型可解釋性更強——在臨床場景常常更受歡迎。</p>
-<p data-lang="en">Both snippets print AUROC and AUPRC. RF usually edges out, but logistic regression's interpretability often wins in clinical settings.</p>
+
+<p data-zh="這個資料集太簡單（特徵已是良好工程整理過的），三個模型差不多。<strong>真實世界的 tabular 任務，XGBoost / LightGBM 通常微幅領先 RF，明顯領先 LogReg</strong>。但 Logistic 在臨床場景更受歡迎——可解釋性壓倒精度。" data-en="This dataset is too easy (features are pre-engineered) — the three models tie. <strong>On real-world tabular tasks, XGBoost/LightGBM usually edge out RF and clearly beat LogReg.</strong> But logistic regression still wins in clinical settings because interpretability beats accuracy.">這個資料集太簡單，三個模型差不多。真實 tabular 任務 XGBoost/LightGBM 通常勝出，但 Logistic 在臨床仍受青睞——可解釋性壓過精度。</p>
 </section>
 
-<!-- Decision Tree -->
+<!-- Section 7: SHAP -->
+<section class="section">
+<div class="section-label" data-zh="模型可解釋性" data-en="Interpretability">模型可解釋性</div>
+<h2 data-zh="七、SHAP：把黑盒模型打開的鑰匙" data-en="VII. SHAP — opening the black box">七、SHAP：把黑盒打開</h2>
+<p data-zh="<span class='glossary-pill' title='SHapley Additive exPlanations：源自合作博弈論的 Shapley value；對每個預測拆解出「每個特徵貢獻多少」'>SHAP</span> (SHapley Additive exPlanations) 提供了一個「對每筆預測拆解貢獻」的數學嚴謹方法。Lundberg & Lee (2017) 把賽局論的 Shapley value 引入 ML，<strong>已成為臨床 / 監管場合 model card 必備</strong>。" data-en="<span class='glossary-pill' title='SHapley Additive exPlanations: based on cooperative game theory; decomposes each prediction into per-feature contributions.'>SHAP</span> (SHapley Additive exPlanations) gives a mathematically rigorous way to decompose every prediction into per-feature contributions. Lundberg & Lee (2017) brought game theory's Shapley value into ML — <strong>now mandatory in clinical / regulatory model cards</strong>.">SHAP 把每筆預測拆解成各特徵貢獻，是臨床/監管 model card 的標配。</p>
+
+<div class="code-tabs">
+<div class="code-tab-btns"><button class="code-tab-btn active">Python</button></div>
+<div class="code-tab-content active"><pre><span class="kw">import</span> shap, xgboost <span class="kw">as</span> xgb
+
+mdl = xgb.<span class="cls">XGBClassifier</span>(n_estimators=<span class="num">300</span>).<span class="func">fit</span>(Xtr, ytr)
+explainer = shap.<span class="func">TreeExplainer</span>(mdl)
+shap_values = explainer.<span class="func">shap_values</span>(Xte)
+
+<span class="comment"># Global: which features matter most?</span>
+shap.<span class="func">summary_plot</span>(shap_values, Xte, feature_names=feature_names)
+
+<span class="comment"># Local: explain a single prediction</span>
+shap.<span class="func">force_plot</span>(explainer.expected_value, shap_values[<span class="num">0</span>], Xte[<span class="num">0</span>])
+
+<span class="comment"># Force plot 會顯示：base_value 0.4 → 此樣本 0.92，</span>
+<span class="comment"># 哪些特徵把預測推高、哪些壓低，每個貢獻多少。</span></pre></div>
+</div>
+
+<div class="callout tip"><span class="callout-icon">💡</span><div>
+<span data-lang="zh"><strong>SHAP 的兩個常見誤用：</strong>(1) 把 global feature importance 跟個案的 local explanation 混淆——前者是「整體上哪些特徵重要」，後者是「對<em>這個</em>病人為什麼預測這樣」；(2) SHAP 顯示<strong>相關性</strong>不是因果性，不能直接用來做機制推論。</span>
+<span data-lang="en"><strong>Two common SHAP misuses:</strong> (1) confusing global feature importance with per-case local explanations — the former is 'overall, what matters,' the latter is 'why <em>this</em> patient got this prediction'; (2) SHAP shows <strong>association</strong>, not causation — don't infer mechanism directly from it.</span>
+</div></div>
+</section>
+
+<!-- Section 8: Decision Tree -->
 <section class="section">
 <div class="section-label" data-zh="決策樹" data-en="Decision Tree">決策樹</div>
-<h2 data-zh="六、選哪個 ML 模型？" data-en="VI. Which ML Model Should I Use?">六、選哪個 ML 模型？</h2>
+<h2 data-zh="八、選哪個 ML 模型？" data-en="VIII. Which ML Model Should I Use?">八、選哪個 ML 模型？</h2>
 <div class="decision-tree">
 <h4>🌳 Quick guide</h4>
-<div class="dt-node"><span class="dt-q">N&lt;1k</span> <span class="dt-arrow">→</span> <span data-zh="Logistic / Penalized regression（可解釋、不易過擬合）" data-en="Logistic / penalized regression — interpretable, hard to overfit">Logistic / Penalized regression（可解釋、不易過擬合）</span></div>
-<div class="dt-node"><span class="dt-q">1k-100k</span> <span class="dt-arrow">→</span> <span data-zh="<strong>XGBoost / LightGBM</strong> 是 tabular 王者；<span class='term'>SHAP<span class='term-tip'>把每個特徵對單一預測的貢獻量化</span></span> 解釋特徵重要性" data-en="<strong>XGBoost / LightGBM</strong> dominate tabular tasks; SHAP for feature attribution"><strong>XGBoost / LightGBM</strong> 是 tabular 王者；SHAP 解釋特徵重要性</span></div>
-<div class="dt-node"><span class="dt-q">&gt;100k</span> <span class="dt-arrow">→</span> <span data-zh="如果是序列/影像，跳到 DL（章 03）；若仍是 tabular，深層 GBM 仍很強" data-en="Sequence/image → jump to DL (Ch. 03); else GBMs still hold their own">如果是序列/影像，跳到 DL（章 03）；若仍是 tabular，深層 GBM 仍很強</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="無標籤" data-en="Unlabeled">無標籤</span> <span class="dt-arrow">→</span> <span data-zh="K-means / Louvain → UMAP 視覺化；之後做半監督 (label propagation)" data-en="K-means / Louvain → UMAP for visualization; then semi-supervised label propagation">K-means / Louvain → UMAP 視覺化；之後做半監督</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="N&lt;1k" data-en="N&lt;1k">N&lt;1k</span> <span class="dt-arrow">→</span> <span data-zh="Logistic / Penalized regression（可解釋、不易過擬合）" data-en="Logistic / penalized regression — interpretable, hard to overfit">Logistic / Penalized regression（可解釋、不易過擬合）</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="1k-100k" data-en="1k-100k">1k-100k</span> <span class="dt-arrow">→</span> <span data-zh="<strong>XGBoost / LightGBM</strong> 是 tabular 王者；SHAP 解釋特徵重要性" data-en="<strong>XGBoost / LightGBM</strong> dominate tabular tasks; SHAP for feature attribution"><strong>XGBoost / LightGBM</strong> 是 tabular 王者</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="&gt;100k" data-en="&gt;100k">&gt;100k</span> <span class="dt-arrow">→</span> <span data-zh="如果是序列/影像，跳到 DL（章 03）；若仍是 tabular，深層 GBM 仍很強" data-en="Sequence/image → jump to DL (Ch. 03); else GBMs still hold their own">序列/影像跳到 DL（章 03），tabular 仍 GBM</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="無標籤" data-en="Unlabeled">無標籤</span> <span class="dt-arrow">→</span> <span data-zh="K-means / Louvain → UMAP 視覺化；之後做半監督 (label propagation)" data-en="K-means / Louvain → UMAP for visualization; then semi-supervised label propagation">K-means / Louvain → UMAP 視覺化</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="極不平衡" data-en="Heavy imbalance">極不平衡</span> <span class="dt-arrow">→</span> <span data-zh="class_weight、focal loss、SMOTE；改看 AUPRC + MCC" data-en="class_weight, focal loss, SMOTE; report AUPRC + MCC instead">class_weight / focal loss / SMOTE</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="臨床部署" data-en="Clinical deployment">臨床部署</span> <span class="dt-arrow">→</span> <span data-zh="必須 calibration + SHAP + 多族群 disaggregated metrics" data-en="Must include calibration + SHAP + disaggregated subgroup metrics">必須 calibration + SHAP + 子群指標</span></div>
+</div>
+</section>
+
+<!-- Section 9: Discussion -->
+<section class="section">
+<div class="section-label" data-zh="深入討論" data-en="Discussion">深入討論</div>
+<h2 data-zh="九、爭議：經典 ML 真的會被 DL 取代嗎？" data-en="IX. Debate: will classical ML really be replaced by DL?">九、爭議：經典 ML 真的會被 DL 取代嗎？</h2>
+
+<div class="discuss-block">
+  <button class="discuss-toggle" data-target="d_a"><span data-zh="▶ 觀點 A：對 tabular 資料，GBM 仍然贏" data-en="▶ View A: on tabular data, GBM still wins">▶ 觀點 A：對 tabular 資料，GBM 仍然贏</span></button>
+  <div class="discuss-body" id="d_a">
+    <p data-lang="zh">Shwartz-Ziv & Armon (2022) 在 11 個 tabular benchmark 上發現：XGBoost 平均優於各種 DL 架構（TabNet、SAINT、FT-Transformer）。原因可能是 tabular 特徵已被人類「工程過」，沒有像 raw 序列 / image 那樣需要學表徵。</p>
+    <p data-lang="en">Shwartz-Ziv & Armon (2022) showed across 11 tabular benchmarks: XGBoost on average beats various DL architectures (TabNet, SAINT, FT-Transformer). The reason is likely that tabular features are already "human-engineered" — no need to learn representations from scratch like raw sequences or images.</p>
+  </div>
+</div>
+
+<div class="discuss-block">
+  <button class="discuss-toggle" data-target="d_b"><span data-zh="▶ 觀點 B：當 N 大、特徵 raw、無明顯結構，DL 才勝出" data-en="▶ View B: DL only wins when N is large, features are raw, and structure is hidden">▶ 觀點 B：當 N 大、特徵 raw、無明顯結構，DL 才勝出</span></button>
+  <div class="discuss-body" id="d_b">
+    <p data-lang="zh">DL 的優勢在「能自動學表徵」，但這對小 N 與良好工程的特徵反而是負擔。在生資中，真正適合 DL 的場景是：序列 (Ch 04-05、08-10)、影像 (病理切片)、單細胞表達矩陣，以及「沒有明顯特徵工程方向」的 raw 資料。</p>
+    <p data-lang="en">DL's edge is learning representations automatically — but that's a burden with small N and well-engineered features. In bio, DL truly wins on: sequences (Ch 04-05, 08-10), images (pathology slides), single-cell matrices, and other raw data without an obvious feature-engineering path.</p>
+  </div>
+</div>
+
+<div class="discuss-block">
+  <button class="discuss-toggle" data-target="d_c"><span data-zh="▶ 觀點 C：「混搭」才是 2026 主流" data-en="▶ View C: 'hybrid' is the 2026 mainstream">▶ 觀點 C：「混搭」才是 2026 主流</span></button>
+  <div class="discuss-body" id="d_c">
+    <p data-lang="zh">現在大部分高表現 pipeline 是<strong>「foundation model 抽 embedding → 經典 ML 分類」</strong>：例如把 ESM-2 嵌入丟給 XGBoost 預測抗體親和力。這比 fine-tune 整個 Transformer 便宜 100×，效果只差 1-2 個百分點。對小實驗室是甜蜜點。</p>
+    <p data-lang="en">Most high-performing pipelines today are <strong>"foundation model embeddings → classical ML classifier"</strong>: e.g., feed ESM-2 embeddings to XGBoost for antibody-affinity prediction. 100× cheaper than fine-tuning the whole Transformer, with only a 1-2-point accuracy gap. The sweet spot for small labs.</p>
+  </div>
 </div>
 </section>
 
 <!-- Quiz -->
 <section class="quiz-section">
-<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<h3 data-zh="📝 概念小測 (5 題)" data-en="📝 Quick Check (5 questions)">📝 概念小測 (5 題)</h3>
+
 <div class="quiz-q">
-<p data-zh="Q1. 你拿罕見疾病資料 (1:200 不平衡) 訓練分類器，AUROC=0.95，AUPRC=0.20。最合理的解讀是？" data-en="Q1. On a rare-disease classifier (1:200 imbalance) you get AUROC=0.95, AUPRC=0.20. Best interpretation?">Q1. 你拿罕見疾病資料 (1:200 不平衡) 訓練分類器，AUROC=0.95，AUPRC=0.20。最合理的解讀是？</p>
+<p data-zh="Q1. 罕見疾病資料 (1:200 不平衡)，AUROC=0.95 但 AUPRC=0.20。最合理的解讀？" data-en="Q1. Rare disease classifier (1:200), AUROC=0.95 but AUPRC=0.20. Best interpretation?">Q1. 罕見疾病資料 (1:200 不平衡)，AUROC=0.95 但 AUPRC=0.20。最合理的解讀？</p>
 <div class="quiz-options">
 <div class="quiz-opt" data-correct="false"><span data-zh="(A) 模型表現極佳" data-en="(A) Excellent model">(A) 模型表現極佳</span></div>
-<div class="quiz-opt" data-correct="true"><span data-zh="(B) 排序能力 OK，但實際應用中 precision 很低，誤報率仍高" data-en="(B) Ranking is OK, but precision in deployment will still be low — many false positives">(B) 排序能力 OK，但實際應用中 precision 很低，誤報率仍高</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 排序能力 OK，但實際應用 precision 仍很低，誤報率高" data-en="(B) Ranking is OK but precision in deployment is low — many false positives">(B) 排序能力 OK，但實際應用 precision 仍很低</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(C) 資料一定有 bug" data-en="(C) Data must be buggy">(C) 資料一定有 bug</span></div>
-<div class="quiz-opt" data-correct="false"><span data-zh="(D) AUPRC 沒有意義可以忽略" data-en="(D) AUPRC is meaningless, ignore it">(D) AUPRC 沒有意義可以忽略</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) AUPRC 沒有意義可忽略" data-en="(D) AUPRC is meaningless, ignore it">(D) AUPRC 沒有意義可忽略</span></div>
 </div>
-<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。在 1:200 的場景中，AUPRC = 0.20 雖比 baseline 0.005 高很多，但仍代表 ~80% 預測陽性是錯的。" data-en="✅ (B). At 1:200 base rate, AUPRC of 0.20 is far above baseline 0.005, but still ~80% of predicted positives are false alarms.">✅ 正解 (B)</span></div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
 </div>
 
 <div class="quiz-q">
-<p data-zh="Q2. 下列哪一種切分最容易導致「假好」?" data-en="Q2. Which split most likely creates artificially inflated performance?">Q2. 下列哪一種切分最容易導致「假好」?</p>
+<p data-zh="Q2. 下列哪一種切分最容易導致「假好」表現？" data-en="Q2. Which split most likely creates artificially inflated metrics?">Q2. 下列哪一種切分最容易導致「假好」表現？</p>
 <div class="quiz-options">
 <div class="quiz-opt" data-correct="false"><span data-zh="(A) 對病人 ID 做 group K-fold" data-en="(A) Group K-fold by patient ID">(A) 對病人 ID 做 group K-fold</span></div>
 <div class="quiz-opt" data-correct="true"><span data-zh="(B) 隨機 split — 同一病人在 train 與 test 各出現一次" data-en="(B) Random split where the same patient appears in both train and test">(B) 隨機 split — 同一病人在 train 與 test 各出現一次</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(C) 序列相似度 30% 切分" data-en="(C) Sequence-identity split at 30%">(C) 序列相似度 30% 切分</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(D) Stratified K-fold" data-en="(D) Stratified K-fold">(D) Stratified K-fold</span></div>
 </div>
-<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。這是最常見的 leakage 來源之一。" data-en="✅ (B). One of the most common leakage failure modes.">✅ 正解 (B)</span></div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
 </div>
 
 <div class="quiz-q">
-<p data-zh="Q3. 自監督式 (self-supervised) 模型最大的優勢是？" data-en="Q3. Biggest advantage of self-supervised models?">Q3. 自監督式 (self-supervised) 模型最大的優勢是？</p>
+<p data-zh="Q3. 自監督式 (self-supervised) 模型最大的優勢是？" data-en="Q3. Biggest advantage of self-supervised models?">Q3. 自監督式模型最大的優勢是？</p>
 <div class="quiz-options">
 <div class="quiz-opt" data-correct="false"><span data-zh="(A) 不需要算力" data-en="(A) No compute required">(A) 不需要算力</span></div>
-<div class="quiz-opt" data-correct="true"><span data-zh="(B) 可以利用海量無標籤序列預訓練，再以小量標籤資料 fine-tune" data-en="(B) Can pretrain on massive unlabeled sequences, then fine-tune with small labeled data">(B) 可以利用海量無標籤序列預訓練，再以小量標籤資料 fine-tune</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 可以利用海量無標籤序列預訓練，再以小量標籤資料 fine-tune" data-en="(B) Can pretrain on massive unlabeled data and fine-tune with little labeled data">(B) 可利用海量無標籤序列預訓練，再以小量標籤 fine-tune</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(C) 永遠比監督式準" data-en="(C) Always beats supervised">(C) 永遠比監督式準</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(D) 不需要驗證集" data-en="(D) No validation set needed">(D) 不需要驗證集</span></div>
 </div>
-<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。所有現代生物 foundation model（ESM、scGPT、Evo 2）都是這套思路。" data-en="✅ (B). The recipe behind every modern biology foundation model — ESM, scGPT, Evo 2.">✅ 正解 (B)</span></div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。所有現代生物 foundation model 都採此設計。" data-en="✅ (B). The recipe behind every modern biology foundation model.">✅ 正解 (B)。所有現代生物 foundation model 都採此設計。</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q4. train loss 很低、val loss 很高。最該嘗試？" data-en="Q4. Train loss low but val loss high. Best first try?">Q4. train loss 很低、val loss 很高。最該嘗試？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 加深模型" data-en="(A) Deeper model">(A) 加深模型</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 增加正則化（dropout、weight decay、early stopping）或加更多訓練資料" data-en="(B) Add regularization (dropout/weight decay/early stopping) or get more data">(B) 增加正則化（dropout、weight decay、early stopping）或加更多資料</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 降低正則化強度" data-en="(C) Reduce regularization">(C) 降低正則化強度</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 加更多特徵" data-en="(D) Add more features">(D) 加更多特徵</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。這是過擬合典型徵兆。" data-en="✅ (B). Classic overfitting pattern.">✅ 正解 (B)。這是過擬合典型徵兆。</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q5. 對臨床部署的 ML 模型，下列哪一項不是必備的？" data-en="Q5. For a clinically deployed ML model, which is NOT a must-have?">Q5. 對臨床部署的 ML 模型，下列哪一項<strong>不是</strong>必備？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) Calibration（預測機率可信）" data-en="(A) Calibration (probabilities are reliable)">(A) Calibration</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(B) SHAP 等個案解釋工具" data-en="(B) SHAP-style local explanations">(B) SHAP 個案解釋</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 多族群 disaggregated 指標" data-en="(C) Disaggregated subgroup metrics">(C) 多族群 disaggregated 指標</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(D) 必須使用 GPU 訓練" data-en="(D) Must train on GPU">(D) 必須使用 GPU 訓練</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (D)。GPU 只是算力選擇，與臨床合規無關；ABC 都是 model card 必備。" data-en="✅ (D). GPU is a compute choice unrelated to clinical compliance; A/B/C are model-card essentials.">✅ 正解 (D)。GPU 只是算力選擇，與臨床合規無關。</span></div>
 </div>
 </section>
 
@@ -204,19 +370,18 @@ rf    <- <span class="func">rand_forest</span>(trees=<span class="num">300</span
 
 <script src="i18n.js"></script>
 <script>
-// Overfitting demo: noisy sin(x) -> fit polynomials of varying degree
+// Overfitting demo
 const X = Array.from({length:30}, (_,i)=> -3 + 6*i/29);
 function noisy(){ return X.map(x => Math.sin(x) + (Math.random()-0.5)*0.45); }
 const yTrain = noisy();
 const yVal = X.map(x => Math.sin(x));
 
 function fitPoly(deg){
-  // Build Vandermonde and solve via normal equations (small N, OK for demo)
   const A = X.map(x => Array.from({length:deg+1}, (_,k)=> Math.pow(x,k)));
   const AT = (M)=> M[0].map((_,c)=> M.map(r=>r[c]));
   const dot = (P,Q)=> P.map(p => Q[0].map((_,c)=> p.reduce((s,_,k)=> s + p[k]*Q[k][c],0)));
   const matVec = (P,v)=> P.map(p => p.reduce((s,_,k)=> s + p[k]*v[k],0));
-  const inv = (M)=>{ // Gauss-Jordan small
+  const inv = (M)=>{
     const n=M.length, A=M.map((r,i)=> [...r, ...Array.from({length:n},(_,j)=>i===j?1:0)]);
     for(let i=0;i<n;i++){
       let mx=i; for(let k=i+1;k<n;k++) if(Math.abs(A[k][i])>Math.abs(A[mx][i]))mx=k;
@@ -244,12 +409,12 @@ function render(deg){
   const {xs, ys, trainLoss, valLoss} = fitPoly(deg);
   document.getElementById('valDeg').textContent = deg;
   document.getElementById('trainLoss').textContent = 'Train MSE: '+trainLoss.toFixed(3);
-  document.getElementById('valLoss').textContent = 'Val MSE (vs true sin): '+valLoss.toFixed(3);
+  document.getElementById('valLoss').textContent = 'Val MSE: '+valLoss.toFixed(3);
   const data = {
     datasets:[
       {label:'Train data', data: X.map((x,i)=>({x, y:yTrain[i]})), backgroundColor:'#5b3df5', type:'scatter'},
       {label:'True sin(x)', data: X.map((x,i)=>({x, y:yVal[i]})), borderColor:'#16a673', borderWidth:2, type:'line', pointRadius:0, fill:false},
-      {label:'Polynomial fit (deg='+deg+')', data: xs.map((x,i)=>({x, y:ys[i]})), borderColor:'#ff7a59', borderWidth:2, type:'line', pointRadius:0, fill:false}
+      {label:'Poly deg='+deg, data: xs.map((x,i)=>({x, y:ys[i]})), borderColor:'#ff7a59', borderWidth:2, type:'line', pointRadius:0, fill:false}
     ]
   };
   if(chart) chart.destroy();

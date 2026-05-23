@@ -1,49 +1,48 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Ch 03: 深度學習基礎 — AI for Bioinformatics</title>
+<title data-zh="Ch 03: 深度學習基礎 — AI for Bioinformatics" data-en="Ch 03: Deep Learning Basics — AI for Bioinformatics">Ch 03: Deep Learning Basics — AI for Bioinformatics</title>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head><body>
 <nav class="top-nav"><div class="top-nav-inner">
   <a href="index.html" class="top-nav-brand"><span>🧠</span> <span data-zh="AI × 生資" data-en="AI × Bioinformatics">AI × 生資</span></a>
   <ul class="top-nav-links">
-    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html" class="active">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references.html">📚</a></li>
-    <li><a href="references/index.html" data-zh="📚 參考資料" data-en="📚 References">📚 參考資料</a></li>
+    <li><a href="01-overview.html">01 Overview</a></li><li><a href="02-ml-basics.html">02 ML</a></li><li><a href="03-deep-learning.html" class="active">03 DL</a></li><li><a href="04-sequence-embeddings.html">04 Seq</a></li><li><a href="05-protein-structure.html">05 Struct</a></li><li><a href="06-protein-design.html">06 Design</a></li><li><a href="07-protein-ligand.html">07 PPI</a></li><li><a href="08-regulatory-genomics.html">08 RegGen</a></li><li><a href="09-variant-splicing.html">09 Variant</a></li><li><a href="10-singlecell-ai.html">10 scAI</a></li><li><a href="11-drug-discovery.html">11 Drug</a></li><li><a href="12-bio-llm.html">12 BioLLM</a></li><li><a href="13-ai-agents.html">13 Agent</a></li><li><a href="14-ethics.html">14 Ethics</a></li><li><a href="references/index.html">📚</a></li>
   </ul>
 </div></nav>
 <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
 
 <header class="page-hero"><div class="step-badge">CHAPTER 03 / 14 · BASIC</div>
 <h1 data-zh="深度學習基礎" data-en="Deep Learning Basics">深度學習基礎</h1>
-<p class="subtitle" data-lang="zh">神經元 → 反向傳播 → CNN/RNN/Transformer 三大架構，搭配活互動 sigmoid/softmax 計算與 PyTorch + R torch 雙語範例。</p>
-<p class="subtitle" data-lang="en">From neurons to backprop to the three pillars (CNN/RNN/Transformer), with live sigmoid/softmax demos and side-by-side PyTorch + R torch code.</p>
+<p class="subtitle" data-zh="從一個神經元到 Transformer attention——這一章用直覺、互動與最少數學帶你穿越深度學習。學會這套「文法」後，AlphaFold 3 與 ESM-3 不再是黑魔法。" data-en="From one neuron to Transformer attention — this chapter walks you through deep learning with intuition, interactivity, and minimum math. Once you've internalized this 'grammar,' AlphaFold 3 and ESM-3 stop being black magic.">從一個神經元到 Transformer attention——用直覺、互動與最少數學穿越深度學習。學會這套「文法」後，AlphaFold 3 與 ESM-3 不再是黑魔法。</p>
 </header>
 
 <main class="content-wrap">
 
 <!-- Section 1: Neuron -->
 <section class="section">
-<div class="section-label" data-zh="神經元" data-en="Neuron">神經元</div>
-<h2 data-zh="一、一個神經元到底在算什麼？" data-en="I. What does a neuron actually compute?">一、一個神經元到底在算什麼？</h2>
-<div data-lang="zh">
-<p>一個神經元做兩件事：(1) 把所有輸入<strong>線性加權求和再加 bias</strong>；(2) 通過<strong>非線性激活函數</strong>。整個深度學習就是這兩個動作的堆疊。</p>
-</div>
-<div data-lang="en">
-<p>One neuron does two things: (1) take a <strong>weighted sum of inputs plus bias</strong>; (2) pass through a <strong>nonlinear activation</strong>. All of deep learning is a stack of these two operations.</p>
-</div>
+<div class="section-label" data-zh="第一原理" data-en="First Principles">第一原理</div>
+<h2 data-zh="一、一個神經元到底在算什麼？" data-en="I. What does one neuron actually compute?">一、一個神經元到底在算什麼？</h2>
+<p data-zh="深度學習聽起來嚇人，但「一個神經元」其實只做兩件事：(1) 把所有輸入<strong>線性加權求和再加 bias</strong>；(2) 通過一個<strong>非線性激活函數</strong>。整個 AlphaFold 3 也只是這兩步驟堆疊了幾百萬次。" data-en="Deep learning sounds intimidating, but a single neuron does just two things: (1) take a <strong>weighted sum of inputs plus bias</strong>; (2) pass through a <strong>nonlinear activation</strong>. Even AlphaFold 3 is just these two steps stacked millions of times.">深度學習聽起來嚇人，但一個神經元只做兩件事：線性加權求和 + 非線性激活。AlphaFold 3 只是這兩步驟堆疊了幾百萬次。</p>
 <div class="formula-box">y = σ( w<sub>1</sub>·x<sub>1</sub> + w<sub>2</sub>·x<sub>2</sub> + ... + w<sub>n</sub>·x<sub>n</sub> + b )</div>
+
+<div class="concept-card">
+<h4 data-zh="為什麼要「非線性」激活？" data-en="Why is the nonlinearity essential?">為什麼要非線性激活？</h4>
+<p data-zh="如果沒有 σ，無論你疊多少層，全部都會「攤平」成一個線性函數——等於只有 1 層的線性回歸。<strong>非線性是 DL 能比線性回歸強的唯一原因。</strong>" data-en="Without σ, no matter how many layers you stack, the whole net collapses into one linear function — equivalent to a single linear regression. <strong>Nonlinearity is the only reason DL beats linear regression.</strong>">沒有非線性激活，無論疊多少層都會攤平成一個線性函數。</p>
+<div class="concept-analogy" data-zh="像把多片透明色片疊在一起——只要每片都是「均勻變色」，疊多少片總效果還是一個顏色。中間夾一片「不均勻」的東西，才能產生複雜圖案。" data-en="Like stacking transparent color filters — if each is uniformly tinted, the net effect is still one color, no matter how many layers. Slip a non-uniform filter in and you get complex patterns.">像把多片透明色片疊在一起——必須中間夾一片「不均勻」的，才能產生複雜圖案。</div>
+</div>
+
 <div class="card-grid cols-3">
-<div class="card"><h4>ReLU</h4><div data-lang="zh"><p>max(0, x)。最常用，計算便宜，深層 CNN/MLP 默認選擇。</p></div><div data-lang="en"><p>max(0, x). The default — cheap and works for deep MLPs/CNNs.</p></div></div>
-<div class="card"><h4>Sigmoid</h4><div data-lang="zh"><p>1 / (1+e<sup>-x</sup>)。輸出 (0,1)，二元分類最後一層。深層中間用會 vanish。</p></div><div data-lang="en"><p>1 / (1+e<sup>-x</sup>). Output (0,1) — final layer for binary classification. Vanishes when stacked deep.</p></div></div>
-<div class="card"><h4>GELU / SiLU</h4><div data-lang="zh"><p>近年 Transformer 主流選擇 (GPT、ESM、AlphaFold 都用)。比 ReLU 平滑、收斂更快。</p></div><div data-lang="en"><p>Default in modern Transformers (GPT, ESM, AlphaFold). Smoother than ReLU, converges faster.</p></div></div>
+<div class="card"><h4>ReLU</h4><div data-lang="zh"><p><code>max(0, x)</code>。最常用，計算便宜，深層 CNN/MLP 預設。<br><strong>缺點：</strong>「dying ReLU」——神經元落到負值區後永遠不會更新（梯度=0）。</p></div><div data-lang="en"><p><code>max(0, x)</code>. The default — cheap and works for deep MLPs/CNNs.<br><strong>Drawback:</strong> "dying ReLU" — once a neuron lands in the negative region, gradient = 0 forever.</p></div></div>
+<div class="card"><h4>Sigmoid</h4><div data-lang="zh"><p>1 / (1+e<sup>-x</sup>)。輸出 (0,1)，二元分類最後一層。<br><strong>缺點：</strong>深層中間使用會梯度消失 (vanishing gradient)。</p></div><div data-lang="en"><p>1 / (1+e<sup>-x</sup>). Output (0,1) — final layer for binary classification.<br><strong>Drawback:</strong> vanishing gradient when stacked deep.</p></div></div>
+<div class="card"><h4>GELU / SiLU</h4><div data-lang="zh"><p>近年 Transformer 主流選擇 (GPT、ESM、AlphaFold 都用)。比 ReLU 平滑、收斂更快。<br><code>GELU(x) = x · Φ(x)</code>（Φ 為標準常態 CDF）</p></div><div data-lang="en"><p>The de-facto choice in modern Transformers (GPT, ESM, AlphaFold). Smoother than ReLU, faster convergence.<br><code>GELU(x) = x · Φ(x)</code> (Φ is the standard normal CDF).</p></div></div>
 </div>
 </section>
 
-<!-- Section 2: Backprop interactive -->
+<!-- Section 2: Sigmoid interactive -->
 <section class="section">
 <div class="section-label" data-zh="互動模擬" data-en="Interactive">互動模擬</div>
 <h2 data-zh="二、Sigmoid 神經元計算器" data-en="II. Sigmoid Neuron Calculator">二、Sigmoid 神經元計算器</h2>
-<div data-lang="zh"><p>調整權重 w 與 bias b，看單一神經元如何把輸入 x∈[-5,5] 映射到 (0,1)。注意 w 越大邊界越陡，b 改變決策邊界位置。</p></div>
-<div data-lang="en"><p>Adjust weight w and bias b to see how a single sigmoid neuron maps inputs to (0,1). Larger |w| sharpens the boundary; b shifts it.</p></div>
+<p data-zh="調整權重 w 與 bias b，看單一神經元如何把輸入 x∈[-5,5] 映射到 (0,1)。<strong>w 越大邊界越陡（決策更「硬」）；b 改變決策邊界的位置</strong>。把它想成「一個分類器」的最簡單形式。" data-en="Adjust weight w and bias b to see how a single sigmoid neuron maps inputs to (0,1). <strong>Larger |w| sharpens the decision; b shifts the boundary.</strong> Think of it as the simplest possible classifier.">調整 w 與 b，看單一神經元如何把 x 映射到 (0,1)。w 越大邊界越陡；b 改變邊界位置。</p>
 <div class="interactive-panel">
 <div class="slider-group"><label><span>weight w</span> <span id="valW">1.0</span></label><input type="range" id="sliderW" min="-5" max="5" value="1" step="0.1"></div>
 <div class="slider-group"><label><span>bias b</span> <span id="valB">0.0</span></label><input type="range" id="sliderB" min="-5" max="5" value="0" step="0.1"></div>
@@ -51,30 +50,100 @@
 </div>
 </section>
 
-<!-- Section 3: Three pillars -->
+<!-- Section 3: Backprop -->
+<section class="section">
+<div class="section-label" data-zh="核心引擎" data-en="The Core Engine">核心引擎</div>
+<h2 data-zh="三、反向傳播 (Backpropagation)：DL 的引擎" data-en="III. Backpropagation — the engine of DL">三、反向傳播：DL 的引擎</h2>
+<p data-zh="一個神經網路就是一個「<strong>把輸入映射到 loss</strong>」的可微分函數。<span class='glossary-pill' title='Backpropagation：把 loss 對每個參數的偏導用「鏈鎖律」一層一層向前傳，是訓練深度模型的核心算法'>反向傳播</span> 用鏈鎖律 (chain rule) 計算每個參數對 loss 的偏導，optimizer 再根據這些梯度更新參數。" data-en="A neural network is a differentiable function mapping <strong>inputs to loss</strong>. <span class='glossary-pill' title='Backpropagation: applies the chain rule to compute the loss gradient w.r.t. every parameter, layer by layer. The core training algorithm for deep models.'>Backpropagation</span> uses the chain rule to compute the partial derivative of loss w.r.t. every parameter; an optimizer then updates parameters using these gradients.">神經網路是一個「把輸入映射到 loss」的可微分函數。反向傳播用鏈鎖律一層一層計算梯度。</p>
+
+<div class="workflow">
+<div class="wf-step" data-num="1"><h5 data-zh="Forward pass：算預測與 loss" data-en="Forward pass: compute predictions and loss">Forward pass：算預測與 loss</h5><p data-lang="zh">輸入 X 經過所有層得到 ŷ，與真 y 算 loss L(ŷ, y)。</p><p data-lang="en">X passes through all layers to produce ŷ, compute loss L(ŷ, y).</p></div>
+<div class="wf-step" data-num="2"><h5 data-zh="Backward pass：鏈鎖律算梯度" data-en="Backward pass: chain rule for gradients">Backward pass：鏈鎖律算梯度</h5><p data-lang="zh">從最後一層往前，每層計算 ∂L/∂w 與 ∂L/∂b。PyTorch 的 <code>loss.backward()</code> 一行搞定。</p><p data-lang="en">From the last layer back, compute ∂L/∂w and ∂L/∂b for each layer. PyTorch's <code>loss.backward()</code> handles it.</p></div>
+<div class="wf-step" data-num="3"><h5 data-zh="Optimizer 更新參數" data-en="Optimizer updates parameters">Optimizer 更新參數</h5><p data-lang="zh">最簡單的 SGD: w ← w - η·∂L/∂w；現代多用 <strong>Adam</strong> 或 <strong>AdamW</strong>，會自適應每個參數的學習率。</p><p data-lang="en">Simplest SGD: w ← w - η·∂L/∂w; modern choice is usually <strong>Adam</strong> or <strong>AdamW</strong>, which adapts learning rate per-parameter.</p></div>
+<div class="wf-step" data-num="4"><h5 data-zh="重複幾百萬次" data-en="Repeat millions of times">重複幾百萬次</h5><p data-lang="zh">每次 mini-batch 都做一遍 1-3。AlphaFold 2 訓練了約 1 週 × 128 TPUv3。</p><p data-lang="en">Repeat 1-3 for each mini-batch. AlphaFold 2 trained for ~1 week on 128 TPUv3.</p></div>
+</div>
+</section>
+
+<!-- Section 4: Three pillars -->
 <section class="section">
 <div class="section-label" data-zh="三大架構" data-en="Three Pillars">三大架構</div>
-<h2 data-zh="三、CNN、RNN、Transformer：三種看資料的方式" data-en="III. CNN, RNN, Transformer — Three Ways to Look at Data">三、CNN、RNN、Transformer：三種看資料的方式</h2>
-<table class="comp-table">
-<thead><tr><th>Architecture</th><th data-zh="關鍵直覺" data-en="Key intuition">關鍵直覺</th><th data-zh="生資代表作" data-en="Bio examples">生資代表作</th><th data-zh="缺點" data-en="Limitations">缺點</th></tr></thead>
-<tbody>
-<tr><td><strong>CNN</strong><br>(1D/2D conv)</td><td data-zh="局部 motif 檢測，平移不變性" data-en="Local motif detection, translation invariance">局部 motif 檢測，平移不變性</td><td>DeepBind, DeepSEA, Basenji, scBasset</td><td data-zh="長距離互動需多層才能捕捉" data-en="Long-range interactions need many layers">長距離互動需多層才能捕捉</td></tr>
-<tr><td><strong>RNN / LSTM</strong></td><td data-zh="序列順序、隱藏狀態傳遞" data-en="Sequential order, hidden state propagation">序列順序、隱藏狀態傳遞</td><td data-zh="早期 splicing 預測、CRF 標註" data-en="Early splicing predictors, CRF labeling">早期 splicing 預測、CRF 標註</td><td data-zh="逐步運算難並行；長距離訊號衰減" data-en="Sequential, hard to parallelize; long-range decay">逐步運算難並行；長距離訊號衰減</td></tr>
-<tr><td><strong>Transformer</strong></td><td data-zh="全連接 attention，可同時看序列任意兩位置" data-en="Full attention — can relate any two positions in one step">全連接 attention，可同時看序列任意兩位置</td><td>ESM, AlphaFold 2/3, scGPT, Enformer, Evo 2</td><td data-zh="O(L²) 記憶體；&gt;100k token 才需要特殊技巧 (Hyena, Mamba)" data-en="O(L²) memory; >100k tokens needs tricks (Hyena, Mamba)">O(L²) 記憶體；&gt;100k token 才需要特殊技巧</td></tr>
-</tbody>
-</table>
+<h2 data-zh="四、CNN、RNN、Transformer：三種看資料的方式" data-en="IV. CNN, RNN, Transformer — Three Ways to Look at Data">四、CNN、RNN、Transformer</h2>
+
+<div class="concept-card">
+<h4 data-zh="CNN — 局部偵測 + 平移不變" data-en="CNN — local detection + translation invariance">CNN — 局部偵測 + 平移不變</h4>
+<p data-zh="<strong>核心思想：</strong>同一個小濾鏡 (kernel) 沿著輸入滑動，找出「motif」。CNN 在影像最強，在 DNA 序列也非常合適（TF 結合 motif 就是局部 pattern）。<br><strong>生資代表：</strong>DeepBind、DeepSEA、Basenji、scBasset。<br><strong>缺點：</strong>長距離互動需要疊很多層 + dilation。" data-en="<strong>Core idea:</strong> a small filter (kernel) slides across the input to detect 'motifs.' CNNs dominate images and are excellent for DNA sequences (TF-binding motifs are local patterns).<br><strong>Bio examples:</strong> DeepBind, DeepSEA, Basenji, scBasset.<br><strong>Drawback:</strong> long-range interactions require many layers + dilation.">CNN：濾鏡滑動找 motif；DeepBind、DeepSEA、Basenji 用 CNN。</p>
+<div class="concept-analogy" data-zh="像用「找『TATA box』的印章」一格一格蓋整條 DNA——每個位置都用同一個印章檢查。" data-en="Like a 'TATA box' stamp pressed onto DNA position by position — every position is checked with the same template.">像用「找 TATA box 的印章」滑動檢查整條 DNA。</div>
+</div>
+
+<div class="concept-card">
+<h4 data-zh="RNN / LSTM — 順序記憶" data-en="RNN / LSTM — sequential memory">RNN / LSTM — 順序記憶</h4>
+<p data-zh="<strong>核心思想：</strong>有「隱藏狀態」一路傳遞，每個位置看到當前輸入 + 之前的隱藏狀態。LSTM 加入「門 (gate)」機制解決長距離記憶問題。<br><strong>生資代表：</strong>早期 splicing 預測、CRF 標註。<br><strong>缺點：</strong>逐步運算難並行，長距離仍會「忘」。2022 後幾乎被 Transformer 取代。" data-en="<strong>Core idea:</strong> a hidden state propagates forward; each position sees current input + previous hidden state. LSTM adds 'gates' to handle long-range memory.<br><strong>Bio examples:</strong> early splicing predictors, CRF labeling.<br><strong>Drawback:</strong> sequential, hard to parallelize; long-range still 'forgets.' Largely replaced by Transformers post-2022.">RNN：隱藏狀態順序傳遞；LSTM 加 gate 處理長距離。2022 後幾乎被 Transformer 取代。</p>
+<div class="concept-analogy" data-zh="像一邊讀小說一邊寫筆記——每翻一頁筆記都更新，但寫到第 100 頁時，第 1 頁的細節可能已經模糊。" data-en="Like reading a novel while taking notes — every page updates the notes, but by page 100 the details from page 1 are fuzzy.">像一邊讀小說一邊寫筆記——讀到第 100 頁時第 1 頁細節已模糊。</div>
+</div>
+
+<div class="concept-card">
+<h4 data-zh="Transformer — 全連接 attention" data-en="Transformer — full attention">Transformer — 全連接 attention</h4>
+<p data-zh="<strong>核心思想：</strong>每個 token 一次性看「所有其他 token」並計算相關性權重 (attention)。可平行訓練，捕捉任意距離關係。<br><strong>生資代表：</strong>ESM (蛋白)、AlphaFold (結構)、scGPT (細胞)、Enformer (基因體)、Evo 2 (跨域)。<br><strong>缺點：</strong>原始版 O(L²) 記憶體；長序列 (&gt;100k token) 需要特殊技巧 (Flash Attention, Hyena, Mamba)。" data-en="<strong>Core idea:</strong> every token attends to every other token simultaneously, weighted by relevance (attention). Parallel training, captures any-distance relationships.<br><strong>Bio examples:</strong> ESM (proteins), AlphaFold (structure), scGPT (cells), Enformer (genome), Evo 2 (cross-domain).<br><strong>Drawback:</strong> vanilla O(L²) memory; long sequences (&gt;100k tokens) need tricks (Flash Attention, Hyena, Mamba).">Transformer：每個 token 看所有其他 token 並算 attention 權重。可平行，捕捉任意距離關係。</p>
+<div class="concept-analogy" data-zh="像「圓桌會議」——每個人發言時可以同時看其他所有人的表情、姿態，決定該重點關注誰。" data-en="Like a round-table meeting — every speaker can read every other person's expression and body language to decide whom to focus on.">像圓桌會議——每個人發言時可同時看其他所有人，決定該重點關注誰。</div>
+</div>
+
 <div class="callout tip"><span class="callout-icon">💡</span><div>
 <span data-lang="zh"><strong>記憶口訣：</strong>CNN 看「局部」、RNN 看「順序」、Transformer 看「全局」。生物序列通常需要全局訊息（promoter 與 gene body 距離數十 kb），這就是為什麼 Transformer 在 2022 年後幾乎一統江山。</span>
 <span data-lang="en"><strong>Mnemonic:</strong> CNN sees local, RNN sees sequential, Transformer sees global. Biology often needs global signal (promoters tens of kb from gene bodies) — which is why Transformers dominate post-2022.</span>
 </div></div>
 </section>
 
-<!-- Section 4: Hands-on PyTorch -->
+<!-- Section 5: Attention deep dive -->
+<section class="section">
+<div class="section-label" data-zh="Attention 拆解" data-en="Attention Unpacked">Attention 拆解</div>
+<h2 data-zh="五、Attention 機制：用「查資料庫」的隱喻看穿它" data-en="V. Attention: see it as 'database lookup'">五、Attention：用「查資料庫」的隱喻看穿它</h2>
+<p data-zh="Attention 看起來很神秘，但本質就是「<strong>用 query 去資料庫裡查最相關的 key，然後加權拿回對應的 value</strong>」。" data-en="Attention looks mysterious but it's really 'use a query to look up the most relevant keys in a database, then weighted-sum the matched values.'">Attention 看起來神秘，但本質就是「用 query 去查 key，加權拿回 value」。</p>
+
+<div class="formula-box">Attention(Q, K, V) = softmax( Q·K<sup>T</sup> / √d ) · V</div>
+
+<div data-lang="zh">
+<ul>
+<li><strong>Q (Query)</strong>：「我要找什麼？」每個位置產生一個 query 向量</li>
+<li><strong>K (Key)</strong>：「我能匹配什麼？」每個位置產生一個 key 向量</li>
+<li><strong>V (Value)</strong>：「我有什麼內容？」每個位置產生一個 value 向量</li>
+<li><strong>Q·K<sup>T</sup></strong>：算每個 query 對每個 key 的相似度（內積）</li>
+<li><strong>softmax</strong>：把相似度變成「機率權重」總和為 1</li>
+<li><strong>權重 × V</strong>：依權重加權拿回 value</li>
+</ul>
+<p>對蛋白質序列：當第 100 個殘基 (Q) 想知道它在 3D 空間的鄰居時，會去算它與其他每個殘基 (K) 的相似度，找到最可能空間接觸的位置，再把這些位置的 value 加權拼起來。<strong>這就是 AlphaFold 用 attention 從序列「猜出 3D 結構」的底層原理</strong>。</p>
+</div>
+<div data-lang="en">
+<ul>
+<li><strong>Q (Query)</strong>: "What am I looking for?" — each position generates a query vector</li>
+<li><strong>K (Key)</strong>: "What can I match?" — each position generates a key vector</li>
+<li><strong>V (Value)</strong>: "What content do I carry?" — each position generates a value vector</li>
+<li><strong>Q·K<sup>T</sup></strong>: compute similarity of every query to every key (dot product)</li>
+<li><strong>softmax</strong>: turn similarity into "probability weights" summing to 1</li>
+<li><strong>weights × V</strong>: weighted retrieval of values</li>
+</ul>
+<p>For a protein sequence: when residue 100 (Q) wants to know its 3D neighbors, it scores its similarity to every other residue (K), identifies likely spatial contacts, then weighted-sums those positions' values. <strong>This is the foundation of how AlphaFold uses attention to 'infer 3D structure from sequence.'</strong></p>
+</div>
+</section>
+
+<!-- Section 6: Training survival kit -->
+<section class="section">
+<div class="section-label" data-zh="實戰錦囊" data-en="Pro Tips">實戰錦囊</div>
+<h2 data-zh="六、訓練 DL 的 7 個保命招數" data-en="VI. Seven survival tips for training DL">六、訓練 DL 的 7 個保命招數</h2>
+<div class="workflow">
+<div class="wf-step" data-num="1"><h5 data-zh="先 overfit 一個 mini-batch" data-en="Overfit one mini-batch first">先 overfit 一個 mini-batch</h5><p data-lang="zh">10 筆資料 train 100 epoch 應該幾乎 0 loss——做不到代表 model/loss/data 有 bug。<strong>這比任何單元測試都有效</strong>。</p><p data-lang="en">10 samples × 100 epochs should reach ~0 loss. If not, your model/loss/data has a bug. <strong>More effective than any unit test.</strong></p></div>
+<div class="wf-step" data-num="2"><h5 data-zh="LR 是最關鍵超參數" data-en="LR is the most important hyperparameter">LR 是最關鍵超參數</h5><p data-lang="zh">用 LR finder 從 1e-7 掃到 1e-1，找 loss 開始下降的甜蜜點。對 Transformer 通常 1e-4 ~ 5e-5 (fine-tune)、1e-3 ~ 5e-4 (from scratch)。</p><p data-lang="en">Use an LR finder, sweeping 1e-7 → 1e-1; pick where loss starts dropping. Transformer fine-tune is typically 1e-4 to 5e-5, from-scratch 1e-3 to 5e-4.</p></div>
+<div class="wf-step" data-num="3"><h5 data-zh="標準化輸入" data-en="Normalize inputs">標準化輸入</h5><p data-lang="zh">數值特徵 z-score；DNA 用 one-hot；表達量用 log1p + scale；影像 0-255 → -1~1。<strong>輸入沒標準化是新手 #1 大坑</strong>。</p><p data-lang="en">z-score numeric; one-hot DNA; log1p + scale expression; images 0-255 → -1~1. <strong>The #1 beginner pitfall is unnormalized inputs.</strong></p></div>
+<div class="wf-step" data-num="4"><h5 data-zh="正則化三件套" data-en="The regularization trio">正則化三件套</h5><p data-lang="zh">Dropout (0.1–0.5)、weight decay (1e-4)、early stopping。避免過擬合的基本配置。</p><p data-lang="en">Dropout (0.1–0.5), weight decay (1e-4), early stopping. Default anti-overfitting setup.</p></div>
+<div class="wf-step" data-num="5"><h5 data-zh="Reproducibility" data-en="Reproducibility">Reproducibility</h5><p data-lang="zh">固定 random seed (Python、NumPy、PyTorch、CUDA 都要)；記下版本與 commit；嚴格的話用 <code>torch.use_deterministic_algorithms(True)</code>。</p><p data-lang="en">Seed Python, NumPy, PyTorch, CUDA — all of them. Log versions and commits. For full determinism: <code>torch.use_deterministic_algorithms(True)</code>.</p></div>
+<div class="wf-step" data-num="6"><h5 data-zh="GPU 記憶體耗光？" data-en="OOM on GPU?">GPU 記憶體耗光？</h5><p data-lang="zh">先 mixed-precision (bf16/fp16)，再 gradient accumulation，最後才縮 batch（縮 batch 影響 BatchNorm 與收斂）。Flash Attention 可省 5-10× 記憶體。</p><p data-lang="en">Try mixed precision (bf16/fp16), then gradient accumulation; reduce batch as last resort (it hurts BN/convergence). Flash Attention saves 5-10× memory.</p></div>
+<div class="wf-step" data-num="7"><h5 data-zh="從 fine-tune 開始" data-en="Start from fine-tuning">從 fine-tune 開始</h5><p data-lang="zh">生物 AI 別從零訓練——HuggingFace 上找 ESM、scGPT、DNABERT 都好。<strong>從零訓練是奢侈，fine-tune 是工程</strong>。</p><p data-lang="en">Don't train bio models from scratch — fine-tune from HuggingFace (ESM, scGPT, DNABERT). <strong>Training from scratch is a luxury; fine-tuning is engineering.</strong></p></div>
+</div>
+</section>
+
+<!-- Section 7: Hands-on -->
 <section class="section">
 <div class="section-label" data-zh="動手實作" data-en="Hands-on">動手實作</div>
-<h2 data-zh="四、用 PyTorch / R-torch 訓練一個 1D-CNN 分類 DNA motif" data-en="IV. Train a 1D-CNN for DNA Motif Classification">四、用 PyTorch / R-torch 訓練一個 1D-CNN 分類 DNA motif</h2>
-<div data-lang="zh"><p>任務：給定 100bp 的 DNA 序列，分類是否含有特定 TF 結合 motif (簡化版)。</p></div>
-<div data-lang="en"><p>Task: given a 100bp DNA sequence, classify whether it contains a TF-binding motif (toy version).</p></div>
+<h2 data-zh="七、用 PyTorch / R-torch 訓練一個 1D-CNN 分類 DNA motif" data-en="VII. Train a 1D-CNN for DNA Motif Classification">七、訓練一個 1D-CNN 分類 DNA motif</h2>
 <div class="code-tabs">
 <div class="code-tab-btns"><button class="code-tab-btn active">Python (PyTorch)</button><button class="code-tab-btn">R (torch)</button></div>
 <div class="code-tab-content active"><pre><span class="kw">import</span> torch, torch.nn <span class="kw">as</span> nn
@@ -84,93 +153,141 @@
         super().<span class="func">__init__</span>()
         self.conv = nn.<span class="cls">Conv1d</span>(<span class="num">4</span>, <span class="num">32</span>, kernel_size=<span class="num">8</span>, padding=<span class="num">3</span>)   <span class="comment"># 4 channels = A,C,G,T</span>
         self.pool = nn.<span class="cls">AdaptiveMaxPool1d</span>(<span class="num">1</span>)
+        self.drop = nn.<span class="cls">Dropout</span>(<span class="num">0.3</span>)
         self.fc   = nn.<span class="cls">Linear</span>(<span class="num">32</span>, <span class="num">1</span>)
     <span class="kw">def</span> <span class="func">forward</span>(self, x):           <span class="comment"># x: (B, 4, 100)</span>
         h = torch.<span class="func">relu</span>(self.<span class="func">conv</span>(x))
         h = self.<span class="func">pool</span>(h).<span class="func">squeeze</span>(<span class="num">-1</span>)
+        h = self.<span class="func">drop</span>(h)
         <span class="kw">return</span> torch.<span class="func">sigmoid</span>(self.<span class="func">fc</span>(h)).<span class="func">squeeze</span>(<span class="num">-1</span>)
 
-model = <span class="cls">DNACNN</span>(); opt = torch.optim.<span class="cls">Adam</span>(model.<span class="func">parameters</span>(), lr=<span class="num">1e-3</span>)
+model = <span class="cls">DNACNN</span>(); opt = torch.optim.<span class="cls">AdamW</span>(model.<span class="func">parameters</span>(), lr=<span class="num">1e-3</span>, weight_decay=<span class="num">1e-4</span>)
 loss_fn = nn.<span class="cls">BCELoss</span>()
 
-<span class="comment"># Toy training loop (assume X_one_hot: (N,4,100), y: (N,))</span>
 <span class="kw">for</span> epoch <span class="kw">in</span> <span class="func">range</span>(<span class="num">10</span>):
     pred = <span class="func">model</span>(X); loss = <span class="func">loss_fn</span>(pred, y)
-    opt.<span class="func">zero_grad</span>(); loss.<span class="func">backward</span>(); opt.<span class="func">step</span>()
+    opt.<span class="func">zero_grad</span>(); loss.<span class="func">backward</span>()
+    nn.utils.<span class="func">clip_grad_norm_</span>(model.<span class="func">parameters</span>(), max_norm=<span class="num">1.0</span>)    <span class="comment"># 防止梯度爆炸</span>
+    opt.<span class="func">step</span>()
     <span class="func">print</span>(epoch, loss.<span class="func">item</span>())</pre></div>
 <div class="code-tab-content"><pre><span class="kw">library</span>(torch)
 DNACNN <- <span class="func">nn_module</span>(
   initialize = <span class="kw">function</span>(){
     self$conv <- <span class="func">nn_conv1d</span>(<span class="num">4</span>, <span class="num">32</span>, kernel_size = <span class="num">8</span>, padding = <span class="num">3</span>)
     self$pool <- <span class="func">nn_adaptive_max_pool1d</span>(<span class="num">1</span>)
+    self$drop <- <span class="func">nn_dropout</span>(<span class="num">0.3</span>)
     self$fc   <- <span class="func">nn_linear</span>(<span class="num">32</span>, <span class="num">1</span>)
   },
   forward = <span class="kw">function</span>(x){
     h <- <span class="func">torch_relu</span>(self$<span class="func">conv</span>(x))
     h <- self$<span class="func">pool</span>(h)$<span class="func">squeeze</span>(<span class="num">-1</span>)
+    h <- self$<span class="func">drop</span>(h)
     <span class="func">torch_sigmoid</span>(self$<span class="func">fc</span>(h))$<span class="func">squeeze</span>(<span class="num">-1</span>)
   }
 )
-model <- <span class="func">DNACNN</span>(); opt <- <span class="func">optim_adam</span>(model$<span class="func">parameters</span>(), lr = <span class="num">1e-3</span>)
+model <- <span class="func">DNACNN</span>(); opt <- <span class="func">optim_adamw</span>(model$<span class="func">parameters</span>(), lr=<span class="num">1e-3</span>, weight_decay=<span class="num">1e-4</span>)
 loss_fn <- <span class="func">nn_bce_loss</span>()
 <span class="kw">for</span>(e <span class="kw">in</span> <span class="num">1</span>:<span class="num">10</span>){
   pred <- <span class="func">model</span>(X); loss <- <span class="func">loss_fn</span>(pred, y)
-  opt$<span class="func">zero_grad</span>(); loss$<span class="func">backward</span>(); opt$<span class="func">step</span>()
+  opt$<span class="func">zero_grad</span>(); loss$<span class="func">backward</span>()
+  <span class="func">nn_utils_clip_grad_norm_</span>(model$<span class="func">parameters</span>(), max_norm = <span class="num">1</span>)
+  opt$<span class="func">step</span>()
 }</pre></div>
 </div>
+
 <div class="callout warn"><span class="callout-icon">⚠️</span><div>
 <span data-lang="zh"><strong>One-hot 編碼提醒：</strong> A=[1,0,0,0]、C=[0,1,0,0]、G=[0,0,1,0]、T=[0,0,0,1]、N=[0.25,0.25,0.25,0.25]。請務必對齊「通道優先 (channel-first)」格式 (B, 4, L)，這是 1D-CNN 的標準輸入。</span>
 <span data-lang="en"><strong>One-hot reminder:</strong> A=[1,0,0,0], C=[0,1,0,0], G=[0,0,1,0], T=[0,0,0,1], N=[0.25,0.25,0.25,0.25]. Use channels-first (B, 4, L) for 1D-CNN.</span>
 </div></div>
 </section>
 
-<!-- Section 5: Tips -->
+<!-- Section 8: Discussion -->
 <section class="section">
-<div class="section-label" data-zh="實戰錦囊" data-en="Pro Tips">實戰錦囊</div>
-<h2 data-zh="五、訓練 DL 的 7 個保命招數" data-en="V. Seven survival tips for training DL">五、訓練 DL 的 7 個保命招數</h2>
-<div class="workflow">
-<div class="wf-step" data-num="1"><h5 data-zh="先 overfit 一個 mini-batch" data-en="Overfit one mini-batch first">先 overfit 一個 mini-batch</h5><p data-lang="zh">10 筆資料 train 100 epoch 應該幾乎 0 loss——做不到代表 model/loss/data 有 bug。</p><p data-lang="en">10 samples × 100 epochs should reach ~0 loss. If not, your model/loss/data has a bug.</p></div>
-<div class="wf-step" data-num="2"><h5 data-zh="LR 是最關鍵超參數" data-en="LR is the most important hyperparameter">LR 是最關鍵超參數</h5><p data-lang="zh">用 LR finder 從 1e-7 掃到 1e-1，找 loss 開始下降的甜蜜點。</p><p data-lang="en">Use an LR finder, sweeping 1e-7 → 1e-1; pick where loss starts dropping.</p></div>
-<div class="wf-step" data-num="3"><h5 data-zh="標準化輸入" data-en="Normalize inputs">標準化輸入</h5><p data-lang="zh">數值特徵 z-score；DNA 用 one-hot；表達量用 log1p + scale。</p><p data-lang="en">z-score numeric; one-hot DNA; log1p + scale expression.</p></div>
-<div class="wf-step" data-num="4"><h5 data-zh="正則化" data-en="Regularize">正則化</h5><p data-lang="zh">Dropout (0.1–0.5)、weight decay (1e-4)、early stopping；避免過擬合。</p><p data-lang="en">Dropout (0.1–0.5), weight decay (1e-4), early stopping — your shield against overfitting.</p></div>
-<div class="wf-step" data-num="5"><h5 data-zh="Reproducibility" data-en="Reproducibility">Reproducibility</h5><p data-lang="zh">固定 random seed (Python、NumPy、PyTorch、CUDA 都要)；記下版本與 commit。</p><p data-lang="en">Seed Python, NumPy, PyTorch, CUDA — all of them. Log versions and commits.</p></div>
-<div class="wf-step" data-num="6"><h5 data-zh="GPU 記憶體耗光？" data-en="OOM on GPU?">GPU 記憶體耗光？</h5><p data-lang="zh">先 mixed-precision (bf16/fp16)，再 gradient accumulation；最後才縮 batch。</p><p data-lang="en">Try mixed precision (bf16/fp16), then gradient accumulation; reduce batch only as last resort.</p></div>
-<div class="wf-step" data-num="7"><h5 data-zh="從 fine-tune 開始" data-en="Start from fine-tuning">從 fine-tune 開始</h5><p data-lang="zh">生物 AI 別從零訓練——HuggingFace 上找 ESM、scGPT、DNABERT 都好。</p><p data-lang="en">Don't train bio models from scratch — fine-tune from HuggingFace (ESM, scGPT, DNABERT).</p></div>
+<div class="section-label" data-zh="深入討論" data-en="Discussion">深入討論</div>
+<h2 data-zh="八、爭議：scaling law 的天花板在哪裡？" data-en="VIII. Debate: where is the ceiling of scaling laws?">八、爭議：scaling law 的天花板在哪裡？</h2>
+
+<div class="discuss-block">
+<button class="discuss-toggle" data-target="d_scl1"><span data-zh="▶ 觀點 A：scaling 還沒到頂（樂觀派）" data-en="▶ View A: scaling hasn't peaked (optimists)">▶ 觀點 A：scaling 還沒到頂（樂觀派）</span></button>
+<div class="discuss-body" id="d_scl1">
+<p data-lang="zh">Kaplan 等 (2020)、Hoffmann 等 (2022 Chinchilla) 提出的「<strong>scaling law</strong>」顯示：loss 隨參數量、資料量、算力呈冪次下降。直到 GPT-4 / Claude 3 / Gemini Ultra 這個層級，仍未看到平台期。生物模型 (ESM、Evo 2) 也在類似曲線上。</p>
+<p data-lang="en">Kaplan et al. (2020) and Hoffmann et al. (2022 Chinchilla) showed <strong>scaling laws</strong>: loss falls as a power of params, data, and compute. Up through GPT-4 / Claude 3 / Gemini Ultra, no plateau in sight. Biological models (ESM, Evo 2) lie on similar curves.</p>
+</div>
+</div>
+
+<div class="discuss-block">
+<button class="discuss-toggle" data-target="d_scl2"><span data-zh="▶ 觀點 B：資料才是瓶頸，不是參數（謹慎派）" data-en="▶ View B: data, not parameters, is the bottleneck (cautious)">▶ 觀點 B：資料才是瓶頸，不是參數（謹慎派）</span></button>
+<div class="discuss-body" id="d_scl2">
+<p data-lang="zh">Chinchilla 論文發現「最佳模型」其實是「同算力下多 token / 較小模型」。對生物：UniProt 約 240M 條蛋白，UniRef50 去冗餘後僅 60M——已接近 Evo 2 訓練量。<strong>如果不能擴增多樣化資料，模型再大也沒用</strong>。這就是為什麼合成生物學家正在實驗合成新蛋白序列來「擴增訓練集」。</p>
+<p data-lang="en">Chinchilla showed the "compute-optimal" model uses more tokens / smaller params. For bio: UniProt has ~240M proteins, UniRef50 (deduplicated) only 60M — close to Evo 2's training set. <strong>Without more diverse data, bigger models don't help.</strong> Synthetic biologists are now experimenting with synthesizing novel sequences to "augment" the training set.</p>
+</div>
+</div>
+
+<div class="discuss-block">
+<button class="discuss-toggle" data-target="d_scl3"><span data-zh="▶ 觀點 C：算力與環境成本（懷疑派）" data-en="▶ View C: compute and environmental costs (skeptics)">▶ 觀點 C：算力與環境成本（懷疑派）</span></button>
+<div class="discuss-body" id="d_scl3">
+<p data-lang="zh">訓練 GPT-4 估計消耗 50 GWh 電力、釋放千噸 CO<sub>2</sub>。Strubell 等 (2019) 早就指出「大模型 = 大碳排」。即使技術上能繼續 scaling，全球能源限制可能讓「無限 scaling」不切實際。注重「sparse models」與「mixture-of-experts」可能比「dense scaling」更有未來。</p>
+<p data-lang="en">Training GPT-4 reportedly consumed ~50 GWh, emitting thousands of tons of CO<sub>2</sub>. Strubell et al. (2019) flagged "big model = big carbon" early. Even if scaling is technically possible, global energy limits may make "infinite scaling" impractical. Sparse models and mixture-of-experts may have more future than dense scaling.</p>
+</div>
 </div>
 </section>
 
 <!-- Quiz -->
 <section class="quiz-section">
-<h3 data-zh="📝 概念小測 (3 題)" data-en="📝 Quick Check (3 questions)">📝 概念小測 (3 題)</h3>
+<h3 data-zh="📝 概念小測 (5 題)" data-en="📝 Quick Check (5 questions)">📝 概念小測 (5 題)</h3>
+
 <div class="quiz-q">
-<p data-zh="Q1. 為什麼現代 Transformer 在生物序列任務全面取代 RNN？" data-en="Q1. Why have Transformers replaced RNNs in modern bio-sequence tasks?">Q1. 為什麼現代 Transformer 在生物序列任務全面取代 RNN？</p>
+<p data-zh="Q1. 為什麼神經網路需要非線性激活函數？" data-en="Q1. Why must neural nets have nonlinear activations?">Q1. 為什麼神經網路需要非線性激活函數？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false"><span data-zh="(A) 為了讓計算更快" data-en="(A) To speed up computation">(A) 為了讓計算更快</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) 沒有非線性，堆疊多少層都等於一層線性回歸" data-en="(B) Without nonlinearity, any stack collapses into one linear regression">(B) 沒有非線性，堆疊多少層都等於一層線性回歸</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 為了減少參數量" data-en="(C) To reduce parameters">(C) 為了減少參數量</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 為了支持 GPU" data-en="(D) To support GPUs">(D) 為了支持 GPU</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q2. 為什麼現代 Transformer 在生物序列任務全面取代 RNN？" data-en="Q2. Why have Transformers replaced RNNs in modern bio-sequence tasks?">Q2. 為什麼現代 Transformer 在生物序列任務全面取代 RNN？</p>
 <div class="quiz-options">
 <div class="quiz-opt" data-correct="false"><span data-zh="(A) Transformer 參數比較少" data-en="(A) Transformers have fewer parameters">(A) Transformer 參數比較少</span></div>
-<div class="quiz-opt" data-correct="true"><span data-zh="(B) Attention 可平行運算且能直接捕捉長距離依賴 (e.g. enhancer-promoter)" data-en="(B) Attention parallelizes and directly captures long-range dependencies (e.g., enhancer–promoter)">(B) Attention 可平行運算且能直接捕捉長距離依賴 (e.g. enhancer-promoter)</span></div>
-<div class="quiz-opt" data-correct="false"><span data-zh="(C) RNN 已被禁用" data-en="(C) RNNs have been deprecated by law">(C) RNN 已被禁用</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) Attention 可平行運算且能直接捕捉長距離依賴" data-en="(B) Attention parallelizes and directly captures long-range dependencies">(B) Attention 可平行運算且能直接捕捉長距離依賴</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) RNN 已被禁用" data-en="(C) RNNs are deprecated by law">(C) RNN 已被禁用</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(D) Transformer 不需要 GPU" data-en="(D) Transformers don't need GPUs">(D) Transformer 不需要 GPU</span></div>
 </div>
 <div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
 </div>
+
 <div class="quiz-q">
-<p data-zh="Q2. 訓練 loss 從第一個 epoch 就 nan，最可能的原因？" data-en="Q2. Loss is NaN from epoch 1. Most likely cause?">Q2. 訓練 loss 從第一個 epoch 就 nan，最可能的原因？</p>
+<p data-zh="Q3. 訓練 loss 從第一個 epoch 就 NaN，最可能的原因？" data-en="Q3. Loss is NaN from epoch 1. Most likely cause?">Q3. 訓練 loss 從第一個 epoch 就 NaN，最可能的原因？</p>
 <div class="quiz-options">
 <div class="quiz-opt" data-correct="false"><span data-zh="(A) 模型太深" data-en="(A) Model too deep">(A) 模型太深</span></div>
-<div class="quiz-opt" data-correct="true"><span data-zh="(B) Learning rate 太大、輸入未正規化、log(0) 等數值問題" data-en="(B) LR too high, unnormalized inputs, or log(0) numerical issues">(B) Learning rate 太大、輸入未正規化、log(0) 等數值問題</span></div>
-<div class="quiz-opt" data-correct="false"><span data-zh="(C) Batch size 太小" data-en="(C) Batch size too small">(C) Batch size 太小</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) learning rate 太大、輸入未正規化、log(0) 等數值問題" data-en="(B) LR too high, unnormalized inputs, or log(0) numerical issues">(B) learning rate 太大、輸入未正規化、log(0) 等數值問題</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) batch size 太小" data-en="(C) Batch size too small">(C) batch size 太小</span></div>
 <div class="quiz-opt" data-correct="false"><span data-zh="(D) 一定是資料 bug" data-en="(D) Must be a data bug">(D) 一定是資料 bug</span></div>
 </div>
-<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。先降 LR、檢查輸入分佈、加上 gradient clipping。" data-en="✅ (B). Lower LR, check input distribution, add gradient clipping.">✅ 正解 (B)</span></div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。先降 LR、檢查輸入分佈、加 gradient clipping。" data-en="✅ (B). Lower LR, check input distribution, add gradient clipping.">✅ 正解 (B)</span></div>
 </div>
+
 <div class="quiz-q">
-<p data-zh="Q3. 你的訓練集 5,000 條 DNA 序列要分類 enhancer。最佳策略？" data-en="Q3. 5,000 DNA sequences, enhancer classification. Best strategy?">Q3. 你的訓練集 5,000 條 DNA 序列要分類 enhancer。最佳策略？</p>
+<p data-zh="Q4. Attention 機制本質上類似什麼？" data-en="Q4. Attention is essentially analogous to?">Q4. Attention 機制本質上類似什麼？</p>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="true"><span data-zh="(A) 用 query 在資料庫中查相關 key 並加權拿回 value" data-en="(A) Using a query to look up relevant keys in a database and weighted-retrieve values">(A) 用 query 在資料庫中查相關 key 並加權拿回 value</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(B) 高解析度 CNN" data-en="(B) High-resolution CNN">(B) 高解析度 CNN</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) LSTM 的門機制" data-en="(C) LSTM gating">(C) LSTM 的門機制</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) PCA 降維" data-en="(D) PCA dimensionality reduction">(D) PCA 降維</span></div>
+</div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (A)。QKV 三元組 = 資料庫查詢隱喻。" data-en="✅ (A). The QKV triplet maps to a database-lookup metaphor.">✅ 正解 (A)</span></div>
+</div>
+
+<div class="quiz-q">
+<p data-zh="Q5. 5,000 條 DNA 序列分類 enhancer，最佳策略？" data-en="Q5. 5,000 DNA sequences, enhancer classification — best strategy?">Q5. 5,000 條 DNA 序列分類 enhancer，最佳策略？</p>
 <div class="quiz-options">
 <div class="quiz-opt" data-correct="false"><span data-zh="(A) 從零訓練 100M 參數 Transformer" data-en="(A) Train a 100M-param Transformer from scratch">(A) 從零訓練 100M 參數 Transformer</span></div>
-<div class="quiz-opt" data-correct="true"><span data-zh="(B) Fine-tune 預訓練好的 DNABERT 或 Nucleotide Transformer" data-en="(B) Fine-tune pretrained DNABERT or Nucleotide Transformer">(B) Fine-tune 預訓練好的 DNABERT 或 Nucleotide Transformer</span></div>
-<div class="quiz-opt" data-correct="false"><span data-zh="(C) 一定要用 ResNet50" data-en="(C) Always use ResNet50">(C) 一定要用 ResNet50</span></div>
-<div class="quiz-opt" data-correct="false"><span data-zh="(D) 只用統計方法" data-en="(D) Only classical statistics">(D) 只用統計方法</span></div>
+<div class="quiz-opt" data-correct="true"><span data-zh="(B) Fine-tune 預訓練的 DNABERT 或 Nucleotide Transformer" data-en="(B) Fine-tune pretrained DNABERT or Nucleotide Transformer">(B) Fine-tune 預訓練的 DNABERT 或 Nucleotide Transformer</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(C) 必須用 ResNet50" data-en="(C) Must use ResNet50">(C) 必須用 ResNet50</span></div>
+<div class="quiz-opt" data-correct="false"><span data-zh="(D) 只用統計方法" data-en="(D) Classical statistics only">(D) 只用統計方法</span></div>
 </div>
-<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。5k 不夠 from-scratch；fine-tune 通常 1 小時跑完且勝過從零訓練。" data-en="✅ (B). 5k is too small for scratch; fine-tuning usually finishes in an hour and beats from-scratch.">✅ 正解 (B)</span></div>
+<div class="quiz-feedback"><span data-zh="✅ 正解 (B)。" data-en="✅ (B).">✅ 正解 (B)</span></div>
 </div>
 </section>
 
@@ -178,7 +295,6 @@ loss_fn <- <span class="func">nn_bce_loss</span>()
 <a href="02-ml-basics.html"><span class="nav-dir" data-zh="← 上一章" data-en="← Prev">← 上一章</span><span class="nav-title" data-zh="02 · ML 基礎" data-en="02 · ML Basics">02 · ML 基礎</span></a>
 <a href="04-sequence-embeddings.html"><span class="nav-dir" data-zh="下一章 →" data-en="Next →">下一章 →</span><span class="nav-title" data-zh="04 · 生物序列嵌入" data-en="04 · Sequence Embeddings">04 · 生物序列嵌入</span></a>
 </nav>
-
 </main>
 <footer class="site-footer">© Charlene — AI for Bioinformatics Interactive Tutorial</footer>
 <script src="i18n.js"></script>

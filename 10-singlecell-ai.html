@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Ch 10: 單細胞基礎模型 — AI for Bioinformatics</title>
+<title data-zh="Ch 10: 單細胞基礎模型 — AI for Bioinformatics" data-en="Ch 10: Single-Cell Foundation Models — AI for Bioinformatics">Ch 10: Single-Cell Foundation Models — AI for Bioinformatics</title>
 <link rel="stylesheet" href="styles.css">
 </head><body>
 <nav class="top-nav"><div class="top-nav-inner">
@@ -27,7 +27,7 @@
 <thead><tr><th>Model</th><th>Year</th><th data-zh="架構" data-en="Architecture">架構</th><th data-zh="預訓練資料" data-en="Pretraining">預訓練資料</th><th data-zh="關鍵能力" data-en="Key capability">關鍵能力</th></tr></thead>
 <tbody>
 <tr><td>scVI</td><td>2018</td><td>VAE (Negative Binomial)</td><td data-zh="單一資料集" data-en="Single dataset">單一資料集</td><td data-zh="去噪、批次校正" data-en="Denoising, batch correction">去噪、批次校正</td></tr>
-<tr><td>scBERT</td><td>2022</td><td>BERT 變體</td><td>~1M cells</td><td>Cell-type annotation</td></tr>
+<tr><td>scBERT</td><td>2022</td><td data-zh="BERT 變體" data-en="BERT variant">BERT 變體</td><td>~1M cells</td><td>Cell-type annotation</td></tr>
 <tr><td>Geneformer</td><td>2023</td><td>BERT</td><td>~30M cells (Genecorpus-30M)</td><td data-zh="Gene rank tokenization；in silico KO" data-en="Gene rank tokenization; in silico KO">Gene rank token；in silico KO</td></tr>
 <tr><td>scGPT</td><td>2024</td><td>GPT-style</td><td>~33M cells</td><td data-zh="多模態 (RNA + ATAC)；perturbation prediction" data-en="Multi-modal (RNA + ATAC); perturbation prediction">多模態；擾動預測</td></tr>
 <tr><td>scFoundation</td><td>2024</td><td>xTrimoGene</td><td>~50M cells</td><td data-zh="連續表達值 (非 rank)；長尾基因表現好" data-en="Continuous expression (no rank loss); strong on long-tail genes">連續表達值；長尾基因強</td></tr>
@@ -136,11 +136,11 @@ sc.pl.<span class="func">umap</span>(adata, color=[<span class="str">"scgpt_pred
 <h2 data-zh="五、要不要用 foundation model？" data-en="V. Should I use a foundation model?">五、要不要用 foundation model？</h2>
 <div class="decision-tree">
 <h4>🌳 Quick guide</h4>
-<div class="dt-node"><span class="dt-q" data-zh="目標：批次整合 + UMAP" data-en="Goal: integration + UMAP">整合 + UMAP</span> <span class="dt-arrow">→</span> <span>scVI / Harmony 已足夠，foundation model 沒明顯加分</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="目標：跨 atlas 對齊" data-en="Goal: cross-atlas alignment">跨 atlas 對齊</span> <span class="dt-arrow">→</span> <span>SCimilarity / UCE / scGPT</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="目標：擾動預測" data-en="Goal: perturbation prediction">擾動預測</span> <span class="dt-arrow">→</span> <span>scGPT / Geneformer (in silico KO)</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：批次整合 + UMAP" data-en="Goal: integration + UMAP">整合 + UMAP</span> <span class="dt-arrow">→</span> <span data-zh="scVI / Harmony 已足夠，foundation model 沒明顯加分" data-en="scVI / Harmony are sufficient; foundation models add little">scVI / Harmony 已足夠，foundation model 沒明顯加分</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：跨 atlas 對齊" data-en="Goal: cross-atlas alignment">跨 atlas 對齊</span> <span class="dt-arrow">→</span> <span data-zh="SCimilarity / UCE / scGPT" data-en="SCimilarity / UCE / scGPT">SCimilarity / UCE / scGPT</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="目標：擾動預測" data-en="Goal: perturbation prediction">擾動預測</span> <span class="dt-arrow">→</span> <span data-zh="scGPT / Geneformer (in silico KO)" data-en="scGPT / Geneformer (in silico KO)">scGPT / Geneformer (in silico KO)</span></div>
 <div class="dt-node"><span class="dt-q" data-zh="目標：罕見細胞型別偵測" data-en="Goal: rare cell-type detection">罕見細胞型別</span> <span class="dt-arrow">→</span> <span data-zh="Foundation model 可幫忙；但搭配 ML baseline 確認" data-en="Foundation model can help; cross-check with ML baselines">Foundation model 可幫忙；但搭配 ML baseline 確認</span></div>
-<div class="dt-node"><span class="dt-q" data-zh="算力極少" data-en="Compute-poor">算力極少</span> <span class="dt-arrow">→</span> <span>用 scVI；foundation model 推論成本高</span></div>
+<div class="dt-node"><span class="dt-q" data-zh="算力極少" data-en="Compute-poor">算力極少</span> <span class="dt-arrow">→</span> <span data-zh="用 scVI；foundation model 推論成本高" data-en="Use scVI; foundation-model inference is costly">用 scVI；foundation model 推論成本高</span></div>
 </div>
 </section>
 
